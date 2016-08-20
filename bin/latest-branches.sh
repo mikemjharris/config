@@ -1,10 +1,11 @@
 #!/bin/bash
 
-T=$(git for-each-ref --sort=-committerdate --count=15 --format="ref=%(refname) %(*subject) $"  refs/heads/)
-IFS=$'$' read -rd '' -a TEST <<<"$T"
+#List latest 15 branches by committer date. Append a $ sign so we can split it into an array.
+LATEST_BRANCHES=$(git for-each-ref --sort=-committerdate --count=15 --format="ref=%(refname) %(*subject) $"  refs/heads/)
 
-LENGTH=${#TEST[@]}
+# Parse to an array - IFS sets the word boundary to be the $ sign we appended previously
+IFS=$'$' read -rd '' -a ARRAY_BRANCHES<<<"$T"
 
-for i in ${!TEST[@]}; do 
-    echo $(($i + 1)) ${TEST[$i]};
+for i in ${!ARRAY_BRANCHES[@]}; do 
+    echo $(($i + 1)) ${ARRAY_BRANCHES[$i]};
 done
