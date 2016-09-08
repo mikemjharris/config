@@ -159,4 +159,3 @@ nnoremap <C-L> :nohl<CR><C-L>
 "
 "- Mike's settings that I like
 set relativenumber
-execute pathogen#infect()
