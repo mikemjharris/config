@@ -10,3 +10,7 @@ This includes things like setting up a new laptop, documentation on getting thin
 **To run**  
 
 ```curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e```
+
+**Notes to myself (cause - memory)**
+At the moment I symlink my .vimrc and .tmux.conf files to this repo.  As such any changes I do are in one place and will get pushed up to the repo.
+TODO - only add changes that makes sense for a remote server and are not in need of any other installations such as pathogen
