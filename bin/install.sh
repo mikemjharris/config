@@ -5,6 +5,9 @@ curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.v
 
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.tmux.conf" -o  ~/.tmux.conf
 
+echo "Creating irbrc"
+curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.irbrc" -o  ~/.irbrc
+
 # TODO - check if the script has been run.
 # TODO - check to see which shell - mabe do for .zshrc
 # TODO - even better would be to have aliases in a seperate file and source that.
