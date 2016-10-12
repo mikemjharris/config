@@ -13,3 +13,6 @@ curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.i
 # TODO - even better would be to have aliases in a seperate file and source that.
 echo "Adding alias' to bashrc"
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/alias-command-line" >> ~/.bashrc
+
+echo "Adding alias' to zshrcrc"
+curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/alias-command-line" >> ~/.zshrc
