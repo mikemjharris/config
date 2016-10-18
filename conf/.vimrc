@@ -159,3 +159,6 @@ nnoremap <C-L> :nohl<CR><C-L>
 "
 "- Mike's settings that I like
 set relativenumber
+
+" setup for templatin 
+autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
