@@ -1,0 +1,5 @@
+
+# This gets appended to the relevant .rc file and pulls in the aliases we setup in conf/
+if [ -f ~/.bash_aliases ]; then
+    source ~/.bash_aliases
+fi
