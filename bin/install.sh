@@ -10,7 +10,6 @@ curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.i
 
 # TODO - check if the script has been run.
 # TODO - check to see which shell - mabe do for .zshrc
-# TODO - even better would be to have aliases in a seperate file and source that.
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.bash_aliases" >> ~/.bash_aliases
 
 echo "Adding alias' to bashrc"
