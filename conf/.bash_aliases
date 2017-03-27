@@ -17,7 +17,7 @@ alias tagdiff=__tagdiff
 
 # Checks for the latest branches - lists them in order of last updated with a number beside it
 function __gb {
-    ~latest-branches.sh
+    ~/latest-branches.sh
 }
 
 alias gb=__gb
