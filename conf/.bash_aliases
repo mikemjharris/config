@@ -1,10 +1,21 @@
-
+:
 ### Alias for git 
 alias gco="git checkout "
 
 # If you are force pushing ALWAYS force push with lease
 # https://developer.atlassian.com/blog/2015/04/force-with-lease/
 alias gfpwl="git push --force-with-lease"
+
+# pretty tree graph of branches
+alias gl="git log --graph --decorate --pretty=oneline --abbrev-commit"
+
+# we usually prefeix commit messages with the branch name.  This does that.
+alias gcm=__gcm
+
+function __gcm {
+ BRANCH_NAME=`git branch | grep \* | sed -E "s/(\* )(.+)/\2/g"`
+ git commit -m "$BRANCH_NAME: $1"
+}
 
 
 # Often I need to find which branches got merged into master between two tags.  This takes two tags and looks at the difference.
@@ -46,3 +57,4 @@ alias hg="history | grep "
 
 # Quick way to check ip address
 alias ip="ifconfig | grep -oEi 'inet\s(.*)\snetmask.*broadcast' | cut -d ' '  -f2"
+
