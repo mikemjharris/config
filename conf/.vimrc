@@ -1,3 +1,5 @@
+execute pathogen#infect()
+
 " Description: A minimal, but feature rich, example .vimrc. If you are a
 "              newbie, basing your first .vimrc on this file is a good choice.
 "              If you're a more advanced user, building your own .vimrc based
@@ -131,8 +133,8 @@ set pastetoggle=<F11>
  
 " Indentation settings for using 4 spaces instead of tabs.
 " Do not change 'tabstop' from its default value of 8 with this setup.
-set shiftwidth=4
-set softtabstop=4
+set shiftwidth=2
+set softtabstop=2
 set expandtab
  
 " Indentation settings for using hard tabs for indent. Display tabs as
@@ -162,3 +164,7 @@ set relativenumber
 
 " setup for templatin 
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
+
+" Ctl p ignore
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor)|(\.(swp|ico|git|svn))$'
