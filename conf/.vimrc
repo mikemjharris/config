@@ -168,3 +168,13 @@ autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
 " Ctl p ignore
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor)|(\.(swp|ico|git|svn))$'
+
+" leader for custom commands
+:let mapleader = "-"
+
+" open up vimrc to edit
+:nnoremap <leader>ev :vsplit $MYVIMRC<cr> G
+
+" source vimrc
+:nnoremap <leader>sv :source $MYVIMRC<cr>
+
