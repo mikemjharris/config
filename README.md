@@ -11,7 +11,13 @@ This includes things like setting up a new laptop, documentation on getting thin
 
 ```curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e```
 
+**If working locally**
+The above works fine for a one off install but I often find myself using the config on a number of machines and updating as I go along.
+In this case I want the various .rc files symlinked to a copy of this repo.  Any changes can easily then be commited and pushed back.
 
-**Notes to myself (cause - memory)**
-At the moment I symlink my .vimrc and .tmux.conf files to this repo.  As such any changes I do are in one place and will get pushed up to the repo.
-TODO - only add changes that makes sense for a remote server and are not in need of any other installations such as pathogen
+In this case:
+- clone this repo
+- cd bin
+- ./local-install.sh
+
+
