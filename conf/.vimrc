@@ -8,6 +8,7 @@ call plug#begin('~/.vim/plugged')
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align'
 "
+Plug 'airblade/vim-gitgutter'
 "
 " Multiple Plug commands can be written in a single line using | separators
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
@@ -209,3 +210,9 @@ let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|d
 " source vimrc
 :nnoremap <leader>sv :source $MYVIMRC<cr>
 
+" Nerdtree
+"
+map <C-n> :NERDTreeToggle<CR>
+"  open NERDTree automatically when vim starts up on opening a directory
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
