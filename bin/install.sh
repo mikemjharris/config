@@ -17,3 +17,7 @@ curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/se
 
 echo "Adding alias' to zshrc"
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/setup_bash_aliases" >> ~/.zshrc
+
+echo "Setting up vim plugin"
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
