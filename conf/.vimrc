@@ -202,13 +202,16 @@ let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor)|(\.(swp|ico|git|svn))$'
 
 " leader for custom commands
+" enter the leader plus the shortcut to run.  In this case '-'
 :let mapleader = "-"
 
-" open up vimrc to edit
+" open up vimrc to edit. $MYVIMRC is the location of vimrc file
 :nnoremap <leader>ev :vsplit $MYVIMRC<cr> G
 
 " source vimrc
 :nnoremap <leader>sv :source $MYVIMRC<cr>
+
+
 
 " Nerdtree
 "
