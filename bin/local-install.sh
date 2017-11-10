@@ -15,3 +15,5 @@ ln -s $(pwd)/../conf/.bash_aliases  ~/.bash_aliases
 echo "Adding alias to zshrc"
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/setup_bash_aliases" >> ~/.zshrc
 
+echo "Setting up global gitignore"
+git config --global core.excludesfile $(pwd)/conf/.gitignore_global
