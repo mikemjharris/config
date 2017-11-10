@@ -7,6 +7,9 @@ call plug#begin('~/.vim/plugged')
 "
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align'
+
+" Ctrl p for opening files
+Plug 'ctrlpvim/ctrlp.vim'
 "
 Plug 'airblade/vim-gitgutter'
 "
