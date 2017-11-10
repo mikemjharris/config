@@ -17,6 +17,3 @@ curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/se
 
 echo "Setting up global gitignore"
 git config --global core.excludesfile $(pwd)/conf/.gitignore_global
-
-echo "Installing homebrew (mac package manager)"
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"

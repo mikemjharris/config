@@ -19,5 +19,7 @@ In this case:
 - clone this repo
 - cd bin
 - ./local-install.sh
+If on a mac then you will want to install brew and it's dependencies
+- ./bin/install-brew-packages.sh
 
 
