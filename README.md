@@ -22,7 +22,7 @@ In this case:
 If on a mac then you will want to install brew and it's dependencies
 - ./bin/install-brew-packages.sh
 
-** Other useful applications **
+**Other useful applications**  
 http://lightheadsw.com/caffeine/  - prevent computer from sleeping - useful for presentations
 http://www.irradiatedsoftware.com/sizeup/  - mac window manager
 
