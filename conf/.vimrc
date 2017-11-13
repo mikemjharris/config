@@ -221,17 +221,17 @@ nnoremap <C-L> :nohl<CR><C-L>
 
 " Set line number to be relative to the line I'm on
 set relativenumber
+" leader for custom commands
+" enter the leader plus the shortcut to run.  In this case '-'
+:let mapleader = "-"
 
 " setup for templatin
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
 
 " Ctl p ignore
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
-let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor)|(\.(swp|ico|git|svn))$'
-
-" leader for custom commands
-" enter the leader plus the shortcut to run.  In this case '-'
-:let mapleader = "-"
+let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp)|(\.(swp|ico|git|svn))$'
+map <leader>C :CtrlPClearCache<cr>
 
 " open up vimrc to edit. $MYVIMRC is the location of vimrc file
 :nnoremap <leader>ev :vsplit $MYVIMRC<cr> G
