@@ -1,0 +1,7 @@
+#session
+# setup a session with one large panel running vim on left covering 70% of screen.
+# then a vertical split 50 /50
+send-keys "vim ." C-m
+
+splitw -h -p 30 
+splitw -v -p 50 
