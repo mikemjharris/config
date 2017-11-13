@@ -8,6 +8,10 @@ call plug#begin('~/.vim/plugged')
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align'
 
+" Markdown plugin
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+
 " Ctrl p for opening files
 Plug 'ctrlpvim/ctrlp.vim'
 "
@@ -23,9 +27,12 @@ Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 "
+" Rails related plugin
+Plug 'tpope/vim-rails'
+
 " Unmanaged plugin (manually installed and updated)
 Plug '~/my-prototype-plugin'
-"
+
 " Initialize plugin system
 call plug#end()
 
