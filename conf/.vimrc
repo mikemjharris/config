@@ -228,6 +228,9 @@ let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|d
 " source vimrc
 :nnoremap <leader>sv :source $MYVIMRC<cr>
 
+" Copy lines visually selected into the register equivalent to system
+" clipboard
+map <C-c> "+y
 
 
 " Nerdtree
