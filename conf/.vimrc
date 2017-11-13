@@ -14,6 +14,9 @@ Plug 'plasticboy/vim-markdown'
 
 " Ctrl p for opening files
 Plug 'ctrlpvim/ctrlp.vim'
+
+" For searching
+Plug 'rking/ag.vim'
 "
 Plug 'airblade/vim-gitgutter'
 "
@@ -26,6 +29,8 @@ Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 "
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+
 "
 " Rails related plugin
 Plug 'tpope/vim-rails'
@@ -250,5 +255,3 @@ map <C-n> :NERDTreeToggle<CR>
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 
-" Use ack instead of grep
-set grepprg=ack
