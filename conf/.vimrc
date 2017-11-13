@@ -35,6 +35,13 @@ xmap ga <Plug>(EasyAlign)
 " " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+"
+"" Miniml .vimrc that I found on the web - my addional setting at the end
+"
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Description: A minimal, but feature rich, example .vimrc. If you are a
 "              newbie, basing your first .vimrc on this file is a good choice.
 "              If you're a more advanced user, building your own .vimrc based
@@ -193,8 +200,15 @@ nnoremap <C-L> :nohl<CR><C-L>
 
 "------------------------------------------------------------
 "
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
 "
-"- Mike's settings that I like
+" Various additional settings I've added over time 
+"
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Set line number to be relative to the line I'm on
 set relativenumber
 
 " setup for templatin
