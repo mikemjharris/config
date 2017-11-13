@@ -30,9 +30,6 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " Rails related plugin
 Plug 'tpope/vim-rails'
 
-" Unmanaged plugin (manually installed and updated)
-Plug '~/my-prototype-plugin'
-
 " Initialize plugin system
 call plug#end()
 
