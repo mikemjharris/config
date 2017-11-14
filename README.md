@@ -27,5 +27,5 @@ If on a mac then you will want to install brew and it's dependencies
 **Other useful applications**  
 http://lightheadsw.com/caffeine/  - prevent computer from sleeping - useful for presentations
 http://www.irradiatedsoftware.com/sizeup/  - mac window manager
-
+https://www.gimp.org/downloads/ - gimp for designing stuff
 
