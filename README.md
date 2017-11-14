@@ -7,9 +7,11 @@ This includes things like setting up a new laptop, documentation on getting thin
 - latest-commits: Loops through latest commits and outputs latest along with numbering so you can select 
 
 
-**To install on a remote box**  
+**To install on a remote box**
 
-```curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e```
+```
+curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e
+```
 
 **If working locally**
 The above works fine for a one off install but I often find myself using the config on a number of machines and updating as I go along.
