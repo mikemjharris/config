@@ -11,8 +11,8 @@ brew install nginx --with-passenger passenger wget tree openssh redis docker ope
 # https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
 brew install reattach-to-user-namespace
 
-# gimp - application for graphic design
-brew cask install gimp
+# use brew cask for install applications https://caskroom.github.io/ 
+brew cask install gimp slack
 
 # https://github.com/rbenv/rbenv#homebrew-on-macos
 # installing rbenv needs this added to specific rc file 
