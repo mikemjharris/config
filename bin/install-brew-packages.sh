@@ -10,7 +10,9 @@ brew install nginx --with-passenger passenger wget tree openssh redis docker ope
 # This is required for my tmux conf setup to allow things like pbcopy / paste to work with tmux
 # https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
 brew install reattach-to-user-namespace
- 
+
+# gimp - application for graphic design
+brew cask install gimp
 
 # https://github.com/rbenv/rbenv#homebrew-on-macos
 # installing rbenv needs this added to specific rc file 
