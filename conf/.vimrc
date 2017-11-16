@@ -228,10 +228,15 @@ set relativenumber
 " setup for templatin
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
 
+" For autocompletion - ctr space instead of ctrl x ctrl o http://vim.wikia.com/wiki/Auto_closing_an_HTML_tag
+:imap <C-Space> <C-X><C-O>
+
 " Ctl p ignore
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp)|(\.(swp|ico|git|svn))$'
 map <leader>C :CtrlPClearCache<cr>
+"Allow more results for ctrl p https://github.com/kien/ctrlp.vim/issues/187
+let g:ctrlp_match_window = 'results:20' 
 
 " set paset mode
 :nnoremap <leader>p :set paste <cr>
