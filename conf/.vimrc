@@ -233,6 +233,9 @@ let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp)|(\.(swp|ico|git|svn))$'
 map <leader>C :CtrlPClearCache<cr>
 
+" set paset mode
+:nnoremap <leader>p :set paste <cr>
+
 " open up vimrc to edit. $MYVIMRC is the location of vimrc file
 :nnoremap <leader>ev :vsplit $MYVIMRC<cr> G
 
@@ -259,3 +262,14 @@ map <C-f> :NERDTreeFind<CR>
 "  open NERDTree automatically when vim starts up on opening a directory
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+" Cursor colour and underline.  TODO need to get proper settings for zsh. Only underline works.
+" https://gist.github.com/andyfowler/1195581
+
+if exists('$TMUX')
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+else
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
