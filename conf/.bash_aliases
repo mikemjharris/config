@@ -50,6 +50,9 @@ function __ga {
 
 alias ga=__ga
 
+# Pretty tree for git log
+alias lg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ce %cr)" --abbrev-commit --date=relative'
+
 
 ### Alias for command line
 # I always look at my history
