@@ -11,6 +11,7 @@ echo "symlinks .tmux.conf and .vimrc along with others to your directory so that
 ln -s $(pwd)/conf/.tmux.conf  ~/.tmux.conf
 ln -s $(pwd)/conf/.vimrc ~/.vimrc
 ln -s $(pwd)/conf/.bash_aliases  ~/.bash_aliases
+ln -s $(pwd)/bin/latest-branches.sh  ~/latest-branches.sh
 
 echo "Linking in vim templates"
 ln -s $(pwd)/conf/vim-templates ~/.vim/templates
