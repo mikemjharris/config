@@ -13,7 +13,8 @@ This includes things like setting up a new laptop, documentation on getting thin
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e
 ```
 
-**If working locally**
+**If working locally**  
+
 The above works fine for a one off install but I often find myself using the config on a number of machines and updating as I go along.
 In this case I want the various .rc files symlinked to a copy of this repo.  Any changes can easily then be commited and pushed back.
 
