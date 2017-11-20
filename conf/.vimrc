@@ -223,13 +223,16 @@ nnoremap <C-L> :nohl<CR><C-L>
 set relativenumber
 " leader for custom commands
 " enter the leader plus the shortcut to run.  In this case '-'
-:let mapleader = "-"
+let mapleader = "="
 
 " setup for templatin
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
 
 " For autocompletion - ctr space instead of ctrl x ctrl o http://vim.wikia.com/wiki/Auto_closing_an_HTML_tag
 :imap <C-Space> <C-X><C-O>
+b
+
+:nnoremap <leader>sp :setlocal spell! spelllang=en_us <cr>
 
 " Ctl p ignore
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
@@ -278,3 +281,5 @@ else
   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 endif
+
+
