@@ -223,7 +223,7 @@ nnoremap <C-L> :nohl<CR><C-L>
 set relativenumber
 " leader for custom commands
 " enter the leader plus the shortcut to run.  In this case '-'
-let mapleader = "="
+let mapleader = "\\"
 
 " setup for templatin
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
@@ -253,9 +253,6 @@ let g:ctrlp_match_window = 'results:20'
 " ctrl and up and down to move between tabs 
 :map <C-j> :tabn<cr>
 :map <C-k> :tabp<cr>
-
-" I keep inputting a capital W. 
-:command W w
 
 " Copy lines visually selected into the register equivalent to system
 " clipboard
