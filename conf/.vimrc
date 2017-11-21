@@ -254,6 +254,9 @@ let g:ctrlp_match_window = 'results:20'
 :map <C-j> :tabn<cr>
 :map <C-k> :tabp<cr>
 
+" I keep inputting a capital W. 
+:command W w
+
 " Copy lines visually selected into the register equivalent to system
 " clipboard
 map <C-c> "+y
