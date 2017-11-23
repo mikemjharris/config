@@ -9,6 +9,9 @@ alias gfpwl="git push --force-with-lease"
 # pretty tree graph of branches
 alias gl="git log --graph --decorate --pretty=oneline --abbrev-commit"
 
+# stage hunks
+alias gah="git add --patch"
+
 # we usually prefeix commit messages with the branch name.  This does that.
 alias gcm=__gcm
 
