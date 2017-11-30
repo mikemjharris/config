@@ -37,6 +37,10 @@ Plug 'tpope/vim-rails'
 " Rails add comments
 Plug 'tomtom/tcomment_vim'
 
+
+" Coffee script syntax
+Plug 'kchmck/vim-coffee-script'
+
 " Initialize plugin system
 call plug#end()
 
