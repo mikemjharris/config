@@ -64,3 +64,7 @@ alias hg="history | grep "
 # Quick way to check ip address
 alias ip="ifconfig | grep -oEi 'inet\s(.*)\snetmask.*broadcast' | cut -d ' '  -f2"
 
+
+# Ruby short cuts
+alias be"bundle exec "
+alias st="bundle exec foreman start"
