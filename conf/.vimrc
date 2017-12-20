@@ -19,6 +19,8 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'rking/ag.vim'
 "
 Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+
 "
 " Multiple Plug commands can be written in a single line using | separators
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
@@ -234,7 +236,6 @@ autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
 
 " For autocompletion - ctr space instead of ctrl x ctrl o http://vim.wikia.com/wiki/Auto_closing_an_HTML_tag
 :imap <C-Space> <C-X><C-O>
-b
 
 :nnoremap <leader>sp :setlocal spell! spelllang=en_us <cr>
 
@@ -277,6 +278,8 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 
 " Cursor colour and underline.  TODO need to get proper settings for zsh. Only underline works.
 " https://gist.github.com/andyfowler/1195581
+
+" require 'pry'; binding.pry 
 
 if exists('$TMUX')
   let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
