@@ -289,4 +289,8 @@ else
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 endif
 
+" Mike's macros
+" 
+let @b = 'orequire "pry-remote"; binding.remote_pry'
+
 
