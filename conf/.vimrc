@@ -292,5 +292,6 @@ endif
 " Mike's macros
 " 
 let @b = 'orequire "pry-remote"; binding.remote_pry'
+let @p = 'orequire "pry"; binding.pry'
 
 
