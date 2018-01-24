@@ -12,6 +12,9 @@ alias gl="git log --graph --decorate --pretty=oneline --abbrev-commit"
 # stage hunks
 alias gah="git add --patch"
 
+# and and stash stuff to clear repo
+alias gs="git add . && git stash"
+
 # we usually prefeix commit messages with the branch name.  This does that.
 alias gcm=__gcm
 
