@@ -43,6 +43,10 @@ Plug 'tomtom/tcomment_vim'
 " Coffee script syntax
 Plug 'kchmck/vim-coffee-script'
 
+" Focus plugin for things like autoupdating files when changed in the
+" background
+Plug 'tmux-plugins/vim-tmux-focus-events'
+
 " Initialize plugin system
 call plug#end()
 
@@ -233,6 +237,9 @@ let mapleader = "\\"
 
 " setup for templatin
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
+
+" https://vi.stackexchange.com/a/13092 for autoreading of files
+au FocusGained,BufEnter * :checktime
 
 " For autocompletion - ctr space instead of ctrl x ctrl o http://vim.wikia.com/wiki/Auto_closing_an_HTML_tag
 :imap <C-Space> <C-X><C-O>
