@@ -15,6 +15,9 @@ alias gah="git add --patch"
 # and and stash stuff to clear repo
 alias gs="git add . && git stash"
 
+# diff wit not plus and minus in front - good for copying old chunks
+alias gd='git diff --color-words'
+
 # we usually prefeix commit messages with the branch name.  This does that.
 alias gcm=__gcm
 
