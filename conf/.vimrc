@@ -303,4 +303,8 @@ endif
 let @b = 'orequire "pry-remote"; binding.remote_pry'
 let @p = 'orequire "pry"; binding.pry'
 
-
+" Commands
+"
+" delete buffer and open previous one in it's place.  Useful for keep split
+" windows
+command Bd bp\|bd \#
