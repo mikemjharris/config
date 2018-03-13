@@ -246,6 +246,8 @@ au FocusGained,BufEnter * :checktime
 
 :nnoremap <leader>sp :setlocal spell! spelllang=en_us <cr>
 
+" Comment out lines (ruby) could extend for other languages. Sometime!
+:nnoremap <leader>cc :s/^/#/<cr> :nohl <cr>
 " Ctl p ignore
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp)|(\.(swp|ico|git|svn))$'
