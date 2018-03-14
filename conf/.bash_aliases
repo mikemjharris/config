@@ -74,3 +74,6 @@ alias ip="ifconfig | grep -oEi 'inet\s(.*)\snetmask.*broadcast' | cut -d ' '  -f
 # Ruby short cuts
 alias be="bundle exec "
 alias st="bundle exec foreman start"
+
+# Formatting outputs with line numvers
+alias nos="awk '{print NR \":\" \$1}'"
