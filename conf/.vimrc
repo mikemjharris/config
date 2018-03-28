@@ -225,7 +225,7 @@ nnoremap <C-L> :nohl<CR><C-L>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""
 "
-" Various additional settings I've added over time 
+" Various additional settings I've added over time
 "
 """"""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -257,7 +257,7 @@ let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp)|(\.(swp|ico|git|svn))$'
 map <leader>C :CtrlPClearCache<cr>
 "Allow more results for ctrl p https://github.com/kien/ctrlp.vim/issues/187
-let g:ctrlp_match_window = 'results:20' 
+let g:ctrlp_match_window = 'results:20'
 
 " set paset mode
 :nnoremap <leader>p :set paste <cr>
@@ -268,9 +268,9 @@ let g:ctrlp_match_window = 'results:20'
 " source vimrc
 :nnoremap <leader>sv :source $MYVIMRC<cr>
 
-" ctrl and up and down to move between tabs 
-:map <C-j> :tabn<cr>
-:map <C-k> :tabp<cr>
+" ctrl and up and down to move between tabs
+":map <C-j> :tabn<cr>
+":map <C-k> :tabp<cr> 
 
 " Copy lines visually selected into the register equivalent to system
 " clipboard
@@ -301,9 +301,12 @@ else
 endif
 
 " Mike's macros
-" 
+"
 let @b = 'orequire "pry-remote"; binding.remote_pry'
 let @p = 'orequire "pry"; binding.pry'
+
+" Clear trailing white space
+let @c = ':%s/\s\+$//'
 
 " Commands
 "
