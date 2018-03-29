@@ -193,11 +193,9 @@ set pastetoggle=<F11>
 " Indentation options {{{1
 "
 " Indentation settings according to personal preference.
-
-" Indentation settings for using 4 spaces instead of tabs.
-" Do not change 'tabstop' from its default value of 8 with this setup.
+set tabstop=2
 set shiftwidth=2
-set softtabstop=2
+set shiftround 
 set expandtab
 
 " Indentation settings for using hard tabs for indent. Display tabs as
@@ -269,8 +267,8 @@ let g:ctrlp_match_window = 'results:20'
 :nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " ctrl and up and down to move between tabs
-":map <C-j> :tabn<cr>
-":map <C-k> :tabp<cr> 
+:map <C-j> :tabn<cr>
+:map <C-k> :tabp<cr> 
 
 " Copy lines visually selected into the register equivalent to system
 " clipboard
