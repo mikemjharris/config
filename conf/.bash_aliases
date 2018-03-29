@@ -77,4 +77,13 @@ alias st="bundle exec foreman start"
 
 # Formatting outputs with line numvers
 alias nos="awk '{print NR \":\" \$1}'"
-# TODO Use with this to get the appropriate line:  git diff master --name-only | tail -2 | head -n 1 "
+
+# Use when trying to get a line from a long list.  First pipe to 'nos' to get the line number.
+# e.g.  git diff master --name-only | nos 
+#       git diff master --name-only | line 7
+function __line {
+  tail -$1 | head -n 1
+}
+
+alias line=__line
+
