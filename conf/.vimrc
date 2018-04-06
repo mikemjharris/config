@@ -270,6 +270,7 @@ let g:ctrlp_match_window = 'results:20'
 :map <C-j> :tabn<cr>
 :map <C-k> :tabp<cr> 
 
+:map :W :w<cr> 
 " Copy lines visually selected into the register equivalent to system
 " clipboard
 map <C-c> "+y
