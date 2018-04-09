@@ -236,6 +236,9 @@ let mapleader = "\\"
 " setup for templatin
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
 
+" Set ejs highlighting the same as html
+au BufNewFile,BufRead *.ejs set filetype=html
+
 " https://vi.stackexchange.com/a/13092 for autoreading of files
 au FocusGained,BufEnter * :checktime
 
