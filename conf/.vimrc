@@ -309,6 +309,8 @@ let @p = 'orequire "pry"; binding.pry'
 
 " Clear trailing white space
 let @c = ':%s/\s\+$//'
+" clear trailng white space on save
+autocmd BufWritePre *.{rb,js,erb,json} :%s/\s\+$//e
 
 " Commands
 "
