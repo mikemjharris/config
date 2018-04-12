@@ -51,10 +51,18 @@ alias gcb=__gcb
 
 # Often the pom.xml file is updated in dev to reference a front end snapshot jar.  Generally we don't want to commit this. Yes when commiting we should add only a couple of 
 # files at a time but often only one or two files HAVE changed so running git add .  makes sense.  This file needs to be commited though so shouldn't be added to the .gitignore
+## OLD 
+#function __ga {
+#   git add .
+#   git reset ecom-cms-webapp/pom.xml
+#   git status
+#}
+
+# Often want to add files matching part of a pattern - here can match with part of their name.  e.g. `ga page_cont` will add page_controller
+# git statu after to double check waht's been added.
 function __ga {
-    git add .
-    git reset ecom-cms-webapp/pom.xml
-    git status
+  git add **$1**
+  git status
 }
 
 alias ga=__ga
