@@ -8,6 +8,9 @@ curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.t
 echo "Creating irbrc"
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.irbrc" -o  ~/.irbrc
 
+echo "Creating tmux template files"
+curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/tmux/session1" -o  ~/.tmux-session1
+
 # TODO - check if the script has been run.
 # TODO - check to see which shell - mabe do for .zshrc
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/.bash_aliases" >> ~/.bash_aliases
