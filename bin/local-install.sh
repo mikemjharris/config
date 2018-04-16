@@ -19,6 +19,9 @@ ln -s $(pwd)/conf/vim-templates ~/.vim/templates
 echo "Linking in tmux conf"
 ln -s $(pwd)/conf/tmux/session1  ~/.tmux-session1
 
+echo "Linking in tmux conf"
+ln -s $(pwd)/conf/tmux/ra-session  ~/.tmux-ra-session
+
 echo "Adding alias to zshrc"
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/setup_bash_aliases" >> ~/.zshrc
 
