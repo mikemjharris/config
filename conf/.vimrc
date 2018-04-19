@@ -312,6 +312,9 @@ let @c = ':%s/\s\+$//'
 " clear trailng white space on save
 autocmd BufWritePre *.{rb,js,erb,json} :%s/\s\+$//e
 
+" copies the current path to the unamed register
+let @" = expand("%")
+
 " Commands
 "
 " delete buffer and open previous one in it's place.  Useful for keep split
