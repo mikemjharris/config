@@ -99,5 +99,6 @@ function __line {
 alias line=__line
 
 alias pon="networksetup -setsocksfirewallproxy 'AX88179 USB 3.0 to Gigabit Ethernet' 127.0.0.1 8081 && ssh -D 8081 bastion-staging"
+alias pst="networksetup -getsocksfirewallproxy 'AX88179 USB 3.0 to Gigabit Ethernet'" 
 alias pof="networksetup -setsocksfirewallproxystate 'AX88179 USB 3.0 to Gigabit Ethernet' off"
  
