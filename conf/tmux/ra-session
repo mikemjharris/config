@@ -1,12 +1,14 @@
 #session
-# setup a session with one large panel running vim on left covering 70% of screen.
+# open up sessions for the ra services that are used regularly
+# Need to setup alias' to joshua and account in relevant rc file (e.g. alias account="cd ~/dev/account")
 # then a vertical split 50 /50
-send-keys "redis-server" C-m
+send-keys "joshua" C-m
+send-keys "st" C-m
 
-splitw -v -p 30 
-send-keys "cd /Users/michael.harris/dev/account" C-m
+splitw -h -p 50 
+send-keys "account" C-m
 send-keys "st" C-m
 
 splitw -v -p 50 
-send-keys "cd /Users/michael.harris/dev/joshua" C-m
-send-keys "st" C-m
+send-keys "account" C-m
+send-keys "redis-server" C-m
