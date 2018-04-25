@@ -1,6 +1,6 @@
 sudo apt-get update
 
-sudo apt-get install zsh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev
+sudo apt-get install zsh mosh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev
 #mysql_secure_installation
 
 # fuzzy search /completion
