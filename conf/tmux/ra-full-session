@@ -21,5 +21,7 @@ send-keys "redis-server" C-m
 
 
 neww -n db 
-send-keys "mysql -u root ra_development"
+send-keys "mysql -u root ra_development" C-m
+
+select-window -t :=1
 
