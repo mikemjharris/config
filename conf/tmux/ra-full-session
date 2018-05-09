@@ -1,0 +1,25 @@
+
+#session
+send-keys "vim ." C-m
+splitw -h -p 30 
+
+send-keys "st" C-m
+splitw -v -p 50 
+
+neww -n services  
+
+send-keys "joshua" C-m
+send-keys "st" C-m
+
+splitw -h -p 50 
+send-keys "account" C-m
+send-keys "st" C-m
+
+splitw -v -p 50 
+send-keys "account" C-m
+send-keys "redis-server" C-m
+
+
+neww -n db 
+send-keys "mysql -u root ra_development"
+
