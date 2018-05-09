@@ -195,7 +195,7 @@ set pastetoggle=<F11>
 " Indentation settings according to personal preference.
 set tabstop=2
 set shiftwidth=2
-set shiftround 
+set shiftround
 set expandtab
 
 " Indentation settings for using hard tabs for indent. Display tabs as
@@ -271,9 +271,9 @@ let g:ctrlp_match_window = 'results:20'
 
 " ctrl and up and down to move between tabs
 :map <C-j> :tabn<cr>
-:map <C-k> :tabp<cr> 
+:map <C-k> :tabp<cr>
 
-:map :W :w<cr> 
+:map :W :w<cr>
 " Copy lines visually selected into the register equivalent to system
 " clipboard
 map <C-c> "+y
