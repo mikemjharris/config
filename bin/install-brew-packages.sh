@@ -5,7 +5,7 @@ echo "Installing homebrew (mac package manager)"
 
 echo "Brew installing various dependencies"
 brew update
-brew install nginx --with-passenger passenger wget tree openssh redis docker openssl ffmpeg  imagemagick htop postgres tmux vim jq rbenv the_silver_searcher ack nvm fzf mysql v8 elasticsearch telnet
+brew install nginx --with-passenger passenger wget tree openssh redis docker openssl ffmpeg  imagemagick htop postgres tmux vim jq rbenv the_silver_searcher ack nvm fzf mysql v8 elasticsearch telnet mosh
 
 # This is required for my tmux conf setup to allow things like pbcopy / paste to work with tmux
 # https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
