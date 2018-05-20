@@ -1,6 +1,12 @@
 sudo apt-get update
 
-sudo apt-get install zsh mosh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev mosh
+sudo apt-get install zsh mosh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev mosh python-pip python-dev build-essential 
+
+#Install and upgrade pip for aws cli
+sudo pip install --upgrade pip 
+sudo pip install --upgrade virtualenv 
+pip install awscli --upgrade --user
+
 #mysql_secure_installation
 
 # fuzzy search /completion
