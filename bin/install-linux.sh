@@ -41,6 +41,9 @@ curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh -o 
 bash install_nvm.sh
 
 
+git config --global user.email "hello@mikemjharris.com"
+git config --global user.name "Mike Harris"
+git config --global push.default simple
 
 
 
