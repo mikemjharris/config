@@ -1,13 +1,16 @@
 sudo apt-get update
 
-sudo apt-get install zsh mosh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev mosh python-pip python-dev build-essential 
+INSTALL_PKGS="zsh mosh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev"
+#mysql_secure_installation
+
+for i in $INSTALL_PKGS; do
+  sudo apt-get install -y $i
+done
 
 #Install and upgrade pip for aws cli
 sudo pip install --upgrade pip 
 sudo pip install --upgrade virtualenv 
 pip install awscli --upgrade --user
-
-#mysql_secure_installation
 
 # fuzzy search /completion
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -22,7 +25,10 @@ sudo apt-get install -y docker-ce
 
 
 # Install rbenv ruby
-sudo apt-get install autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm3 libgdbm-dev libgmp3-dev ruby-dev libmysqlclient
+INSTALL_PKGS_RBENV="autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm3 libgdbm-dev libgmp3-dev ruby-dev libmysqlclient"
+for i in $INSTALL_PKGS_RBENV; do
+  sudo apt-get install -y $i
+done
 
 sudo apt-get install -dev
 
