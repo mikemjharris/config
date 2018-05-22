@@ -44,9 +44,7 @@ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 
 
 # Install Node /nvm
-curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh -o install_nvm.sh
-bash install_nvm.sh
-
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 
 git config --global user.email "hello@mikemjharris.com"
 git config --global user.name "Mike Harris"
