@@ -51,9 +51,7 @@ bash install_nvm.sh
 git config --global user.email "hello@mikemjharris.com"
 git config --global user.name "Mike Harris"
 git config --global push.default simple
-
-
-
+git config --global core.editor "vim
 
 
 
