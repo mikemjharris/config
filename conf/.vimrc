@@ -278,6 +278,8 @@ let g:ctrlp_match_window = 'results:20'
 " clipboard
 map <C-c> "+y
 
+set clipboard=unnamedplus
+
 " Foldable config https://github.com/plasticboy/vim-markdown
 let g:vim_markdown_folding_disabled = 1
 
