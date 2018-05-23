@@ -8,15 +8,15 @@ splitw -v -p 50
 
 neww -n services  
 
-send-keys "joshua" C-m
+send-keys "cd ../joshua" C-m
 send-keys "st" C-m
 
 splitw -h -p 50 
-send-keys "account" C-m
+send-keys "cd ../account" C-m
 send-keys "st" C-m
 
 splitw -v -p 50 
-send-keys "account" C-m
+send-keys "cd ../account" C-m
 send-keys "redis-server" C-m
 
 
