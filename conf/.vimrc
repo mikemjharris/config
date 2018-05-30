@@ -322,3 +322,9 @@ let @" = expand("%")
 " delete buffer and open previous one in it's place.  Useful for keep split
 " windows
 command Bd bp\|bd \#
+
+function AssignGood(foo)
+  let foo_tmp = a:foo
+  let foo_tmp = "Yep"
+  echom foo_tmp
+endfunction
