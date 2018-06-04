@@ -6,3 +6,6 @@
 *.swm
 
 node_modules
+
+# Standard .env file
+.env
