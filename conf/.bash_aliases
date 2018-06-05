@@ -102,6 +102,9 @@ alias pon="networksetup -setsocksfirewallproxy 'AX88179 USB 3.0 to Gigabit Ether
 alias pst="networksetup -getsocksfirewallproxy 'AX88179 USB 3.0 to Gigabit Ethernet'" 
 alias pof="networksetup -setsocksfirewallproxystate 'AX88179 USB 3.0 to Gigabit Ethernet' off"
 
+alias won="nmcli radio wifi on"
+alias woff="nmcli radio wifi off"
+
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
 export VISUAL=vim
 export EDITOR="$VISUAL"
