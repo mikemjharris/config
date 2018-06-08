@@ -4,6 +4,7 @@
 *.swo
 *.swn
 *.swm
+*.swl
 
 node_modules
 
