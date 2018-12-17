@@ -49,6 +49,10 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 
 " Tab completion
 Plug 'ervandew/supertab'
+
+" Language support
+Plug 'sheerun/vim-polyglot'
+
 " Initialize plugin system
 call plug#end()
 
