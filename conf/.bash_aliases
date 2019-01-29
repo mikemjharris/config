@@ -95,7 +95,7 @@ alias nos="awk '{print NR \":\" \$1}'"
 function __line {
   tail -$1 | head -n 1
 }
-
+ 
 alias line=__line
 
 #alias pon="networksetup -setsocksfirewallproxy 'AX88179 USB 3.0 to Gigabit Ethernet' 127.0.0.1 8081 && ssh -D 8081 bastion-staging"
@@ -113,3 +113,8 @@ alias pon="networksetup -setsocksfirewallproxy 'Wi-Fi' 127.0.0.1 8081 && ssh -D 
 alias pst="networksetup -getsocksfirewallproxy 'Wi-Fi'" 
 alias pof="networksetup -setsocksfirewallproxystate 'Wi-Fi' off"
  
+## May as well use vim mode to edit in the terminal too :)
+set editing-mode vi
+
+#vim mode set esc . to be same as in emacs
+bindkey "\e." insert-last-word
