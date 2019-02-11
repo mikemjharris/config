@@ -89,6 +89,9 @@ alias st="bundle exec foreman start"
 # Formatting outputs with line numvers
 alias nos="awk '{print NR \":\" \$1}'"
 
+# Create pr for current branch vs master
+alias pr="git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(git rev-parse --abbrev-ref HEAD)'~' | xclip -sel clip"
+
 # Use when trying to get a line from a long list.  First pipe to 'nos' to get the line number.
 # e.g.  git diff master --name-only | nos 
 #       git diff master --name-only | line 7
