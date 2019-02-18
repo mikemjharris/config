@@ -253,6 +253,7 @@ au FocusGained,BufEnter * :checktime
 
 :nnoremap <leader>sp :setlocal spell! spelllang=en_us <cr>
 
+
 " Comment out lines (ruby) could extend for other languages. Sometime!
 :nnoremap <leader>cc :s/^/#/<cr> :nohl <cr>
 
@@ -314,6 +315,7 @@ endif
 "
 let @b = 'orequire "pry-remote"; binding.remote_pry'
 let @p = 'orequire "pry"; binding.pry'
+:nnoremap <leader>l  :g/debugger/d <cr>:g/pry-remote/d<cr>
 
 " Clear trailing white space
 let @c = ':%s/\s\+$//'
