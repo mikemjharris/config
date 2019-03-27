@@ -21,6 +21,9 @@ alias gd='git diff --color-words'
 # sometimes just need to add all and ammend
 alias gam="git add . && git commit --amend"
 
+# Quick server
+alias server="python -m SimpleHTTPServer 8001"
+
 # we usually prefeix commit messages with the branch name.  This does that.
 alias gcm=__gcm
 
