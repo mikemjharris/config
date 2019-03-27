@@ -93,7 +93,15 @@ alias st="bundle exec foreman start"
 alias nos="awk '{print NR \":\" \$1}'"
 
 # Create pr for current branch vs master
-alias pr="git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(git rev-parse --abbrev-ref HEAD)'~' | xclip -sel clip"
+alias pr=__pr
+
+function __pr {
+  git fetch
+  echo "Type branch you are coming off - most likely:"
+  git branch -a | grep sprint | sort | tail -n 1 | sed -e 's~remotes/origin/~~'
+  read branch
+  git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(echo $branch)'...'$(git rev-parse --abbrev-ref HEAD)'~' | xclip -sel clip
+}
 
 # Use when trying to get a line from a long list.  First pipe to 'nos' to get the line number.
 # e.g.  git diff master --name-only | nos 
