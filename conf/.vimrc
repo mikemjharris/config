@@ -50,8 +50,17 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 " Tab completion
 Plug 'ervandew/supertab'
 
+" Match tags
+Plug 'Valloric/MatchTagAlways'
+
 " Language support
 Plug 'sheerun/vim-polyglot'
+
+" JSX syntax
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+
+
 
 " Initialize plugin system
 call plug#end()
@@ -289,6 +298,20 @@ set clipboard=unnamedplus
 
 " Foldable config https://github.com/plasticboy/vim-markdown
 let g:vim_markdown_folding_disabled = 1
+
+" https://github.com/Valloric/MatchTagAlways
+" Config for matching tags
+let g:mta_filetypes = {
+    \ 'html' : 1,
+    \ 'xhtml' : 1,
+    \ 'xml' : 1,
+    \ 'jinja' : 1,
+    \ 'jsx' : 1,
+    \ 'javascript.jsx' : 1,
+    \}
+let g:mta_use_matchparen_group = 0
+let g:mta_set_default_matchtag_color = 0
+highlight MatchTag ctermfg=black ctermbg=lightgreen guifg=black guibg=lightgreen
 
 
 
