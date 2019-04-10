@@ -294,7 +294,12 @@ let g:ctrlp_match_window = 'results:20'
 " clipboard
 map <C-c> "+y
 
-set clipboard=unnamedplus
+"https://stackoverflow.com/a/39313208
+if system('uname -s') == "Darwin\n"
+  set clipboard=unnamed "OSX
+else
+  set clipboard=unnamedplus "Linux
+endif
 
 " Foldable config https://github.com/plasticboy/vim-markdown
 let g:vim_markdown_folding_disabled = 1
