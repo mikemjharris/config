@@ -352,6 +352,10 @@ let @p = 'orequire "pry"; binding.pry'
 
 " Clear trailing white space
 let @c = ':%s/\s\+$//'
+
+" vertically split last pannel 
+:nnoremap <leader>s :sp \| b# <cr>
+
 " clear trailng white space on save
 autocmd BufWritePre *.{rb,js,erb,json,scss,html} :%s/\s\+$//e
 autocmd BufWritePre *.{jsx,rb,js,erb,json,scss,html} :retab
