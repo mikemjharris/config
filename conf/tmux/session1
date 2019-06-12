@@ -1,6 +1,9 @@
 #session
+# Attach to a current session
 # setup a session with one large panel running vim on left covering 70% of screen.
 # then a vertical split 50 /50
+attach -c "#{pane_current_path}"
+
 send-keys "vim ." C-m
 
 splitw -h -p 30 
