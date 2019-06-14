@@ -25,5 +25,5 @@ echo "Setting up vim plugin"
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-echo "Symlinking to file to find latest branches""
+echo "Symlinking to file to find latest branches"
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/latest-branches.sh" >> ~/latest-branches.sh
