@@ -52,5 +52,7 @@ git config --global push.default simple
 git config --global core.editor "vim"
 
 
+# Install vim plugins
+yes | vim +PlugInstall +qall
 
 # This is required for my tmux conf setup to allow things like pbcopy / paste to work with tmux
