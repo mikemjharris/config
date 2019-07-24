@@ -384,3 +384,6 @@ au FileType css setl ofu=csscomplete#CompleteCSS
 
 set backupdir=~/tmp//
 set directory=~/tmp//
+
+"Abbreviations
+ab exhib exhibition 
