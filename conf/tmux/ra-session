@@ -1,3 +1,6 @@
+# attach to current path so all windows open from same directory
+attach -c "#{pane_current_path}"
+
 #session
 # open up sessions for the ra services that are used regularly
 # Need to setup alias' to joshua and account in relevant rc file (e.g. alias account="cd ~/dev/account")
