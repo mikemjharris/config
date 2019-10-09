@@ -122,6 +122,10 @@ syntax on
 " crashes.
 set hidden
 
+" https://jovicailic.org/2017/04/vim-persistent-undo/
+set undofile " Maintain undo history between sessions
+set undodir=~/tmp/undodir
+
 " Note that not everyone likes working this way (with the hidden option).
 " Alternatives include using tabs or split windows instead of re-using the same
 " window as mentioned above, and/or either of the following options:
