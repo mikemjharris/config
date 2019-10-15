@@ -98,7 +98,7 @@ alias pr=__pr
 function __pr {
   git fetch
   echo "Type branch you are coming off - most likely:"
-  git branch -a | grep sprint | sort | tail -n 1 | sed -e 's~remotes/origin/~~'
+  git branch -a | grep CX-sprint | sort | tail -n 1 | sed -e 's~remotes/origin/~~'
   read branch
   git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(echo $branch)'...'$(git rev-parse --abbrev-ref HEAD)'~' | xclip -sel clip
 }
