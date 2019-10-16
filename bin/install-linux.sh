@@ -31,8 +31,6 @@ for i in $INSTALL_PKGS_RBENV; do
   sudo apt-get install -y $i
 done
 
-sudo apt-get install -dev
-
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
