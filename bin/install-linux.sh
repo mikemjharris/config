@@ -46,11 +46,12 @@ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 # Install Node /nvm
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 
+npm install -g typescript
+
 git config --global user.email "hello@mikemjharris.com"
 git config --global user.name "Mike Harris"
 git config --global push.default simple
 git config --global core.editor "vim"
-
 
 # Install vim plugins
 yes | vim +PlugInstall +qall
