@@ -121,3 +121,5 @@ set editing-mode vi
 
 #vim mode set esc . to be same as in emacs
 bindkey "\e." insert-last-word
+
+HISTCONTROL=ignorespace
