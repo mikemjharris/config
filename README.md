@@ -1,31 +1,39 @@
 **Config to get things working the way I want them to**
 
-This includes things like setting up a new laptop, documentation on getting things set up, config files (.zshrc/.vimrc) etc.
+This repo includes a bunch of scripts to help me setup computers how I want them.  There are scripts for a new box to install relevant programs.  In addition there are script to set up dot files and other config. This config can either be cloned and linked locally or a one off install (e.g. working on a remote box). 
 
-**Contents**
-- command-line-alias:  List of alias to use on the command line.  Append to current ./.zshrc or ./bashrc
-- latest-commits: Loops through latest commits and outputs latest along with numbering so you can select 
+As of Nov 2019 my usual setup is linux laptop with Ubuntu 18 and Gnome desktop.  Usually use a combination of tmux/vim.
+
+*Applications*
+When setting up a new computer you often need to install many things.  These scripts install most of the programs you might need such as git, ruby, mysql etc.
+
+If on a mac then you will want to install brew and it's dependencies
+- `./bin/install-brew-packages.sh`
+
+If on linux:
+- `./bin/install-linux.sh`
+- `./bin/install-linux-apps.sh`
 
 
-**To install on a remote box**
+*Config*
 
+**Working Locally**  
+Working locally I clone this repo - the install scripts symlink all the releavant files which means if I make any config updates they are reflected in the repo and can be commited and saved. 
+
+- clone repo `git clone git@github.com:mikemjharris/config.git`
+- `cd config`
+- ./bin/local-install.sh
+
+**Remote Box**
+On remote box you might not want to clone and do a full symlinking etc. as this requires setting up ssh keys etc.
+This script will do a one off copy of tmux/vim/bash config on a remote box (or anywhere). 
 ```
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e
 ```
 
-**If working locally**  
 
-The above works fine for a one off install but I often find myself using the config on a number of machines and updating as I go along.
-In this case I want the various .rc files symlinked to a copy of this repo.  Any changes can easily then be commited and pushed back.
-
-In this case:
-- clone this repo
-- cd bin
-- ./local-install.sh
-If on a mac then you will want to install brew and it's dependencies
-- ./bin/install-brew-packages.sh
-
-**Other useful applications**  
+**Notes - Other useful applications**  
+Most applications are installed in above scripts - these are some others that I find interestings.
 - http://lightheadsw.com/caffeine/  - prevent computer from sleeping - useful for presentations  
 - http://www.irradiatedsoftware.com/sizeup/  - mac window manager  
 - https://www.gimp.org/downloads/ - gimp for designing stuff  
