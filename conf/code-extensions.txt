@@ -1,0 +1,5 @@
+formulahendry.vscode-mysql
+mgmcdermott.vscode-language-babel
+ms-mssql.mssql
+rebornix.ruby
+vscodevim.vim
