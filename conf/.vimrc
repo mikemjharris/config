@@ -61,7 +61,8 @@ Plug 'sheerun/vim-polyglot'
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 
-
+" Styling
+Plug 'NLKNguyen/papercolor-theme' "current scheme
 
 " Initialize plugin system
 call plug#end()
@@ -324,7 +325,6 @@ let g:mta_set_default_matchtag_color = 0
 highlight MatchTag ctermfg=black ctermbg=lightgreen guifg=black guibg=lightgreen
 
 
-
 " Nerdtree
 "
 map <C-n> :NERDTreeToggle<CR>
@@ -348,6 +348,16 @@ endif
 highlight Search ctermbg=DarkMagenta
 highlight Search ctermfg=white
 
+" Color scheme
+set t_Co=256   " This is may or may not needed.
+
+if strftime("%H") < 18
+  set background=light
+else
+  set background=dark
+endif
+
+colorscheme PaperColor
 
 " Mike's macros
 "
