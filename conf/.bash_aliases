@@ -24,6 +24,13 @@ alias gam="git add . && git commit --amend"
 # Quick server
 alias server="python -m SimpleHTTPServer 8001"
 
+# List ssh hosts
+alias hosts="cat ~/.ssh/config | grep 'Host '"
+
+# Can't ever remember clipboard copy or paste with linux so aliasing to mac ones :(
+alias pbcopy="xclip -sel clip"
+alias pbpaste=" xclip -out -sel clip"
+
 # we usually prefeix commit messages with the branch name.  This does that.
 alias gcm=__gcm
 
