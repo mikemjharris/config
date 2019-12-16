@@ -359,6 +359,10 @@ endif
 
 colorscheme PaperColor
 
+" Toggle cursor center
+" https://vim.fandom.com/wiki/Keep_your_cursor_centered_vertically_on_the_screen
+:nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
+
 " Mike's macros
 "
 let @b = 'orequire "pry-remote"; binding.remote_pry'
