@@ -34,6 +34,7 @@ done
 
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 
+# TODO - make this a bit more clevererrere and choose right shell...
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
