@@ -12,6 +12,7 @@ done
 sudo pip install --upgrade pip 
 sudo pip install --upgrade virtualenv 
 pip install awscli --upgrade --user
+pip install grip  # https://github.com/joeyespo/grip markdown preview
 
 # fuzzy search /completion
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
