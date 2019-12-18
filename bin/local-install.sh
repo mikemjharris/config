@@ -21,7 +21,7 @@ ln -s $(pwd)/conf/tmux ~/.tmux
 
 
 echo "Adding alias to zshrc"
-curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/conf/setup_bash_aliases" >> ~/.zshrc
+cat $(pwd)/conf/setup_bash_aliases >> ~/.zshrc
 
 echo "Setting up global gitignore"
 git config --global core.excludesfile $(pwd)/conf/.gitignore_global
