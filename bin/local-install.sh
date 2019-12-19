@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "install pulg for local plugins. run - :PlugInstall"
+echo "install plug for local plugins. run - :PlugInstall"
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
