@@ -130,3 +130,8 @@ set editing-mode vi
 bindkey "\e." insert-last-word
 
 HISTCONTROL=ignorespace
+
+plugins=(
+  git
+  zsh-z
+)
