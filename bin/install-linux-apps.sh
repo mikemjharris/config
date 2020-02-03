@@ -10,6 +10,7 @@ snap install chrome
 snap install sequeler
 snap install code --classic
 snap install --edge sqlitebrowser
+sudo snap install --classic heroku
 
 
 sudo apt-get update

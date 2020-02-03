@@ -28,3 +28,6 @@ git config --global core.excludesfile $(pwd)/conf/.gitignore_global
 
 echo "Setting up z plugin"
 git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
+
+echo "Setting up vim tmp folder"
+mkdir ~/tmp
