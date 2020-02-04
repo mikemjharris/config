@@ -15,7 +15,8 @@ sudo snap install --classic heroku
 
 sudo apt-get update
 # These are only really useful when using desktop
-INSTALL_PKGS="gnome-shell-extensions-gpaste gpaste"
+# for copyq set ubuntu keyboard preferences to set Ctrl-Shift-H to run `copyq toggle`
+INSTALL_PKGS="copyq"
 
 for i in $INSTALL_PKGS; do
   sudo apt-get install -y $i
