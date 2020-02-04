@@ -125,8 +125,12 @@ export EDITOR="$VISUAL"
 
 ## May as well use vim mode to edit in the terminal too :)
 set editing-mode vi
+## Reuduce time when hit escape to 0.1sec
+export KEYTIMEOUT=1
+
 
 #vim mode set esc . to be same as in emacs
+bindkey -v
 bindkey "\e." insert-last-word
 
 HISTCONTROL=ignorespace
