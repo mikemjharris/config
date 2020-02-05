@@ -51,7 +51,7 @@ npm install -g typescript
 
 git config --global user.email "hello@mikemjharris.com"
 git config --global user.name "Mike Harris"
-git config --global push.default simple
+git config --global push.default current
 git config --global core.editor "vim"
 
 # Install vim plugins
