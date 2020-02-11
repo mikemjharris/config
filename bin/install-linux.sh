@@ -1,6 +1,6 @@
 sudo apt-get update
 
-INSTALL_PKGS="apt-utils zsh mosh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim-gnome less jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev mosh python-pip python-dev build-essential curl locales htop memcached libmemcached-tools postgresql libpd-dev xclip"
+INSTALL_PKGS="apt-utils zsh mosh nginx wget redis-server docker openssl ffmpeg  imagemagick tmux vim-gnome less jq rbenv silversearcher-ag ack-grep elasticsearch telnet mysql-server libmysqlclient-dev mosh python-pip python-dev build-essential curl locales htop memcached libmemcached-tools postgresql libpd-dev xclip net-tools"
 
 
 #mysql_secure_installation
