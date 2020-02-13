@@ -40,6 +40,10 @@ Plug 'tpope/vim-rails'
 " Rails add comments
 Plug 'tomtom/tcomment_vim'
 
+" Ruby better
+Plug 'tpope/vim-rbenv'
+Plug 'tpope/vim-bundler'
+
 
 " Coffee script syntax
 Plug 'kchmck/vim-coffee-script'
