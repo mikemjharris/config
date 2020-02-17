@@ -74,7 +74,7 @@ alias gcb=__gcb
 # Often want to add files matching part of a pattern - here can match with part of their name.  e.g. `ga page_cont` will add page_controller
 # git statu after to double check waht's been added.
 function __ga {
-  git add **$1**
+  git add "*$1*"
   git status
 }
 
