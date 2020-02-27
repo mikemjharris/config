@@ -68,6 +68,9 @@ Plug 'mxw/vim-jsx'
 " Styling
 Plug 'NLKNguyen/papercolor-theme' "current scheme
 
+" Does lots of stuff like autocompleteion etc.
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
 " Initialize plugin system
 call plug#end()
 
