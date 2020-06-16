@@ -272,8 +272,8 @@ nnoremap * yiw*
 " Set line number to be relative to the line I'm on
 set relativenumber
 " leader for custom commands
-" enter the leader plus the shortcut to run.  In this case '-'
-let mapleader = "\\"
+" enter the leader plus the shortcut to run.  
+let mapleader = " "
 
 " setup for templatin
 autocmd BufNewFile * silent! 0r $HOME/.vim/templates/%:e.skeleton
