@@ -144,6 +144,9 @@ export KEYTIMEOUT=1
 bindkey -v
 bindkey "\e." insert-last-word
 
+# make sure vim doesn't hang on ctl s : https://unix.stackexchange.com/a/72092
+stty -ixon
+
 HISTCONTROL=ignorespace
 
 plugins=(
