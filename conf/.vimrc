@@ -417,6 +417,8 @@ autocmd BufWritePre *.{yml} :%s/\t/  /e
 " copies the current path to the unamed register
 let @" = expand("%")
 
+" set path to find files
+set path+=**
 " Commands
 "
 " delete buffer and open previous one in it's place.  Useful for keep split
