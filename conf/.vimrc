@@ -395,10 +395,11 @@ colorscheme PaperColor
 :nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
 
 " Mike's macros
-"
-let @b = 'orequire "pry-remote"; binding.remote_pry'
+
+let @b = 'odebugger'
+autocmd BufRead,BufNewFile *.rb  let @b = 'orequire "pry"; binding.pry'
 let @p = 'orequire "pry"; binding.pry'
-:nnoremap <leader>l  :g/debugger/d <cr>:g/pry-remote/d<cr>
+:nnoremap <leader>l  :g/debugger/d <cr>:g/pry-remote/d<cr> :g/binding.pry/d<cr>
 
 " Clear trailing white space
 let @c = ':%s/\s\+$//'
