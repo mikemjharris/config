@@ -431,6 +431,10 @@ function AssignGood(foo)
   echom foo_tmp
 endfunction
 
+"  vertical line character for ident line plug in
+let g:indentLine_char = '⦙'
+
+
 filetype plugin on
 au FileType php setl ofu=phpcomplete#CompletePHP
 au FileType ruby,eruby setl ofu=rubycomplete#Complete
