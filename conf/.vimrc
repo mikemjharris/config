@@ -411,6 +411,9 @@ let @c = ':%s/\s\+$//'
 autocmd BufWritePre *.{rb,js,erb,json,scss,html} :%s/\s\+$//e
 autocmd BufWritePre *.{jsx,rb,js,erb,json,scss,html} :retab
 
+" yml convert tabs to spaces
+autocmd BufWritePre *.{yml} :%s/\t/  /e
+
 " copies the current path to the unamed register
 let @" = expand("%")
 
