@@ -190,7 +190,12 @@ set nostartofline
 " line of a window
 set ruler
 
-" Always display the status line, even if only one window is displayed
+"This shows the column and line you are on
+set cursorcolumn
+set cursorline
+
+let g:indent_guides_auto_colors = 1
+
 set laststatus=2
 
 " Instead of failing a command because of unsaved changes, instead raise a
