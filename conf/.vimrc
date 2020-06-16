@@ -297,8 +297,7 @@ au FocusGained,BufEnter * :checktime
 :nnoremap <leader>cd :s/^#//<cr> :nohl <cr>
 
 " Ctl p ignore
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
-let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp)|(\.(swp|ico|git|svn))$'
+let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp|build)|(\.(swp|ico|git|svn))$'
 map <leader>C :CtrlPClearCache<cr>
 "Allow more results for ctrl p https://github.com/kien/ctrlp.vim/issues/187
 let g:ctrlp_match_window = 'results:20'
