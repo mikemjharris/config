@@ -127,6 +127,9 @@ alias line=__line
 # Sometimes accidentally detach from tmux - want a quick way to get back in"
 alias tx="tmux attach"
 
+# I mean i never remember and it seems such an obvious alias! 
+alias open="xdg-open"
+
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
 export VISUAL=vim
 export EDITOR="$VISUAL"
