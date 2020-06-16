@@ -255,6 +255,10 @@ map Y y$
 " next search
 nnoremap <C-L> :nohl<CR><C-L>
 
+" Using * finds the word - I want to copy it to the clipboard as often i
+" want to use it elsewhere 
+nnoremap * yiw*
+
 "------------------------------------------------------------
 "
 
