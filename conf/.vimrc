@@ -346,12 +346,23 @@ highlight MatchTag ctermfg=black ctermbg=lightgreen guifg=black guibg=lightgreen
 
 
 " Nerdtree
-"
+" Some tips from (this
+" post)[https://medium.com/@victormours/a-better-nerdtree-setup-3d3921abc0b9]
 map <C-n> :NERDTreeToggle<CR>
 map <C-f> :NERDTreeFind<CR>
 "  open NERDTree automatically when vim starts up on opening a directory
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+" Quit nerdtree on file open
+let NERDTreeQuitOnOpen = 1
+
+" Close if last window in buffer 
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+let NERDTreeAutoDeleteBuffer = 1
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
 
 " Cursor colour and underline.  TODO need to get proper settings for zsh. Only underline works.
 " https://gist.github.com/andyfowler/1195581
