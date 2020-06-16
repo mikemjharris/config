@@ -106,10 +106,12 @@ alias nos="awk '{print NR \":\" \$1}'"
 alias pr=__pr
 
 function __pr {
-  git fetch
-  echo "Type branch you are coming off - most likely:"
-  git branch -a | grep CX-sprint | sort | tail -n 1 | sed -e 's~remotes/origin/~~'
-  read branch
+  #  # functionality for dynamic sprint branch reading - now just go off master
+  #  git fetch
+  #  echo "Type branch you are coming off - most likely:"
+  #  git branch -a | grep CX-sprint | sort | tail -n 1 | sed -e 's~remotes/origin/~~'
+  #read branch  - used to have this when entering 
+  branch="master"
   git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(echo $branch)'...'$(git rev-parse --abbrev-ref HEAD)'~' | xclip -sel clip
 }
 
