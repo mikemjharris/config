@@ -27,7 +27,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 "
 " On-demand loading
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } 
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 "
 " Plugin outside ~/.vim/plugged with post-update hook
@@ -44,6 +44,8 @@ Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-rbenv'
 Plug 'tpope/vim-bundler'
 
+"HTML tag matching 
+Plug 'tpope/vim-surround'
 
 " Coffee script syntax
 Plug 'kchmck/vim-coffee-script'
@@ -70,6 +72,9 @@ Plug 'NLKNguyen/papercolor-theme' "current scheme
 
 " Does lots of stuff like autocompleteion etc.
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" Vertical marks
+Plug 'Yggdroot/indentLine'
 
 " Initialize plugin system
 call plug#end()
