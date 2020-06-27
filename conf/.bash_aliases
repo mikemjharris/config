@@ -22,7 +22,11 @@ alias gd='git diff --color-words'
 alias gam="git add . && git commit --amend"
 
 # set remote branch to local branch
-alias gsb="git branch --set-upstream-to=origin/`git rev-parse --abbrev-ref HEAD` `git rev-parse --abbrev-ref HEAD`"
+alias gsb=__gsb
+
+function __gsb {
+  git branch --set-upstream-to=origin/`git rev-parse --abbrev-ref HEAD` `git rev-parse --abbrev-ref HEAD`
+}
 
 # Quick server
 alias server="python -m SimpleHTTPServer 8001"
