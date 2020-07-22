@@ -76,9 +76,8 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Vertical marks
 Plug 'Yggdroot/indentLine'
 
-" status line : https://github.com/vim-airline/vim-airline
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+" History
+Plug 'simnalamburt/vim-mundo'
 
 " Initialize plugin system
 call plug#end()
