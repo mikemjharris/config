@@ -1,4 +1,4 @@
-# Config to get things working the way I want them to**
+# Config to get things working the way I want them to
 
 This repo includes a bunch of scripts to help me setup computers how I want them.  There are scripts for a new box to install relevant programs.  In addition there are script to set up dot files and other config. This config can either be cloned and linked locally or a one off install (e.g. working on a remote box). 
 
