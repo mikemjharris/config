@@ -65,7 +65,9 @@ Plug 'sheerun/vim-polyglot'
 
 " JSX syntax
 Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
+Plug 'yuezk/vim-js'
+Plug 'maxmellon/vim-jsx-pretty'
+
 
 " Styling
 Plug 'NLKNguyen/papercolor-theme' "current scheme
