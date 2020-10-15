@@ -53,6 +53,9 @@ git config --global user.email "hello@mikemjharris.com"
 git config --global user.name "Mike Harris"
 git config --global push.default current
 git config --global core.editor "vim"
+git config --global merge.tool vimdiff
+git config --global merge.conflictstyle diff3
+git config --global mergetool.prompt false
 
 # Install vim plugins
 yes | vim +PlugInstall +qall
