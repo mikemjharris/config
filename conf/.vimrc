@@ -417,7 +417,11 @@ let @c = ':%s/\s\+$//'
 " vertically split last pannel 
 :nnoremap <leader>ss :sp \| b# <cr><cr>
 
-" vertically split last pannel 
+" "+ is system clipboard.
+" "% is the filename
+" this copies the file name to the clipboard
+:map <leader>f :let @+=@% <cr>
+
 :nnoremap <leader>js :%! jq '.'<cr>
 
 " clear trailng white space on save
