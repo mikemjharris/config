@@ -468,3 +468,7 @@ set directory=~/tmp//
 
 "Abbreviations
 ab exhib exhibition 
+
+"Alias
+:command B Buffers 
+
