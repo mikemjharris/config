@@ -31,3 +31,7 @@ git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
 
 echo "Setting up vim tmp folder"
 mkdir ~/tmp
+
+echo "Setting up ctags config"
+ln -s $(pwd)/conf/.ctags ~/.ctags
+
