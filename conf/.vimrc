@@ -472,3 +472,6 @@ ab exhib exhibition
 "Alias
 :command B Buffers 
 
+" Highlight words as you search
+set incsearch
+
