@@ -422,6 +422,7 @@ let @c = ':%s/\s\+$//'
 " this copies the file name to the clipboard
 :map <leader>f :let @+=@% <cr>
 
+" format file js file with jq
 :nnoremap <leader>js :%! jq '.'<cr>
 
 " clear trailng white space on save
