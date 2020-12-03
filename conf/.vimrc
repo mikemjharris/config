@@ -425,6 +425,9 @@ let @c = ':%s/\s\+$//'
 " format file js file with jq
 :nnoremap <leader>js :%! jq '.'<cr>
 
+" format file  html file with tidy
+:nnoremap <leader>html :!tidy -mi -html -wrap 0 %<cr>
+
 " clear trailng white space on save
 autocmd BufWritePre *.{rb,js,erb,json,scss,html} :%s/\s\+$//e
 autocmd BufWritePre *.{jsx,rb,js,erb,json,scss,html} :retab
