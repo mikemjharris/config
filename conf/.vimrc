@@ -68,6 +68,8 @@ Plug 'pangloss/vim-javascript'
 Plug 'yuezk/vim-js'
 Plug 'maxmellon/vim-jsx-pretty'
 
+" Typescript syntax
+Plug 'leafgarland/typescript-vim'
 
 " Styling
 Plug 'NLKNguyen/papercolor-theme' "current scheme
@@ -288,6 +290,9 @@ au BufNewFile,BufRead *.ejs set filetype=html
 
 " https://vi.stackexchange.com/a/13092 for autoreading of files
 au FocusGained,BufEnter * :checktime
+
+" set typescrpt syntax
+au BufRead,BufNewFile *.ts   setfiletype typescript
 
 " For autocompletion - ctr space instead of ctrl x ctrl o http://vim.wikia.com/wiki/Auto_closing_an_HTML_tag
 :imap <C-Space> <C-X><C-O>
