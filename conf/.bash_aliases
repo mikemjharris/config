@@ -134,6 +134,9 @@ alias tx="tmux attach"
 # I mean i never remember and it seems such an obvious alias! 
 alias open="xdg-open"
 
+# Because my fingers can never spell ~herkou~ heroku 
+alias herkou="heroku"
+
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
 export VISUAL=vim
 export EDITOR="$VISUAL"
