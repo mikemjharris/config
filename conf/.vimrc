@@ -83,6 +83,9 @@ Plug 'Yggdroot/indentLine'
 " History
 Plug 'simnalamburt/vim-mundo'
 
+" Zoom in on split window ala tmux
+Plug 'troydm/zoomwintab.vim' 
+
 " Initialize plugin system
 call plug#end()
 
@@ -475,3 +478,5 @@ ab exhib exhibition
 " Highlight words as you search
 set incsearch
 
+" Set status bar to include git status
+set statusline=%{FugitiveStatusline()}\ %f\ %m
