@@ -35,3 +35,6 @@ mkdir ~/tmp
 echo "Setting up ctags config"
 ln -s $(pwd)/conf/.ctags ~/.ctags
 
+echo "Setting up keyboard mappings for external keyboard (Akkon 65 key)"
+ln -s $(pwd)/conf/keyboard ~/.mh_config
+
