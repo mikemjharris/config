@@ -137,6 +137,9 @@ alias open="xdg-open"
 # Because my fingers can never spell ~herkou~ heroku 
 alias herkou="heroku"
 
+# for plugging in remote keyboard - TODO - path is britthle - need to setup symlink properly
+alias kb="./.mh_config/setup-keyboard.sh"
+
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
 export VISUAL=vim
 export EDITOR="$VISUAL"

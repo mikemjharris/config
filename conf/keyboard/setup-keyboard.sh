@@ -11,4 +11,5 @@ KEYBOARD_ID=$(
 [ "$KEYBOARD_ID" ] || exit
 
 # updload the new layout display
-xkbcomp -i $KEYBOARD_ID new-layout.xkb $DISPLAY
+# TODO make the folder structure less brittle
+xkbcomp -i $KEYBOARD_ID ~/.mh_config/new-layout.xkb $DISPLAY
