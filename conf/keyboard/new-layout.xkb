@@ -1196,7 +1196,7 @@ xkb_symbols "pc+jp+gb:2+inet(evdev)" {
     key <AE03> {
         type[group2]= "FOUR_LEVEL",
         symbols[Group1]= [               3,      numbersign ],
-        symbols[Group2]= [               3,        sterling,   threesuperior,        sterling ]
+        symbols[Group2]= [               3,        numbersign,  sterling,        sterling ]
     };
     key <AE04> {
         type[group2]= "FOUR_LEVEL",
