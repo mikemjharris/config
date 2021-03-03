@@ -86,6 +86,9 @@ Plug 'simnalamburt/vim-mundo'
 " Zoom in on split window ala tmux
 Plug 'troydm/zoomwintab.vim' 
 
+" Show marks in gutter
+Plug 'kshenoy/vim-signature'
+
 " Initialize plugin system
 call plug#end()
 
