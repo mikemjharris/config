@@ -88,6 +88,9 @@ Plug 'troydm/zoomwintab.vim'
 " Show marks in gutter
 Plug 'kshenoy/vim-signature'
 
+" Show contents of registers
+Plug 'junegunn/vim-peekaboo'
+
 " Initialize plugin system
 call plug#end()
 
