@@ -10,7 +10,6 @@ Plug 'junegunn/vim-easy-align'
 
 " Markdown plugin
 Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
 
 " Ctrl p for opening files
 Plug 'ctrlpvim/ctrlp.vim'
