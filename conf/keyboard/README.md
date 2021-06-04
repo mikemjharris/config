@@ -8,7 +8,7 @@ This creates a lock file in /tmp/keyboard.lock
 
 Finally run:
 
-Run ```./file-notify.sh /tmp/keyboard.lock /home/mike/working/config/conf/keyboard/setup-keyboard.sh &``
+Run ```./file-notify.sh /tmp/keyboard.lock /home/mike/working/config/conf/keyboard/setup-keyboard.sh &```
 
 This checks when that lock file updates and when it does it runs the script we have that sets the keybaord to the correct layout.
 
