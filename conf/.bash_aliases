@@ -38,6 +38,9 @@ alias hosts="cat ~/.ssh/config | grep 'Host '"
 alias pbcopy="xclip -sel clip"
 alias pbpaste=" xclip -out -sel clip"
 
+# If you have dirty json copied this makes it pretty
+alias json="pbpaste | jq | pbcopy"
+
 # we usually prefeix commit messages with the branch name.  This does that.
 alias gcm=__gcm
 
