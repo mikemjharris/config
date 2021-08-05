@@ -39,10 +39,12 @@ Just started using VS code and wanted a backup of extensions.  To install extens
 To backup this (or similar):
 `code --list-extensions >> ./conf/code-extensions.txt` 
 
-**Notes - Other useful applications**  
-Most applications are installed in above scripts - these are some others that I find interestings.
 Also run:
 `ln -s ./conf/settings.json ~/.config/Code/User/settings.json`
+
+### **Notes - Other useful applications**
+Most applications are installed in above scripts - these are some others that I find interestings - this is pretty old now
+as mainly using linux apps rather than mac
 - http://lightheadsw.com/caffeine/  - prevent computer from sleeping - useful for presentations  
 - http://www.irradiatedsoftware.com/sizeup/  - mac window manager  
 - https://www.gimp.org/downloads/ - gimp for designing stuff  
