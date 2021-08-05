@@ -41,6 +41,8 @@ To backup this (or similar):
 
 **Notes - Other useful applications**  
 Most applications are installed in above scripts - these are some others that I find interestings.
+Also run:
+`ln -s ./conf/settings.json ~/.config/Code/User/settings.json`
 - http://lightheadsw.com/caffeine/  - prevent computer from sleeping - useful for presentations  
 - http://www.irradiatedsoftware.com/sizeup/  - mac window manager  
 - https://www.gimp.org/downloads/ - gimp for designing stuff  
