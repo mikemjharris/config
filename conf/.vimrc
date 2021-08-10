@@ -91,6 +91,9 @@ Plug 'kshenoy/vim-signature'
 " Show contents of registers
 Plug 'junegunn/vim-peekaboo'
 
+" Vim debugger https://github.com/puremourning/vimspector
+Plug 'puremourning/vimspector'
+
 " Initialize plugin system
 call plug#end()
 
