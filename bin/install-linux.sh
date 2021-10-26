@@ -102,4 +102,8 @@ git config --global merge.tool vimdiff
 git config --global merge.conflictstyle diff3
 git config --global mergetool.prompt false
 
+
+# This was useful in getting headphones working 
+# https://askubuntu.com/a/1277644
+
 # This is required for my tmux conf setup to allow things like pbcopy / paste to work with tmux
