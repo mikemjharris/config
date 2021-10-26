@@ -79,6 +79,13 @@ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.zshrc
 
+# create folder for any installed apps
+mkdir ~/.apps
+
+# install z which is used to move around directories 
+git clone https://github.com/rupa/z.git ~/.apps/z
+echo '. ~/.apps/z/z.sh' >> ~/.zshrc
+
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 
 
