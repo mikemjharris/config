@@ -16,9 +16,14 @@ ln -s $(pwd)/bin/latest-branches.sh  ~/latest-branches.sh
 echo "Linking in vim templates"
 ln -s $(pwd)/conf/vim-templates ~/.vim/templates
 
+echo "Setting up vim tmp folder"
+mkdir ~/tmp
+
+echo "Install vim plugins"
+yes | vim +PlugInstall +qall
+
 echo "Linking in tmux init sessions"
 ln -s $(pwd)/conf/tmux ~/.tmux
-
 
 echo "Adding alias to zshrc"
 cat $(pwd)/conf/setup_bash_aliases >> ~/.zshrc
@@ -29,8 +34,6 @@ git config --global core.excludesfile $(pwd)/conf/.gitignore_global
 echo "Setting up z plugin"
 git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
 
-echo "Setting up vim tmp folder"
-mkdir ~/tmp
 
 echo "Setting up ctags config"
 ln -s $(pwd)/conf/.ctags ~/.ctags
