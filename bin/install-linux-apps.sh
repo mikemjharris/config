@@ -12,6 +12,8 @@ sudo apt-get update
 # for copyq set ubuntu keyboard preferences to set Ctrl-Shift-H to run `copyq toggle`
 INSTALL_PKGS="copyq google-chrome-stable"
 
+# for copyq add 'copyq toggle' to the keyboard shortcuts in gnome 
+
 for i in $INSTALL_PKGS; do
   sudo apt-get install -y $i
 done
