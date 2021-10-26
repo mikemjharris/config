@@ -2,7 +2,7 @@ sudo apt-get update
 
 INSTALL_PKGS="
 git 
-vim
+vim-gtk3 
 curl
 apt-utils
 zsh
