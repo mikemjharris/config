@@ -156,6 +156,7 @@ export KEYTIMEOUT=1
 #vim mode set esc . to be same as in emacs
 bindkey -v
 bindkey "\e." insert-last-word
+bindkey '^R' history-incremental-search-backward
 
 # make sure vim doesn't hang on ctl s : https://unix.stackexchange.com/a/72092
 stty -ixon
