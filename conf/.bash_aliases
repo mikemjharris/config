@@ -143,6 +143,19 @@ alias herkou="heroku"
 # for plugging in remote keyboard - TODO - path is britthle - need to setup symlink properly
 alias kb="~/.mh_config/setup-keyboard.sh"
 
+# notes and todos - adds whatever is pased in to the relevant copyq tab.  
+# use: note remember this
+function __note {
+  copyq tab notes add "$*"
+}
+alias note=__note
+
+# use: todo remember to do this
+function __todo {
+  copyq tab todo add "$*"
+}
+alias todo=__todo
+
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
 export VISUAL=vim
 export EDITOR="$VISUAL"
