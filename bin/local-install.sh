@@ -16,11 +16,16 @@ ln -s $(pwd)/bin/latest-branches.sh  ~/latest-branches.sh
 echo "Linking in vim templates"
 ln -s $(pwd)/conf/vim-templates ~/.vim/templates
 
+echo "Setting up neovim config"
+mkdir -p ~/.config/nvim
+ln -s $(pwd)/conf/init.vim ~/.config/nvim/init.vim
+
 echo "Setting up vim tmp folder"
 mkdir ~/tmp
 
 echo "Install vim plugins"
 yes | vim +PlugInstall +qall
+yes | nvim +PlugInstall +qall
 
 echo "Linking in tmux init sessions"
 ln -s $(pwd)/conf/tmux ~/.tmux
