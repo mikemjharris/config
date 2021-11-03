@@ -94,6 +94,11 @@ Plug 'junegunn/vim-peekaboo'
 " Vim debugger https://github.com/puremourning/vimspector
 Plug 'puremourning/vimspector'
 
+" Copilot - github ai for code completion
+" When installing first time run  :Copilot setup and copy 8 digit code in vim
+" to browser
+Plug 'github/copilot.vim'
+
 " Initialize plugin system
 call plug#end()
 
