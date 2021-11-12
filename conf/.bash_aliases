@@ -156,6 +156,20 @@ function __todo {
 }
 alias todo=__todo
 
+# Go all in on neovim - check if it exists if so let's use that
+alias vim=__choose-which-vim
+
+function __choose-which-vim {
+  if ! command -v nvim-nightly &> /dev/null
+  then
+    echo "<the_command> could not be found"
+    vim $*
+    exit
+  fi
+  echo "using neovim nightly"
+  nvim-nightly $*
+}
+
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
 export VISUAL=vim
 export EDITOR="$VISUAL"
