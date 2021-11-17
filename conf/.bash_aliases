@@ -162,8 +162,8 @@ alias vim=__choose-which-vim
 function __choose-which-vim {
   if ! command -v nvim-nightly &> /dev/null
   then
-    echo "<the_command> could not be found"
-    vim $*
+    echo "Neovim nightly not installed - using vim instead"
+    /usr/bin/vim $*
     exit
   fi
   echo "using neovim nightly"
