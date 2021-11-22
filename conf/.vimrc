@@ -353,6 +353,16 @@ else
   set clipboard=unnamedplus "Linux
 endif
 
+" WSL yank support
+" https://superuser.com/a/1557751
+let s:clip = '/mnt/c/Windows/System32/clip.exe'
+if executable(s:clip)
+ augroup WSLYank
+    autocmd!
+    autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+  augroup END
+endif
+
 " Foldable config https://github.com/plasticboy/vim-markdown
 let g:vim_markdown_folding_disabled = 1
 
