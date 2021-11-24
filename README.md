@@ -32,6 +32,10 @@ This script will do a one off copy of tmux/vim/bash config on a remote box (or a
 ```
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e
 ```
+### WSL - windows subsystem for Linux
+Most of this setup should work as it does for a standard ubuntu setup. A few things to note:
+- Use Windows Terminal not Windows console (it solves many font and display issues)
+- My normal setup mixes dark mode in the terminal with light in vim - the terminal seems to force the same colour in all situations. As such I've set a light theme for the terminal - see `robbyrussell-light.zsh-theme` for instructions.
 
 ## VS Code
 Just started using VS code and wanted a backup of extensions.  To install extensions on a new computer:
