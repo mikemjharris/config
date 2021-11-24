@@ -174,10 +174,10 @@ function __choose-which-vim {
   then
     echo "Neovim nightly not installed - using vim instead"
     /usr/bin/vim $*
-    exit
+  else 
+    echo "using neovim nightly"
+    nvim-nightly $*
   fi
-  echo "using neovim nightly"
-  nvim-nightly $*
 }
 
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
