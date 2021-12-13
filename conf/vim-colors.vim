@@ -21,7 +21,7 @@ hi IncSearch term=reverse cterm=reverse gui=reverse
 hi ModeMsg term=bold cterm=bold gui=bold
 hi StatusLine term=reverse,bold cterm=reverse,bold gui=reverse,bold
 hi StatusLineNC term=reverse cterm=reverse gui=reverse
-hi VertSplit term=NONE ctermbg=0 gui=reverse
+hi VertSplit ctermbg=0 ctermfg=7 gui=reverse
 hi Visual term=reverse cterm=reverse gui=reverse guifg=Grey guibg=fg
 hi VisualNOS term=underline,bold cterm=underline,bold gui=underline,bold
 hi DiffText term=reverse cterm=bold ctermbg=Red gui=bold guibg=Red
