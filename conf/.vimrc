@@ -72,6 +72,7 @@ Plug 'leafgarland/typescript-vim'
 
 " Styling
 Plug 'NLKNguyen/papercolor-theme' "current scheme
+Plug 'flazz/vim-colorschemes'
 
 " Does lots of stuff like autocompleteion etc.
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -425,6 +426,7 @@ else
 endif
 
 colorscheme PaperColor
+colorscheme mikecolor 
 
 " Toggle cursor center
 " https://vim.fandom.com/wiki/Keep_your_cursor_centered_vertically_on_the_screen
