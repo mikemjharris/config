@@ -70,10 +70,6 @@ Plug 'maxmellon/vim-jsx-pretty'
 " Typescript syntax
 Plug 'leafgarland/typescript-vim'
 
-" Styling
-Plug 'NLKNguyen/papercolor-theme' "current scheme
-Plug 'flazz/vim-colorschemes'
-
 " Does lots of stuff like autocompleteion etc.
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
@@ -425,7 +421,7 @@ else
   set background=dark
 endif
 
-colorscheme PaperColor
+" ensure you symlink vim-colors folder to ~/.vim/colors
 colorscheme mikecolor 
 
 " Toggle cursor center
