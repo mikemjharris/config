@@ -505,3 +505,6 @@ set incsearch
 
 " Set status bar to include git status
 set statusline=%{FugitiveStatusline()}\ %f\ %m
+
+" Always show git gutter bar
+set signcolumn=yes 
