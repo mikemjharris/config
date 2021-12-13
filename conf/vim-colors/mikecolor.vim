@@ -32,7 +32,7 @@ hi LineNr term=underline ctermfg=Brown guifg=Brown
 hi MoreMsg term=bold ctermfg=DarkGreen gui=bold guifg=SeaGreen
 hi NonText term=bold ctermfg=Blue gui=bold guifg=Blue guibg=grey80
 hi Question term=standout ctermfg=DarkGreen gui=bold guifg=SeaGreen
-hi Search term=reverse ctermbg=250 ctermfg=NONE guibg=Yellow guifg=NONE
+hi Search term=reverse ctermbg=158 ctermfg=NONE guibg=Yellow guifg=NONE
 hi SpecialKey term=bold ctermfg=DarkBlue guifg=Blue
 hi Title term=bold ctermfg=DarkMagenta gui=bold guifg=Magenta
 hi WarningMsg term=standout ctermfg=DarkRed guifg=Red
@@ -43,6 +43,8 @@ hi DiffAdd term=bold ctermbg=LightBlue guibg=LightBlue
 hi DiffChange term=bold ctermbg=LightMagenta guibg=LightMagenta
 hi DiffDelete term=bold ctermfg=Blue ctermbg=LightCyan gui=bold guifg=Blue guibg=LightCyan
 hi SignColumn term=bold ctermbg=NONE
+hi CursorLine   cterm=NONE ctermbg=222 ctermfg=NONE
+
 
 " Colors for syntax highlighting
 hi Constant term=underline ctermfg=DarkRed guifg=Magenta guibg=grey95
