@@ -44,6 +44,10 @@ hi DiffChange term=bold ctermbg=LightMagenta guibg=LightMagenta
 hi DiffDelete term=bold ctermfg=Blue ctermbg=LightCyan gui=bold guifg=Blue guibg=LightCyan
 hi SignColumn term=bold ctermbg=NONE
 hi CursorLine   cterm=NONE ctermbg=222 ctermfg=NONE
+hi TabLineFill cterm=none
+hi TabLine ctermfg=NONE ctermbg=NONE
+hi TabLineSel cterm=reverse
+
 
 
 " Colors for syntax highlighting
