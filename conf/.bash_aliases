@@ -60,9 +60,9 @@ function __gcm {
 }
 
 
-# Often I need to find which branches got merged into master between two tags.  This takes two tags and looks at the difference.
+# Often I need to find which branches got merged into main between two tags.  This takes two tags and looks at the difference.
 function __tagdiff {                                                                
-     git log --pretty=format:"%h%x09%an%x09%ad%x09%s" $1..$2 | grep "into 'master'" | sed -E "s/.*Merge branch '(.*)' into 'master'/\1/"
+     git log --pretty=format:"%h%x09%an%x09%ad%x09%s" $1..$2 | grep "into 'main'" | sed -E "s/.*Merge branch '(.*)' into 'main'/\1/"
 } 
 
 alias tagdiff=__tagdiff
@@ -119,22 +119,22 @@ alias st="bundle exec foreman start"
 # Formatting outputs with line numvers
 alias nos="awk '{print NR \":\" \$1}'"
 
-# Create pr for current branch vs master
+# Create pr for current branch vs main
 alias pr=__pr
 
 function __pr {
-  #  # functionality for dynamic sprint branch reading - now just go off master
+  #  # functionality for dynamic sprint branch reading - now just go off main
   #  git fetch
   #  echo "Type branch you are coming off - most likely:"
   #  git branch -a | grep CX-sprint | sort | tail -n 1 | sed -e 's~remotes/origin/~~'
   #read branch  - used to have this when entering 
-  branch="master"
-  git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(echo $branch)'...'$(git rev-parse --abbrev-ref HEAD)'~' | xclip -sel clip
+  branch="main"
+  git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(echo $branch)'...'$(git rev-parse --abbrev-ref HEAD)'~' | pbcopy 
 }
 
 # Use when trying to get a line from a long list.  First pipe to 'nos' to get the line number.
-# e.g.  git diff master --name-only | nos 
-#       git diff master --name-only | line 7
+# e.g.  git diff main --name-only | nos 
+#       git diff main --name-only | line 7
 function __line {
   tail -$1 | head -n 1
 }
