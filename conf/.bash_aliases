@@ -215,4 +215,8 @@ enter_directory() {
   [[ -f ".nvmrc" ]] && nvm use
 }
 
+# Precmd is zsh hook that runs before each command. PROMPT_COMMAND is the bash hook.
+precmd() {
+  enter_directory
+}
 export PROMPT_COMMAND=enter_directory
