@@ -328,8 +328,9 @@ let g:ctrlp_match_window = 'results:20'
 " set paset mode
 :nnoremap <leader>p :set paste <cr>
 
-" open up vimrc to edit. $MYVIMRC is the location of vimrc file
-:nnoremap <leader>ev :vsplit $MYVIMRC<cr> G
+" open up vimrc to edit. $MYVIMRC is the location of vimrc file - updated 
+" to actual path as neovim has different location but sources this
+:nnoremap <leader>ev :vsplit ~/.vimrc<cr> G
 
 " source vimrc
 :nnoremap <leader>sv :source $MYVIMRC<cr>
