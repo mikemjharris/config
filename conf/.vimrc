@@ -96,12 +96,11 @@ Plug 'puremourning/vimspector'
 " to browser
 Plug 'github/copilot.vim'
 
+" https://www.dailysmarty.com/posts/how-to-setup-prettier-with-vimu
+Plug 'prettier/vim-prettier'
+
 " Initialize plugin system
 call plug#end()
-
-" Neoformat
-" https://prettier.io/docs/en/vim.html
-Plug 'sbdchd/neoformat'
 
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
@@ -510,6 +509,8 @@ set statusline=%{FugitiveStatusline()}\ %f\ %m
 " Always show git gutter bar
 set signcolumn=yes 
 
-" Project specific vimrc files https://andrew.stwrt.ca/posts/project-specific-vimrc/
 set exrc
+" Project specific vimrc files https://andrew.stwrt.ca/posts/project-specific-vimrc/
 set secure
+
+source .vimrc
