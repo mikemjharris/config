@@ -99,6 +99,10 @@ Plug 'github/copilot.vim'
 " Initialize plugin system
 call plug#end()
 
+" Neoformat
+" https://prettier.io/docs/en/vim.html
+Plug 'sbdchd/neoformat'
+
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 "
