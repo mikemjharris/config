@@ -505,3 +505,7 @@ set statusline=%{FugitiveStatusline()}\ %f\ %m
 
 " Always show git gutter bar
 set signcolumn=yes 
+
+" Project specific vimrc files https://andrew.stwrt.ca/posts/project-specific-vimrc/
+set exrc
+set secure
