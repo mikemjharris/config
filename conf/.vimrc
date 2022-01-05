@@ -454,8 +454,8 @@ let @c = ':%s/\s\+$//'
 :nnoremap <leader>html :!tidy -mi -html -wrap 0 %<cr>
 
 " clear trailng white space on save
-autocmd BufWritePre *.{rb,js,erb,json,scss,html,ts} :%s/\s\+$//e
-autocmd BufWritePre *.{jsx,rb,js,erb,json,scss,html,ts} :retab
+autocmd BufWritePre *.{rb,js,erb,json,scss,html,ts,tsx} :%s/\s\+$//e
+autocmd BufWritePre *.{jsx,rb,js,erb,json,scss,html,ts,tsx} :retab
 
 " yml convert tabs to spaces
 autocmd BufWritePre *.{yml} :%s/\t/  /e
