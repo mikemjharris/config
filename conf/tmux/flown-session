@@ -1,0 +1,15 @@
+
+# attach to current path so all windows open from same directory
+attach -c "#{pane_current_path}"
+
+#session
+# then a vertical split 50 /50
+send-keys "vim ." C-m
+
+splitw -h -p 25 
+send-keys "npm run start:db" C-m
+
+splitw -v -p 75 
+send-keys "npm run start" C-m
+
+splitw -v -p 60 
