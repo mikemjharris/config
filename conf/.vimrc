@@ -512,5 +512,7 @@ set signcolumn=yes
 set exrc
 " Project specific vimrc files https://andrew.stwrt.ca/posts/project-specific-vimrc/
 set secure
+if !empty(glob(".vimrc"))
+  source .vimrc
+endif
 
-source .vimrc
