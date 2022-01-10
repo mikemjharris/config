@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+#Script to get local dev server up and running
+
+cd ~/dev/flown.com/
+
+tmux new-session \; \
+attach -c "#{pane_current_path}"\; \
+send-keys "vim ." C-m\; \
+splitw -h -p 25 \; \
+send-keys "npm run start:db" C-m\; \
+splitw -v -p 75 \; \
+send-keys "npm run start" C-m\; \
+splitw -v -p 60 \; \
+select-window -t :=1\; 

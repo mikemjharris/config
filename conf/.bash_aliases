@@ -220,3 +220,6 @@ precmd() {
   enter_directory
 }
 export PROMPT_COMMAND=enter_directory
+
+# TODO symlink and better path
+export PATH=/home/mike/working/config/local-exec:$PATH
