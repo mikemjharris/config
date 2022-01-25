@@ -223,3 +223,13 @@ export PROMPT_COMMAND=enter_directory
 
 # TODO symlink and better path
 export PATH=/home/mike/working/config/local-exec:$PATH
+
+### All for WSL and gui apps
+# https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps
+#
+# set DISPLAY variable to the IP automatically assigned to WSL2
+# https://shouv.medium.com/how-to-run-cypress-on-wsl2-989b83795fb6
+export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
+sudo /etc/init.d/dbus start &> /dev/null
+# https://askubuntu.com/questions/1127011/win10-linux-subsystem-libgl-error-no-matching-fbconfigs-or-visuals-found-libgl
+export LIBGL_ALWAYS_INDIRECT=1
