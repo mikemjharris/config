@@ -8,6 +8,9 @@ call plug#begin('~/.vim/plugged')
 " Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
 Plug 'junegunn/vim-easy-align'
 
+" Tab completion
+Plug 'metalelf0/supertab'
+
 " Markdown plugin
 Plug 'godlygeek/tabular'
 
@@ -53,8 +56,6 @@ Plug 'kchmck/vim-coffee-script'
 " background
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
-" Tab completion
-Plug 'ervandew/supertab'
 
 " Match tags
 Plug 'Valloric/MatchTagAlways'
