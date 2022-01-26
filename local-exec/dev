@@ -10,6 +10,6 @@ send-keys "vim ." C-m\; \
 splitw -h -p 25 \; \
 send-keys "npm run start:db" C-m\; \
 splitw -v -p 75 \; \
-send-keys "npm run start" C-m\; \
+send-keys "npm run dev-debug" C-m\; \
 splitw -v -p 60 \; \
 select-window -t :=1\; 
