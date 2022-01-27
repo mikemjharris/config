@@ -229,7 +229,13 @@ export PATH=/home/mike/working/config/local-exec:$PATH
 #
 # set DISPLAY variable to the IP automatically assigned to WSL2
 # https://shouv.medium.com/how-to-run-cypress-on-wsl2-989b83795fb6
-export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
-sudo /etc/init.d/dbus start &> /dev/null
-# https://askubuntu.com/questions/1127011/win10-linux-subsystem-libgl-error-no-matching-fbconfigs-or-visuals-found-libgl
-export LIBGL_ALWAYS_INDIRECT=1
+# Wrapping this in a function as DISPALY being set seems to impact
+# one of the VIM pluggins for registers
+alias gui=__gui
+
+function __gui {
+  export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
+  sudo /etc/init.d/dbus start &> /dev/null
+  # https://askubuntu.com/questions/1127011/win10-linux-subsystem-libgl-error-no-matching-fbconfigs-or-visuals-found-libgl
+  export LIBGL_ALWAYS_INDIRECT=1
+}
