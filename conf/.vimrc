@@ -340,8 +340,8 @@ let g:ctrlp_match_window = 'results:20'
 :nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " ctrl and up and down to move between tabs
-:map <C-j> :tabn<cr>
-:map <C-k> :tabp<cr>
+:map <C-j> :tabn<cr>:set showtabline=2<cr>
+:map <C-k> :tabp<cr>:set showtabline=2<cr>
 
 :map :W :w<cr>
 " Copy lines visually selected into the register equivalent to system
