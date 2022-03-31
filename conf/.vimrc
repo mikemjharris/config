@@ -449,8 +449,9 @@ let @c = ':%s/\s\+$//'
 " "+ is system clipboard.
 " "% is the filename
 " this copies the file name to the clipboard
+" TODO https://superuser.com/questions/1291425/windows-subsystem-linux-make-vim-use-the-clipboard
 :map <leader>f :let @+=@% <cr>
-
+"
 " format file js file with jq
 :nnoremap <leader>js :%! jq '.'<cr>
 
