@@ -47,6 +47,9 @@ Plug 'tpope/vim-rbenv'
 Plug 'tpope/vim-bundler'
 
 "HTML tag matching 
+Plug 'https://github.com/adelarsq/vim-matchit'
+
+"For surrounding elements
 Plug 'tpope/vim-surround'
 
 " Coffee script syntax
@@ -324,7 +327,7 @@ au BufRead,BufNewFile *.ts   setfiletype typescript
 :nnoremap <leader>cd :s/^#//<cr> :nohl <cr>
 
 " Ctl p ignore
-let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp|build)|(\.(swp|ico|git|svn))$'
+let g:ctrlp_custom_ignore = '\v[\/](bower|bower_components|node_modules|target|dist|_site|vendor|tmp|build|coverage)|(\.(swp|ico|git|svn))$'
 map <leader>C :CtrlPClearCache<cr>
 "Allow more results for ctrl p https://github.com/kien/ctrlp.vim/issues/187
 let g:ctrlp_match_window = 'results:20'
@@ -439,6 +442,10 @@ let @b = 'odebugger'
 autocmd BufRead,BufNewFile *.rb  let @b = 'orequire "pry"; binding.pry'
 let @p = 'orequire "pry"; binding.pry'
 :nnoremap <leader>l  :g/debugger/d <cr>:g/pry-remote/d<cr> :g/binding.pry/d<cr>
+
+" This is a specific work shortcut - this is the new
+" syntax for our design system
+let @s ='otop: ${({ theme }) => theme.spacing[16]};0'
 
 " Clear trailing white space
 let @c = ':%s/\s\+$//'

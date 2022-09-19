@@ -239,3 +239,6 @@ function __gui {
   # https://askubuntu.com/questions/1127011/win10-linux-subsystem-libgl-error-no-matching-fbconfigs-or-visuals-found-libgl
   export LIBGL_ALWAYS_INDIRECT=1
 }
+
+# https://stackoverflow.com/questions/38558989/node-js-heap-out-of-memory
+export NODE_OPTIONS=--max_old_space_size=4096
