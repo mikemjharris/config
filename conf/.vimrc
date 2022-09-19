@@ -469,6 +469,9 @@ let @c = ':%s/\s\+$//'
 autocmd BufWritePre *.{rb,js,erb,json,scss,html,ts,tsx} :%s/\s\+$//e
 autocmd BufWritePre *.{jsx,rb,js,erb,json,scss,html,ts,tsx} :retab
 
+let g:prettier#autoformat = 0
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue PrettierAsync
+
 " yml convert tabs to spaces
 autocmd BufWritePre *.{yml} :%s/\t/  /e
 
