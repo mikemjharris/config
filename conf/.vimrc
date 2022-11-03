@@ -344,7 +344,7 @@ let g:ctrlp_match_window = 'results:20'
 :map :W :w<cr>
 " Copy lines visually selected into the register equivalent to system
 " clipboard
-map <C-c> "+y
+" map <C-c> "+y
 
 "https://stackoverflow.com/a/39313208
 if system('uname -s') == "Darwin\n"
