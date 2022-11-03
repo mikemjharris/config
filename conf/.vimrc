@@ -55,11 +55,6 @@ Plug 'tpope/vim-surround'
 " Coffee script syntax
 Plug 'kchmck/vim-coffee-script'
 
-" Focus plugin for things like autoupdating files when changed in the
-" background
-Plug 'tmux-plugins/vim-tmux-focus-events'
-
-
 " Match tags
 Plug 'Valloric/MatchTagAlways'
 
