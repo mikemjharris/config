@@ -1,0 +1,16 @@
+[user]
+	email = hello@mikemjharris.com
+	name = Mike Harris
+[push]
+	default = current
+[core]
+	editor = nvim
+	excludesfile = /home/mike/working/config/conf/.gitignore_global
+	hooksPath = /home/mike/.git-templates
+[merge]
+	tool = vimdiff  # https://stackoverflow.com/questions/3713765/viewing-all-git-diffs-with-vimdiff/61299449#61299449
+	conflictstyle = diff3
+[mergetool]
+	prompt = false
+[init]
+	templatedir = ~/.git-templates
