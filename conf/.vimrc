@@ -64,6 +64,7 @@ Plug 'maxmellon/vim-jsx-pretty'
 
 " Typescript syntax
 Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
 
 " Does lots of stuff like autocompleteion etc.
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -304,6 +305,7 @@ au FocusGained,BufEnter * :checktime
 
 " set typescrpt syntax
 au BufRead,BufNewFile *.ts   setfiletype typescript
+au BufRead,BufNewFile *.tsx   setfiletype typescriptreact
 
 " For autocompletion - ctr space instead of ctrl x ctrl o http://vim.wikia.com/wiki/Auto_closing_an_HTML_tag
 :imap <C-Space> <C-X><C-O>
