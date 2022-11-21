@@ -24,10 +24,6 @@ Plug 'Chun-Yang/vim-action-ag'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
-"
-" Multiple Plug commands can be written in a single line using | separators
-Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
-"
 " On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' } 
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
