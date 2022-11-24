@@ -4,12 +4,14 @@
 
 cd ~/dev/flown.com/
 
-tmux new-session \; \
+tmux new-session -d \; \
 attach -c "#{pane_current_path}"\; \
 send-keys "vim ." C-m\; \
 splitw -h -p 25 \; \
 send-keys "npm run start:db" C-m\; \
 splitw -v -p 75 \; \
-send-keys "npm run dev:debug" C-m\; \
+send-keys "export TZ=UTC npm run dev" C-m\; \
 splitw -v -p 60 \; \
 select-window -t :=1\; 
+
+exit 0
