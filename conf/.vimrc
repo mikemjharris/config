@@ -439,6 +439,8 @@ let @p = 'orequire "pry"; binding.pry'
 " This is a specific work shortcut - this is the new
 " syntax for our design system
 let @s ='otop: ${({ theme }) => theme.spacing[16]};0'
+let @d ='oconst MainContentWrapper = styled.main(({ theme }) => ({display: "flex",0'
+let @w = 'o[theme.media["bp-desktop-md"]]: {0'
 
 " Clear trailing white space
 let @c = ':%s/\s\+$//'
