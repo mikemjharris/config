@@ -1,2 +1,4 @@
 # We overrid global gitignore here as we want to commit our vimrc
 !.vimrc
+
+conf/new-nvim-setup/lazy-lock.json
