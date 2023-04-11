@@ -48,6 +48,7 @@ local plugins = {
   'rking/ag.vim',
   'Chun-Yang/vim-action-ag',
   'pappasam/papercolor-theme-slim',
+  'norcalli/nvim-colorizer.lua'
 }
 
 local opts = {}
