@@ -47,6 +47,7 @@ local plugins = {
   },
   'rking/ag.vim',
   'Chun-Yang/vim-action-ag',
+  'pappasam/papercolor-theme-slim',
 }
 
 local opts = {}
