@@ -29,8 +29,7 @@ vim.cmd[[
 
 -- https://www.jvt.me/posts/2022/03/01/neovim-format-on-save/
 -- Format on save
-vim.lsp.buf.format()
-vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
+--vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
 
 -- https://blog.kdheepak.com/three-built-in-neovim-features.html
 -- In neovim show all subsitutions in a file in split window
