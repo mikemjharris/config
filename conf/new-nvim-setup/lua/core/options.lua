@@ -36,3 +36,6 @@ vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
 -- In neovim show all subsitutions in a file in split window
 vim.cmd [[ set inccommand=split ]]
 
+-- Use the system clipboard
+vim.cmd [[ set clipboard=unnamedplus ]]
+
