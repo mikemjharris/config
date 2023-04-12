@@ -2,3 +2,4 @@
 !.vimrc
 
 conf/new-nvim-setup/lazy-lock.json
+conf/new-nvim-setup/lua/.luarc.json
