@@ -12,43 +12,39 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-  'wbthomason/packer.nvim',
-  'ellisonleao/gruvbox.nvim',
-  {
-    'dracula/vim',
-    lazy = false,
-  },
-  'nvim-tree/nvim-tree.lua',
-  'nvim-tree/nvim-web-devicons',
-  'nvim-lualine/lualine.nvim',
-  'nvim-treesitter/nvim-treesitter',
-  'bluz71/vim-nightfly-colors',
-  'vim-test/vim-test',
-  'lewis6991/gitsigns.nvim',
-  'preservim/vimux',
-  'christoomey/vim-tmux-navigator',
-  'tpope/vim-fugitive',
-   'folke/tokyonight.nvim',
+  { 'ellisonleao/gruvbox.nvim',  priority = 1000 },  --colorscheme
+  'nvim-tree/nvim-tree.lua', -- file explorer
+  'nvim-tree/nvim-web-devicons', -- file explorer icons
+  'nvim-lualine/lualine.nvim', -- statusline
+  'nvim-treesitter/nvim-treesitter', -- syntax highlighting
+  'vim-test/vim-test', --run tests from file
+  'lewis6991/gitsigns.nvim', -- git signs gutter and commands
+  'preservim/vimux', --link to tmux
+  'tpope/vim-fugitive', --git commands
   -- completion
   'hrsh7th/nvim-cmp',
   'hrsh7th/cmp-nvim-lsp',
   'L3MON4D3/LuaSnip',
   'saadparwaiz1/cmp_luasnip',
   "rafamadriz/friendly-snippets",
-  "github/copilot.vim",
-  "williamboman/mason.nvim",
-  "neovim/nvim-lspconfig",
-  "williamboman/mason-lspconfig.nvim",
-  "glepnir/lspsaga.nvim",
+  "github/copilot.vim", -- copilot
+  "williamboman/mason.nvim", -- manage lsps etc.
+  "neovim/nvim-lspconfig", --list of lsp server configs
+  "williamboman/mason-lspconfig.nvim", --link the two above
+  "glepnir/lspsaga.nvim", -- lsp ui
   {
-	  'nvim-telescope/telescope.nvim',
+	  'nvim-telescope/telescope.nvim', -- fuzzy finder
 	  tag = '0.1.0',
 	  dependencies = { {'nvim-lua/plenary.nvim'} }
   },
-  'rking/ag.vim',
-  'Chun-Yang/vim-action-ag',
-  'pappasam/papercolor-theme-slim',
-  'norcalli/nvim-colorizer.lua'
+  'rking/ag.vim', -- ag search
+  'Chun-Yang/vim-action-ag', -- ag search word you are on
+  'pappasam/papercolor-theme-slim', -- colorscheme
+  'norcalli/nvim-colorizer.lua', -- see colors in nvim
+  {
+    "jose-elias-alvarez/null-ls.nvim", -- linting - eslint too slow though
+    requires = { "nvim-lua/plenary.nvim" },
+  }
 }
 
 local opts = {}
