@@ -1,6 +1,6 @@
 require("mason-lspconfig").setup({
-    ensure_installed = { "tsserver"}
-  }
+  ensure_installed = { "tsserver" }
+}
 )
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -21,6 +21,28 @@ local lspconfig = require('lspconfig')
 
 lspconfig.pyright.setup {}
 lspconfig.tsserver.setup {}
+lspconfig.lua_ls.setup {
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = { 'vim' },
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}
 
 local keymap = vim.keymap.set
 
@@ -31,7 +53,7 @@ local keymap = vim.keymap.set
 keymap("n", "gh", "<cmd>Lspsaga lsp_finder<CR>")
 
 -- Code action
-keymap({"n","v"}, "<leader>ac", "<cmd>Lspsaga code_action<CR>")
+keymap({ "n", "v" }, "<leader>ac", "<cmd>Lspsaga code_action<CR>")
 
 -- Rename all occurrences of the hovered word for the entire file
 keymap("n", "rn", "<cmd>Lspsaga rename<CR>")
@@ -47,7 +69,7 @@ keymap("n", "rN", "<cmd>Lspsaga rename ++project<CR>")
 keymap("n", "gd", "<cmd>Lspsaga peek_definition<CR>")
 
 -- Go to definition
-keymap("n","gD", "<cmd>Lspsaga goto_definition<CR>")
+keymap("n", "gD", "<cmd>Lspsaga goto_definition<CR>")
 
 -- Peek type definition
 -- You can edit the file containing the type definition in the floating window
@@ -57,7 +79,7 @@ keymap("n","gD", "<cmd>Lspsaga goto_definition<CR>")
 keymap("n", "gt", "<cmd>Lspsaga peek_type_definition<CR>")
 
 -- Go to type definition
-keymap("n","gT", "<cmd>Lspsaga goto_type_definition<CR>")
+keymap("n", "gT", "<cmd>Lspsaga goto_type_definition<CR>")
 
 
 -- Show line diagnostics
@@ -88,7 +110,7 @@ keymap("n", "]E", function()
 end)
 
 -- Toggle outline
-keymap("n","<leader>o", "<cmd>Lspsaga outline<CR>")
+keymap("n", "<leader>o", "<cmd>Lspsaga outline<CR>")
 
 -- Hover Doc
 -- If there is no hover doc,
@@ -110,11 +132,11 @@ keymap("n", "<Leader>ci", "<cmd>Lspsaga incoming_calls<CR>")
 keymap("n", "<Leader>co", "<cmd>Lspsaga outgoing_calls<CR>")
 
 -- Floating terminal
-keymap({"n", "t"}, "<A-d>", "<cmd>Lspsaga term_toggle<CR>")
+keymap({ "n", "t" }, "<A-d>", "<cmd>Lspsaga term_toggle<CR>")
 
 -- lsp sage jump to and change doesn't seem to work.  Here is a workaround
 -- calling vim diagnostic next and then the code action
-function nextChange() 
+function nextChange()
   vim.diagnostic.goto_prev()
   vim.cmd [[Lspsaga code_action]]
 end
@@ -122,7 +144,7 @@ end
 -- LSP Config setup - when lspsaga struggles
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', nextChange)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next )
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 keymap('n', '<space>q', vim.diagnostic.setloclist)
 
 vim.api.nvim_create_autocmd('LspAttach', {
