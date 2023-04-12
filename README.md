@@ -26,6 +26,8 @@ Working locally I clone this repo - the install scripts symlink all the releavan
 - `cd config`
 - ./bin/local-install.sh
 
+Recently (13-04-2022) added in neovim installation - that's not included in the script (and indeed the script isn't as smooth as I'd like) for nvim sym link the new-nvim-config folder to ~/.config/nvim
+
 ### Remote Box
 On remote box you might not want to clone and do a full symlinking etc. as this requires setting up ssh keys etc.
 This script will do a one off copy of tmux/vim/bash config on a remote box (or anywhere). 
