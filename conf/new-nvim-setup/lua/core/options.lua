@@ -20,7 +20,7 @@ vim.cmd [[ set noswapfile ]]
 vim.wo.number = true
 
 -- highlight yanked text for 200ms using the "Visual" highlight group
-vim.cmd[[
+vim.cmd [[
   augroup highlight_yank
     autocmd!
     au TextYankPost * silent! lua vim.highlight.on_yank({higroup="Visual", timeout=200})
@@ -29,7 +29,7 @@ vim.cmd[[
 
 -- https://www.jvt.me/posts/2022/03/01/neovim-format-on-save/
 -- Format on save
-vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
+vim.cmd [[autocmd BufWritePre *.lua lua vim.lsp.buf.format()]]
 
 -- https://blog.kdheepak.com/three-built-in-neovim-features.html
 -- In neovim show all subsitutions in a file in split window
