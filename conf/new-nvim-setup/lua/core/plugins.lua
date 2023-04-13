@@ -12,15 +12,15 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-  { 'ellisonleao/gruvbox.nvim', priority = 1000 },  --colorscheme
-  'nvim-tree/nvim-tree.lua',                        -- file explorer
-  'nvim-tree/nvim-web-devicons',                    -- file explorer icons
-  'nvim-lualine/lualine.nvim',                      -- statusline
-  'nvim-treesitter/nvim-treesitter',                -- syntax highlighting
-  'vim-test/vim-test',                              --run tests from file
-  'lewis6991/gitsigns.nvim',                        -- git signs gutter and commands
-  'preservim/vimux',                                --link to tmux
-  'tpope/vim-fugitive',                             --git commands
+  { 'ellisonleao/gruvbox.nvim', priority = 1000 }, --colorscheme
+  'nvim-tree/nvim-tree.lua',                       -- file explorer
+  'nvim-tree/nvim-web-devicons',                   -- file explorer icons
+  'nvim-lualine/lualine.nvim',                     -- statusline
+  'nvim-treesitter/nvim-treesitter',               -- syntax highlighting
+  'vim-test/vim-test',                             --run tests from file
+  'lewis6991/gitsigns.nvim',                       -- git signs gutter and commands
+  'preservim/vimux',                               --link to tmux
+  'tpope/vim-fugitive',                            --git commands
   -- completion
   'hrsh7th/nvim-cmp',
   'hrsh7th/cmp-nvim-lsp',
@@ -45,7 +45,9 @@ local plugins = {
     "jose-elias-alvarez/null-ls.nvim", -- linting - eslint too slow though
     requires = { "nvim-lua/plenary.nvim" },
   },
-  'folke/neodev.nvim'
+  'folke/neodev.nvim',
+  "folke/which-key.nvim",
+
 }
 
 local opts = {}
