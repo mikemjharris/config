@@ -16,6 +16,11 @@ require('lspsaga').setup({
   },
 })
 
+-- IMPORTANT: make sure to setup neodev BEFORE lspconfig
+require("neodev").setup({
+  -- add any options here, or leave empty to use the default settings
+})
+
 -- Setup language servers.
 local lspconfig = require('lspconfig')
 
@@ -40,6 +45,9 @@ lspconfig.lua_ls.setup {
       telemetry = {
         enable = false,
       },
+      completion = {
+        callSnippet = "Replace"
+      }
     },
   },
 }

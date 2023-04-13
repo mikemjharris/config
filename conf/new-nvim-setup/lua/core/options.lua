@@ -37,4 +37,3 @@ vim.cmd [[ set inccommand=split ]]
 
 -- Use the system clipboard
 vim.cmd [[ set clipboard=unnamedplus ]]
-

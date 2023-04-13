@@ -4,6 +4,11 @@ vim.g.loaded_netrwPlugin = 1
 require("nvim-tree").setup({
   view = {
     adaptive_size = true
+  },
+  actions = {
+    open_file = {
+      resize_window = true
+    }
   }
 })
 
