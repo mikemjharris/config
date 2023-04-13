@@ -5,7 +5,7 @@ local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
 null_ls.setup {
   debug = true,
   sources = {
-    null_ls.builtins.formatting.prettier
+    null_ls.builtins.formatting.prettierd
   },
   on_attach = function(client, bufnr)
     if client.supports_method 'textDocument/formatting' then
@@ -14,7 +14,6 @@ null_ls.setup {
         group = augroup,
         buffer = bufnr,
         callback = function()
-          print 'Formatting...'
           vim.lsp.buf.format({ bufnr = bufnr })
         end,
       })
