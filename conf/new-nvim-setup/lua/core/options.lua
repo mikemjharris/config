@@ -18,6 +18,7 @@ vim.cmd [[ set noswapfile ]]
 
 --Line numbers
 vim.wo.number = true
+vim.wo.relativenumber = true
 
 -- highlight yanked text for 200ms using the "Visual" highlight group
 vim.cmd [[
