@@ -16,9 +16,10 @@ local wk = require("which-key")
 
 wk.register({
   f = {
-    name = "file",                                                                  -- optional group name
-    f = { "<cmd>Telescope find_files<cr>", "Find File" },                           -- create a binding with label
-    n = { "New File" },                                                             -- just a label. don't create any mapping
-    b = { function() print("This is an example of what you can do") end, "Foobar" } -- you can also pass functions!
-  },
+    name = "file",                                                                   -- optional group name
+    f = { "<cmd>Telescope find_files<cr>", "Find File" },                            -- create a binding with label
+    n = { "New File" },                                                              -- just a label. don't create any mapping
+    x = { function() print("This is an example of what you can do") end, "Foobar" }, -- you can also pass functions!
+    c = { "<cmd> :let @+=@% <cr>", 'Copy file name' }
+  }
 }, { prefix = "<leader>" })
