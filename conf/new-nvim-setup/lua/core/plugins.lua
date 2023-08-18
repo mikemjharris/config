@@ -46,7 +46,8 @@ local plugins = {
     requires = { "nvim-lua/plenary.nvim" },
   },
   'folke/neodev.nvim',
-  "folke/which-key.nvim",
+  'folke/which-key.nvim',
+  'pwntester/octo.nvim',
 }
 
 local opts = {}
