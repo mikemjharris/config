@@ -245,3 +245,11 @@ function __gui {
 export NODE_OPTIONS=--max_old_space_size=4096
 
 export WIN_HOME=/mnt/c/Users/mikem
+
+alias pt=__pt
+
+function __pt {
+  for file in $(git diff-tree --no-commit-id --name-only -r HEAD); do
+    npx  prettier --write "$file"
+  done
+}
