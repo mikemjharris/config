@@ -253,3 +253,5 @@ function __pt {
     npx  prettier --write "$file"
   done
 }
+
+alias docker-compose="docker compose "
