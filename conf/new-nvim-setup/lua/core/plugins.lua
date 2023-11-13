@@ -12,11 +12,16 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
+  'nvim-treesitter/nvim-treesitter', -- syntax highlighting
+  {
+    'nvim-telescope/telescope.nvim', -- fuzzy finder
+    tag = '0.1.4',
+    dependencies = { { 'nvim-lua/plenary.nvim' } }
+  },
   { 'ellisonleao/gruvbox.nvim', priority = 1000 }, --colorscheme
   'nvim-tree/nvim-tree.lua',                       -- file explorer
   'nvim-tree/nvim-web-devicons',                   -- file explorer icons
   'nvim-lualine/lualine.nvim',                     -- statusline
-  'nvim-treesitter/nvim-treesitter',               -- syntax highlighting
   'vim-test/vim-test',                             --run tests from file
   'lewis6991/gitsigns.nvim',                       -- git signs gutter and commands
   'preservim/vimux',                               --link to tmux
@@ -32,11 +37,6 @@ local plugins = {
   "neovim/nvim-lspconfig",             --list of lsp server configs
   "williamboman/mason-lspconfig.nvim", --link the two above
   "glepnir/lspsaga.nvim",              -- lsp ui
-  {
-    'nvim-telescope/telescope.nvim',   -- fuzzy finder
-    tag = '0.1.0',
-    dependencies = { { 'nvim-lua/plenary.nvim' } }
-  },
   'rking/ag.vim',                      -- ag search
   'Chun-Yang/vim-action-ag',           -- ag search word you are on
   'pappasam/papercolor-theme-slim',    -- colorscheme
