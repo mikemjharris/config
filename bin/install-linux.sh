@@ -106,11 +106,9 @@ echo '. ~/.apps/z/z.sh' >> ~/.zshrc
 
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 
-
-# Install Node /nvm
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
-
-npm install -g typescript
+# install google chrome - useful for running cypress
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt -y install ./google-chrome-stable_current_amd64.deb
 
 git config --global user.email "hello@mikemjharris.com"
 git config --global user.name "Mike Harris"
@@ -125,3 +123,13 @@ git config --global core.hooksPath '~/.git-templates'
 # https://askubuntu.com/a/1277644
 
 # This is required for my tmux conf setup to allow things like pbcopy / paste to work with tmux
+
+
+# Install Node /nvm
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+
+# debug as nvm not always setup - also should setup the best node default
+npm install -g typescript
+npm install -g @fsouza/prettierd
+
+
