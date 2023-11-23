@@ -48,6 +48,7 @@ local plugins = {
   'folke/neodev.nvim',
   'folke/which-key.nvim',
   'pwntester/octo.nvim',
+  'numToStr/Comment.nvim',
 }
 
 local opts = {}
