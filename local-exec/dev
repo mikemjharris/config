@@ -15,7 +15,7 @@ tmux send-keys -t $session "vim ." C-m
 
 # Split window horizontally, 25% pane
 tmux splitw -h -p 25 -t $session
-tmux send-keys -t $session "npm run start:db" C-m
+tmux send-keys -t $session "docker compose up" C-m
 
 # Split window vertically, 75% pane
 tmux splitw -v -p 75 -t $session
