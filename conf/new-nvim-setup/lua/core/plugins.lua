@@ -49,16 +49,6 @@ local plugins = {
   'folke/which-key.nvim',
   'pwntester/octo.nvim',
   'numToStr/Comment.nvim',
-  'MunifTanjim/nui.nvim',
-  {
-    'jackMort/ChatGPT.nvim',
-    requires = {
-      'MunifTanjim/nui.nvim',
-      'nvim-lua/plenary.nvim',
-      'nvim-telescope/telescope.nvim'
-    }
-  },
-
 }
 
 local opts = {}
