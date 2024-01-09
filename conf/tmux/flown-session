@@ -10,6 +10,6 @@ splitw -h -p 25
 send-keys "npm run start:db" C-m
 
 splitw -v -p 75 
-send-keys "export TZ=UTC npm run dev" C-m
+send-keys "export TZ=UTC npm run dev:32" C-m
 
 splitw -v -p 60 
