@@ -8,10 +8,13 @@ node_modules
 .env
 
 # ctags
-tags
+/tags/
 
 # orig files - used by vim for merging
 *.orig
 
 # project specific vimrc files
 .vimrc
+
+# .ignore file that's used by ag / silver searcher
+.ignore
