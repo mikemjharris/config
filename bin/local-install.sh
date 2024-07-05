@@ -18,8 +18,7 @@ ln -s $(pwd)/conf/vim-templates ~/.vim/templates
 
 echo "Setting up neovim config"
 mkdir -p ~/.config/nvim
-ln -s $(pwd)/conf/init.vim ~/.config/nvim/init.vim
-ln -s $(pwd)/conf/coc-settings.json ~/.config/nvim/coc-settings.json
+ln -s $(pwd)/conf/new-nvim-config/ ~/.config/nvim
 
 echo "Setting up vim tmp folder"
 mkdir ~/tmp
