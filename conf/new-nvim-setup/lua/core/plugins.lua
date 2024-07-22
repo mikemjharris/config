@@ -54,7 +54,27 @@ local plugins = {
   'folke/which-key.nvim',
   'pwntester/octo.nvim',
   'numToStr/Comment.nvim',
-  'ellisonleao/glow.nvim'
+  'ellisonleao/glow.nvim',
+  {
+    "supermaven-inc/supermaven-nvim",
+    config = function()
+      require("supermaven-nvim").setup({
+        keymaps = {
+          accept_suggestion = "<C-t>",
+          clear_suggestion = "<C-]>",
+          accept_word = "<C-j>",
+        },
+        ignore_filetypes = { cpp = true },
+        color = {
+          suggestion_color = "#bbbbbb",
+          cterm = 244,
+        },
+        log_level = "info",                -- set to "off" to disable logging completely
+        disable_inline_completion = false, -- disables inline completion for use with cmp
+        disable_keymaps = false            -- disables built in keymaps for more manual control
+      })
+    end,
+  }
 }
 
 local opts = {}
