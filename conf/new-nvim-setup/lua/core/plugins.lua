@@ -37,7 +37,6 @@ local plugins = {
     build = "make install_jsregexp"
   },
   'rafamadriz/friendly-snippets',
-  'github/copilot.vim',                -- copilot
   'williamboman/mason.nvim',           -- manage lsps etc.
   'neovim/nvim-lspconfig',             --list of lsp server configs
   'williamboman/mason-lspconfig.nvim', --link the two above
