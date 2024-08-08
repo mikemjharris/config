@@ -59,13 +59,13 @@ local plugins = {
     config = function()
       require("supermaven-nvim").setup({
         keymaps = {
-          accept_suggestion = "<C-t>",
+          accept_suggestion = "<Tab>",
           clear_suggestion = "<C-]>",
           accept_word = "<C-j>",
         },
         ignore_filetypes = { cpp = true },
         color = {
-          suggestion_color = "#bbbbbb",
+          suggestion_color = "#cccccc",
           cterm = 244,
         },
         log_level = "info",                -- set to "off" to disable logging completely
