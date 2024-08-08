@@ -38,3 +38,6 @@ vim.cmd [[ set inccommand=split ]]
 
 -- Use the system clipboard
 vim.cmd [[ set clipboard=unnamedplus ]]
+
+-- fix issue with pasting from windows
+vim.opt.fixendofline = true
