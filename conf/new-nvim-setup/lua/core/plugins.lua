@@ -66,9 +66,9 @@ local plugins = {
         ignore_filetypes = { cpp = true },
         color = {
           suggestion_color = "#cccccc",
-          cterm = 244,
+          cterm = 100,
         },
-        log_level = "info",                -- set to "off" to disable logging completely
+        log_level = "info",                -- set to "off" to disable logging completel
         disable_inline_completion = false, -- disables inline completion for use with cmp
         disable_keymaps = false            -- disables built in keymaps for more manual control
       })
@@ -83,7 +83,8 @@ local plugins = {
         -- Configuration here, or leave empty to use defaults
       })
     end
-  }
+  },
+  { "stevearc/conform.nvim",    opts = {} }
 }
 
 local opts = {}
