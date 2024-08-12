@@ -45,6 +45,10 @@ local plugins = {
   'Chun-Yang/vim-action-ag',           -- ag search word you are on
   'pappasam/papercolor-theme-slim',    -- colorscheme
   'norcalli/nvim-colorizer.lua',       -- see colors in nvim
+  {
+    'jose-elias-alvarez/null-ls.nvim', -- linting - eslint too slow though
+    requires = { 'nvim-lua/plenary.nvim' },
+  },
   'folke/neodev.nvim',
   'folke/which-key.nvim',
   'pwntester/octo.nvim',
