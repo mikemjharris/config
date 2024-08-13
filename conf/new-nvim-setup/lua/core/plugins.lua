@@ -46,7 +46,7 @@ local plugins = {
   'pappasam/papercolor-theme-slim',    -- colorscheme
   'norcalli/nvim-colorizer.lua',       -- see colors in nvim
   {
-    'jose-elias-alvarez/null-ls.nvim', -- linting - eslint too slow though
+    'nvimtools/none-ls.nvim',
     requires = { 'nvim-lua/plenary.nvim' },
   },
   'folke/neodev.nvim',
