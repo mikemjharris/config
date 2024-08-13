@@ -118,6 +118,7 @@ git config --global merge.tool vimdiff
 git config --global merge.conflictstyle diff3
 git config --global mergetool.prompt false
 git config --global core.hooksPath '~/.git-templates'
+git config --global core.defultBranch main
 
 # This was useful in getting headphones working 
 # https://askubuntu.com/a/1277644
