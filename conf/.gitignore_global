@@ -18,3 +18,10 @@ node_modules
 
 # .ignore file that's used by ag / silver searcher
 .ignore
+
+# cert files
+*.crt
+*.cert
+*.csr
+*.key
+*.srl
