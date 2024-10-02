@@ -12,7 +12,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-  'nvim-treesitter/nvim-treesitter', -- syntax highlighting
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+  },
   {
     'nvim-telescope/telescope.nvim', -- fuzzy finder
     tag = '0.1.4',
