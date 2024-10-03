@@ -109,7 +109,7 @@ alias lg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %
 alias hg="history | grep "
 
 # Quick way to check ip address
-alias ip="ifconfig | grep -oEi 'inet\s(.*)\snetmask.*broadcast' | cut -d ' '  -f2"
+##alias ip="ifconfig | grep -oEi 'inet\s(.*)\snetmask.*broadcast' | cut -d ' '  -f2"
 
 
 # Ruby short cuts
