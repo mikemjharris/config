@@ -14,6 +14,21 @@ require('lspsaga').setup({
     show_file = true,
     file_formatter = ""
   },
+  outline = {
+    win_position = "right",
+    win_with = "",
+    win_width = 30,
+    show_detail = true,
+    auto_preview = true,
+    auto_refresh = true,
+    auto_close = true,
+    custom_sort = nil,
+    keys = {
+      jump = "o",
+      expand_collapse = "u",
+      quit = "q",
+    },
+  },
 })
 
 -- IMPORTANT: make sure to setup neodev BEFORE lspconfig
