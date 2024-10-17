@@ -44,4 +44,8 @@ map("n", "]b", ":bnext<CR>", { desc = "Next buffer" })
 map("n", "[B", ":bfirst<CR>", { desc = "First buffer" })
 map("n", "]B", ":blast<CR>", { desc = "Last buffer" })
 
-
+-- Remap Ag to Gg
+vim.api.nvim_create_user_command('Gg', function(opts)
+  vim.cmd('Ag ' .. opts.args)
+end, { nargs = '*', desc = 'Search using Ag (Silver Searcher)' })
+vim.keymap.set('n', '<leader>g', ':Gg ', { noremap = true, desc = 'Search using Gg (Ag)' })
