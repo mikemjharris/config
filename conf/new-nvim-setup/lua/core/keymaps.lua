@@ -48,4 +48,5 @@ map("n", "]B", ":blast<CR>", { desc = "Last buffer" })
 vim.api.nvim_create_user_command('Gg', function(opts)
   vim.cmd('Ag ' .. opts.args)
 end, { nargs = '*', desc = 'Search using Ag (Silver Searcher)' })
-vim.keymap.set('n', '<leader>g', ':Gg ', { noremap = true, desc = 'Search using Gg (Ag)' })
+
+vim.keymap.set('n', '<leader>g', ':Ag ', { noremap = true, desc = 'Search using Ag' })
