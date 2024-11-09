@@ -1,5 +1,5 @@
 require("mason-lspconfig").setup({
-  ensure_installed = { "tsserver" }
+  ensure_installed = { "tsserver", "solargraph" }
 }
 )
 
@@ -30,6 +30,7 @@ require('lspsaga').setup({
     },
   },
 })
+
 
 -- IMPORTANT: make sure to setup neodev BEFORE lspconfig
 require("neodev").setup({
@@ -66,6 +67,32 @@ lspconfig.lua_ls.setup {
     },
   },
 }
+
+-- Solargraph setup
+lspconfig.solargraph.setup({
+  capabilities = capabilities,
+  cmd = { os.getenv('HOME') .. '/.rbenv/shims/solargraph', 'stdio' },
+  root_dir = require('lspconfig.util').root_pattern(
+    '.solargraph.yml',
+    '.git',
+    'Gemfile'
+  ),
+  settings = {
+    solargraph = {
+      diagnostics = true,
+      completion = true,
+      formatting = true,
+      symbols = true,
+      definitions = true,
+      references = true,
+      rename = true,
+      hover = true,
+    }
+  },
+  flags = {
+    debounce_text_changes = 150,
+  },
+})
 
 local keymap = vim.keymap.set
 

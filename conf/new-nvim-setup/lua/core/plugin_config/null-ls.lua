@@ -2,6 +2,8 @@ local null_ls = require("null-ls")
 
 local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
 
+local rubocop_cmd = vim.fn.expand('~/.rbenv/shims/rubocop')
+
 null_ls.setup {
   debug = true,
   sources = {
@@ -9,7 +11,12 @@ null_ls.setup {
       env = {
         PRETTIERD_LOCAL_PRETTIER_ONLY = 1,
       },
-    })
+    }),
+    null_ls.builtins.formatting.rubocop.with({
+      command = rubocop_cmd,
+      args = { "--auto-correct", "-f", "quiet", "--stderr", "--stdin", "$FILENAME" },
+      stdin = true,
+    }),
   },
   on_attach = function(client, bufnr)
     if client.supports_method 'textDocument/formatting' then
