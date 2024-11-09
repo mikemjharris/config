@@ -1,5 +1,5 @@
 require("mason-lspconfig").setup({
-  ensure_installed = { "tsserver", "solargraph" }
+  ensure_installed = { "ts_ls", "solargraph" }
 }
 )
 
@@ -41,7 +41,10 @@ require("neodev").setup({
 local lspconfig = require('lspconfig')
 
 lspconfig.pyright.setup {}
-lspconfig.tsserver.setup {}
+lspconfig.ts_ls.setup {
+  capabilities = capabilities,
+}
+
 lspconfig.lua_ls.setup {
   settings = {
     Lua = {
@@ -79,7 +82,7 @@ lspconfig.solargraph.setup({
   ),
   settings = {
     solargraph = {
-      diagnostics = true,
+      diagnostics = true, -- Enable diagnostics
       completion = true,
       formatting = true,
       symbols = true,
@@ -87,7 +90,24 @@ lspconfig.solargraph.setup({
       references = true,
       rename = true,
       hover = true,
+      checkGemVersion = true, -- Check if newer gem versions are available
+      flags = {
+        debounce_text_changes = 150,
+      },
+      diagnostics_format = '${message} (${source})', -- Show source of diagnostics
+      useBundler = true,                             -- Use bundler if available
+      autoformat = true,
+      documentation = true,
+      require_paths = {
+        'spec',
+        'lib',
+        'app'
+      },
+      plugins = {
+        'solargraph-rspec'
+      }
     }
+
   },
   flags = {
     debounce_text_changes = 150,
