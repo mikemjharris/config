@@ -11,34 +11,30 @@ cmp.setup({
     ['<C-e>'] = cmp.mapping.abort(),
 
     -- Manual trigger completion
-    ['<C-Space>'] = cmp.mapping.complete(),
+    -- ['<C-Space>'] = cmp.mapping.complete(),
 
     -- Navigate completion menu
     ['<C-j>'] = cmp.mapping.select_next_item(),
     ['<C-k>'] = cmp.mapping.select_prev_item(),
 
-    -- Tab completion as an alternative to Ctrl-j/k
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
+    -- -- Tab completion as an alternative to Ctrl-j/k
+    -- ['<Tab>'] = cmp.mapping(function(fallback)
+    --   if cmp.visible() then
+    --     cmp.select_next_item()
+    --   else
+    --     fallback()
+    --   end
+    -- end, { 'i', 's' }),
+    --
+    -- ['<S-Tab>'] = cmp.mapping(function(fallback)
+    --   if cmp.visible() then
+    --     cmp.select_prev_item()
+    --   else
+    --     fallback()
+    --   end
+    -- end, { 'i', 's' }),
+    ['<Tab>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-
-    -- Confirm completion
-    ['<CR>'] = cmp.mapping.confirm({
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    }),
   }),
 
   -- Completion menu appearance
