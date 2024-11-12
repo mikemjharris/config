@@ -4,8 +4,8 @@ require("luasnip.loaders.from_vscode").lazy_load()
 cmp.setup({
   mapping = cmp.mapping.preset.insert({
     -- Documentation scrolling
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
 
     -- Cancel completion
     ['<C-e>'] = cmp.mapping.abort(),
@@ -70,4 +70,47 @@ cmp.setup({
   completion = {
     completeopt = 'menu,menuone,noinsert',
   },
+})
+
+cmp.setup.cmdline({ '/', '?' }, {
+  mapping = cmp.mapping.preset.cmdline({
+    -- Navigate the completion menu
+    ['<C-j>'] = cmp.mapping.select_prev_item(),
+    ['<C-k>'] = cmp.mapping.select_next_item(),
+    -- Scroll the documentation window
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    -- Cancel completion
+    ['<C-e>'] = cmp.mapping.abort(),
+    -- Confirm completion
+    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+    -- Complete with the first item
+    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+  }),
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- Use cmdline & path source for ':' with custom keybindings
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline({
+    -- Navigate the completion menu
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    -- Scroll the documentation window
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    -- Cancel completion
+    ['<C-e>'] = cmp.mapping.abort(),
+    -- Confirm completion
+    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+    -- Complete with the first item
+    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+  }),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
 })
