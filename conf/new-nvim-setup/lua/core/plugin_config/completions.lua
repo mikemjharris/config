@@ -4,7 +4,7 @@ require("luasnip.loaders.from_vscode").lazy_load()
 cmp.setup({
   mapping = cmp.mapping.preset.insert({
     -- Documentation scrolling
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-r>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
 
     -- Cancel completion
