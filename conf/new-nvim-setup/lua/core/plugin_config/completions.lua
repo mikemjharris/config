@@ -1,6 +1,36 @@
 local cmp = require("cmp")
 require("luasnip.loaders.from_vscode").lazy_load()
 
+-- Add these variables at the top to track completion state
+vim.g.cmp_global_enabled = true
+
+local function toggle_completion_buffer()
+  local current_buffer = vim.api.nvim_get_current_buf()
+  local is_enabled = vim.b[current_buffer].cmp_enabled
+
+  if is_enabled == nil then
+    is_enabled = true -- Default to true if not set
+  end
+
+  vim.b[current_buffer].cmp_enabled = not is_enabled
+  cmp.setup.buffer({ enabled = not is_enabled })
+
+  -- Show notification of current state
+  local state = not is_enabled and "enabled" or "disabled"
+  vim.notify("Completion " .. state .. " for current buffer", vim.log.levels.INFO)
+end
+
+local function toggle_completion_global()
+  vim.g.cmp_global_enabled = not vim.g.cmp_global_enabled
+  cmp.setup({ enabled = vim.g.cmp_global_enabled })
+
+  -- Show notification of current state
+  local state = vim.g.cmp_global_enabled and "enabled" or "disabled"
+  vim.notify("Completion " .. state .. " globally", vim.log.levels.INFO)
+end
+
+
+
 cmp.setup({
   mapping = cmp.mapping.preset.insert({
     -- Documentation scrolling
@@ -113,4 +143,12 @@ cmp.setup.cmdline(':', {
   }, {
     { name = 'cmdline' }
   })
+})
+
+
+-- Add these to your which-key config
+local wk = require("which-key")
+wk.add({
+  { "<leader>cb", toggle_completion_buffer, desc = "Toggle buffer completion", mode = "n" },
+  { "<leader>cg", toggle_completion_global, desc = "Toggle buffer completion", mode = "n" },
 })
