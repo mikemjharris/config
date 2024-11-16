@@ -78,7 +78,12 @@ local plugins = {
       })
     end
   },
-  { "stevearc/conform.nvim",    opts = {} }
+  { "stevearc/conform.nvim",    opts = {} },
+  {
+    'olimorris/persisted.nvim',
+    config = true
+  }
+
 }
 
 local opts = {}

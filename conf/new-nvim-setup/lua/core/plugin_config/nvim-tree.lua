@@ -12,6 +12,21 @@ require("nvim-tree").setup({
   }
 })
 
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
+  pattern = "*.rb",
+  callback = function(args)
+    -- Check if the file is empty
+    if vim.fn.line('$') == 1 and vim.fn.getline(1) == '' then
+      -- Insert the frozen string literal comment
+      vim.api.nvim_buf_set_lines(args.buf, 0, 0, false, {
+        '# frozen_string_literal: true',
+        '' -- Add an empty line after the comment
+      })
+    end
+  end
+})
+
+
 local wk = require("which-key")
 
 wk.add({

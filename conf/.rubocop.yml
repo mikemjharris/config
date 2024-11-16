@@ -23,4 +23,4 @@ Layout/LineLength:
   Max: 100
 
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  Enabled: true 
