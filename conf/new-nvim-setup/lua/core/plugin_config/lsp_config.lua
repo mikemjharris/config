@@ -1,5 +1,5 @@
 require("mason-lspconfig").setup({
-  ensure_installed = { "ts_ls", "solargraph" }
+  ensure_installed = { "ts_ls" }
 }
 )
 
@@ -71,48 +71,6 @@ lspconfig.lua_ls.setup {
   },
 }
 
--- Solargraph setup
-lspconfig.solargraph.setup({
-  capabilities = capabilities,
-  cmd = { os.getenv('HOME') .. '/.rbenv/shims/solargraph', 'stdio' },
-  root_dir = require('lspconfig.util').root_pattern(
-    '.solargraph.yml',
-    '.git',
-    'Gemfile'
-  ),
-  settings = {
-    solargraph = {
-      diagnostics = true, -- Enable diagnostics
-      completion = true,
-      formatting = true,
-      symbols = true,
-      definitions = true,
-      references = true,
-      rename = true,
-      hover = true,
-      checkGemVersion = true, -- Check if newer gem versions are available
-      flags = {
-        debounce_text_changes = 150,
-      },
-      diagnostics_format = '${message} (${source})', -- Show source of diagnostics
-      useBundler = true,                             -- Use bundler if available
-      autoformat = true,
-      documentation = true,
-      require_paths = {
-        'spec',
-        'lib',
-        'app'
-      },
-      plugins = {
-        'solargraph-rspec'
-      }
-    }
-
-  },
-  flags = {
-    debounce_text_changes = 150,
-  },
-})
 
 local keymap = vim.keymap.set
 

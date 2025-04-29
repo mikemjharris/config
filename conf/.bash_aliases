@@ -35,18 +35,35 @@ alias server="python -m SimpleHTTPServer 8001"
 alias hosts="cat ~/.ssh/config | grep 'Host '"
 
 # Can't ever remember clipboard copy or paste with linux so aliasing to mac ones :(
-alias pbcopy=__pbcopy
+# alias pbcopy=__pbcopy
 
-if ! command -v /mnt/c/Windows/System32/clip.exe &> /dev/null
-then
-  alias pbpaste=" xclip -out -sel clip"
-  alias pbcopy="xclip -sel clip"
-else
-  # xclip doesn't work in WSL so using the mounted clip.exe instead 
-  # https://github.com/microsoft/WSL/issues/1069
-  alias pbpaste="powershell.exe -command 'Get-Clipboard' | tr -d '\r' | head -n -1"
-  alias pbcopy="/mnt/c/Windows/System32/clip.exe"
-fi
+# Detect platform
+unameOut="$(uname -s)"
+
+# Check if we are running on WSL or not
+# case "${unameOut}" in
+#     Linux*)
+#         if grep -q Microsoft /proc/version 2>/dev/null; then
+#             # Inside WSL
+#             alias pbpaste="powershell.exe -command 'Get-Clipboard' | tr -d '\r' | head -n -1"
+#             alias pbcopy="/mnt/c/Windows/System32/clip.exe"
+#         else
+#             # Regular Linux
+#             if command -v xclip &> /dev/null; then
+#                 alias pbpaste="xclip -out -sel clip"
+#                 alias pbcopy="xclip -sel clip"
+#             fi
+#         fi
+#         ;;
+#     Darwin*)
+#         # macOS
+#         # Nothing needed, macOS already has pbcopy and pbpaste
+#         ;;
+#     *)
+#         # Other platforms
+#         ;;
+# esac
+#
 
 # If you have dirty json copied this makes it pretty
 alias json="pbpaste | jq | pbcopy"
