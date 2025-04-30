@@ -1,14 +1,23 @@
 local builtin = require('telescope.builtin')
 local actions = require('telescope.actions')
+
+
 require('telescope').setup({
   defaults = {
+    file_ignore_patterns = {
+      ".*node_modules/.*",
+      ".*migrations/.*",
+      ".*generated/.*",
+      ".*infra/.*"
+    },
+    find_command = { "fd", "--type", "f", "--hidden", "--exclude", ".git", "--exclude", "node_modules" },
     mappings = {
       i = {
         ["<C-j>"] = actions.move_selection_next,
         ["<C-k>"] = actions.move_selection_previous,
       }
     }
-  }
+  },
 })
 
 local function find_alternate_file()
