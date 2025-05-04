@@ -11,6 +11,12 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+vim.filetype.add({
+  extension = {
+    codecompanion = "codecompanion"
+  }
+})
+
 local plugins = {
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
@@ -95,8 +101,14 @@ local plugins = {
     config = true
   },
   {
-    "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown", "codecompanion" }
+    "MeanderingProgrammer/render-markdown.nvim", -- Make Markdown buffers look beautiful
+    ft = { "markdown", "codecompanion", "Avante" },
+    opts = {
+      render_modes = true, -- Render in ALL modes
+      sign = {
+        enabled = false,   -- Turn off in the status column
+      },
+    },
   },
   {
     "yetone/avante.nvim",
@@ -146,14 +158,6 @@ local plugins = {
             use_absolute_path = true,
           },
         },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { "markdown", "Avante" },
-        },
-        ft = { "markdown", "Avante" },
       },
     },
   }
