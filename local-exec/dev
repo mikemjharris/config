@@ -9,7 +9,7 @@ tmux has-session -t $session 2>/dev/null
 
 # If the session doesn't exist, create it
 if [ $? != 0 ]; then
-    cd ~/dev/flown.com/
+    cd ~/dev/omnea-meta-repo/omnea-app
     
     # Create a new detached session
     tmux new-session -d -s $session

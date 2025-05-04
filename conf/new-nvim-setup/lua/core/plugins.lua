@@ -21,14 +21,26 @@ local plugins = {
     tag = '0.1.4',
     dependencies = { { 'nvim-lua/plenary.nvim' } }
   },
-  { 'ellisonleao/gruvbox.nvim', priority = 1000 }, --colorscheme
-  'nvim-tree/nvim-tree.lua',                       -- file explorer
-  'nvim-tree/nvim-web-devicons',                   -- file explorer icons
-  'nvim-lualine/lualine.nvim',                     -- statusline
-  'vim-test/vim-test',                             --run tests from file
-  'lewis6991/gitsigns.nvim',                       -- git signs gutter and commands
-  'preservim/vimux',                               --link to tmux
-  'tpope/vim-fugitive',                            --git commands
+
+  { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
+  {
+    "olimorris/codecompanion.nvim",
+    opts = {},
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "ravitemer/mcphub.nvim"
+    },
+  },
+  { 'ellisonleao/gruvbox.nvim',                 priority = 1000 }, --colorscheme
+  'nvim-tree/nvim-tree.lua',                                       -- file explorer
+  'nvim-tree/nvim-web-devicons',                                   -- file explorer icons
+  'nvim-lualine/lualine.nvim',                                     -- statusline
+  'vim-test/vim-test',                                             --run tests from file
+  'lewis6991/gitsigns.nvim',                                       -- git signs gutter and commands
+  'preservim/vimux',                                               --link to tmux
+  'tpope/vim-fugitive',                                            --git commands
+  "EdenEast/nightfox.nvim",                                        -- lazy,<
   -- completion
   {
     'hrsh7th/nvim-cmp',
@@ -67,7 +79,6 @@ local plugins = {
   'pwntester/octo.nvim',
   'numToStr/Comment.nvim',
   'ellisonleao/glow.nvim',
-  'supermaven-inc/supermaven-nvim',
   {
     "kylechui/nvim-surround",
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
@@ -78,10 +89,14 @@ local plugins = {
       })
     end
   },
-  { "stevearc/conform.nvim",    opts = {} },
+  { "stevearc/conform.nvim", opts = {} },
   {
     'olimorris/persisted.nvim',
     config = true
+  },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown", "codecompanion" }
   },
   {
     "yetone/avante.nvim",
