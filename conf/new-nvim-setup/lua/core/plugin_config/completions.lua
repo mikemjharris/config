@@ -146,9 +146,9 @@ cmp.setup.cmdline(':', {
 })
 
 
--- Add these to your which-key config
-local wk = require("which-key")
-wk.add({
-  { "<leader>cb", toggle_completion_buffer, desc = "Toggle buffer completion", mode = "n" },
-  { "<leader>cg", toggle_completion_global, desc = "Toggle buffer completion", mode = "n" },
-})
+-- -- Add these to your which-key config
+-- local wk = require("which-key")
+-- wk.add({
+--   { "<leader>cb", toggle_completion_buffer, desc = "Toggle buffer completion", mode = "n" },
+--   { "<leader>cg", toggle_completion_global, desc = "Toggle buffer completion", mode = "n" },
+-- })
