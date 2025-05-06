@@ -30,12 +30,53 @@ local plugins = {
 
   { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
   {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    dependencies = {
+      { "zbirenbaum/copilot.vim" },                   -- or zbirenbaum/copilot.lua
+      { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
+    },
+    build = "make tiktoken",                          -- Only on MacOS or Linux
+    opts = {
+      -- See Configuration section for options
+      model = "gpt-3.5-turbo",
+    },
+    -- See Commands section for default commands if you want to lazy load on them
+  },
+  {
     "olimorris/codecompanion.nvim",
-    opts = {},
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      "ravitemer/mcphub.nvim"
+      {
+        "ravitemer/mcphub.nvim", -- Manage MCP servers
+        cmd = "MCPHub",
+        build = "npm install -g mcp-hub@latest",
+        config = true,
+      },
+      {
+        "Davidyz/VectorCode", -- Index and search code in your repositories
+        version = "*",
+        build = "pipx upgrade vectorcode",
+        dependencies = { "nvim-lua/plenary.nvim" },
+      }
+    },
+    opts = {
+      extensions = {
+        mcphub = {
+          callback = "mcphub.extensions.codecompanion",
+          opts = {
+            make_vars = true,
+            make_slash_commands = true,
+            show_result_in_chat = true,
+          },
+        },
+        vectorcode = {
+          opts = {
+            add_tool = true,
+            make_slash_commands = true,
+          },
+        },
+      },
     },
   },
   { 'ellisonleao/gruvbox.nvim',                 priority = 1000 }, --colorscheme
@@ -141,7 +182,6 @@ local plugins = {
       "hrsh7th/nvim-cmp",              -- autocompletion for avante commands and mentions
       "ibhagwan/fzf-lua",              -- for file_selector provider fzf
       "nvim-tree/nvim-web-devicons",   -- or echasnovski/mini.icons
-      "zbirenbaum/copilot.lua",        -- for providers='copilot'
       {
         -- support for image pasting
         "HakonHarnes/img-clip.nvim",
