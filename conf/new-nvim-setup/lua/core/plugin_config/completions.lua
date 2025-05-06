@@ -90,10 +90,10 @@ cmp.setup({
 
   -- Completion sources in priority order
   sources = {
-    { name = 'supermaven', priority = 1000 }, -- AI completions
-    { name = 'nvim_lsp',   priority = 900 },  -- LSP
-    { name = 'luasnip',    priority = 800 },  -- Snippets
-    { name = 'buffer',     priority = 500 },  -- Buffer words
+    { name = 'copilot',  priority = 1000 },  -- AI completions
+    { name = 'nvim_lsp', priority = 900 },   -- LSP
+    { name = 'luasnip',  priority = 800 },   -- Snippets
+    { name = 'buffer',   priority = 500 },   -- Buffer words
   },
 
   -- Completion behavior

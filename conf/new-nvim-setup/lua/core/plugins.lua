@@ -43,6 +43,13 @@ local plugins = {
     -- See Commands section for default commands if you want to lazy load on them
   },
   {
+    'zbirenbaum/copilot-cmp',
+    dependencies = { 'zbirenbaum/copilot.lua' },
+    config = function()
+      require("copilot_cmp").setup()
+    end
+  },
+  {
     "olimorris/codecompanion.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -143,7 +150,7 @@ local plugins = {
   },
   {
     "MeanderingProgrammer/render-markdown.nvim", -- Make Markdown buffers look beautiful
-    ft = { "markdown", "codecompanion", "Avante" },
+    ft = { "markdown", "codecompanion", "Avante", "copilot-chat" },
     opts = {
       render_modes = true, -- Render in ALL modes
       sign = {
