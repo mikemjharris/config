@@ -20,12 +20,17 @@ if [ $? != 0 ]; then
     # Split window horizontally, 25% pane
     tmux splitw -h -p 25 -t $session
     tmux send-keys -t $session "cd .. && yarn api" C-m
-    tmux splitw -v -p 85 -t $session
+    tmux splitw -v -p 95 -t $session
     tmux send-keys -t $session "docker-compose up" C-m
 
-    # Split window vertically, 75% pane
-    tmux splitw -v -p 85 -t $session
+    # Split window vertically
+    tmux splitw -v -p 95 -t $session
     tmux send-keys -t $session "yarn dev:killall" C-m
+    
+    # Split window vertically
+    tmux splitw -v -p 95 -t $session
+    tmux send-keys -t $session "hasura console" C-m
+
 
     # Split window vertically, 60% pane
     tmux splitw -v -p 60 -t $session
