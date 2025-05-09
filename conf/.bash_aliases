@@ -162,7 +162,8 @@ alias line=__line
 alias tx="tmux attach"
 
 # I mean i never remember and it seems such an obvious alias! 
-alias open="xdg-open"
+#  this is just for linux - breaks things on mac
+#alias open="xdg-open"
 
 # Because my fingers can never spell ~herkou~ heroku 
 alias herkou="heroku"
