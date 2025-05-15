@@ -51,7 +51,10 @@ local wk = require("which-key")
 -- Add CodeCompanion keybindings
 wk.add({
   { "<leader>c",  group = "CodeCompanion" },
-  { "<leader>cc", "<cmd>CodeCompanionChat<CR>",    desc = "Open Chat",    mode = "n" },
-  { "<leader>ca", "<cmd>CodeCompanionActions<CR>", desc = "Show Actions", mode = "n" },
-  { "<leader>ci", "<cmd>CodeCompanion<CR>",        desc = "Inline Chat",  mode = "n" },
+  { "<leader>cc", "<cmd>CodeCompanionChat Toggle<CR>", desc = "Open Chat",        mode = { "n", "v" } },
+  { "<leader>ca", "<cmd>CodeCompanionActions<CR>",     desc = "Show Actions",     mode = { "n", "v" } },
+  { "<leader>cd", "<cmd>CodeCompanionChat Add<CR>",    desc = "Add code to chat", mode = "v" },
 })
+
+-- Expand 'cc' into 'CodeCompanion' in the command line
+vim.cmd("cnoreabbrev cc CodeCompanionChat")
