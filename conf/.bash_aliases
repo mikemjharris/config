@@ -199,7 +199,7 @@ alias todo=__todo
 # }
 #
 ## Not an alias but sets vim config - TODO put in seperate env variable file for inclusion'
-export VISUAL=vim
+export VISUAL=nvim
 export EDITOR="$VISUAL"
 
 ## May as well use vim mode to edit in the terminal too :)
