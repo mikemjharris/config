@@ -272,4 +272,16 @@ function __pt {
   done
 }
 
-alias docker-compose="docker compose "
+alias docker-compose="docker compose"
+
+tmux_fzf_copy() {
+  local selected
+  selected=$(tmux capture-pane -J -p | fzf --reverse --no-sort --prompt='Scrollback> ')
+
+  if [ -n "$selected" ]; then
+    echo "$selected" | pbcopy  # macOS clipboard; use xclip or wl-copy on Linux
+    tmux display-message "Copied to clipboard: $selected"
+  fi
+}
+
+bindkey '^F' tmux_fzf_search  # Ctrl-F to trigger

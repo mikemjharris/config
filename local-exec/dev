@@ -35,6 +35,10 @@ if [ $? != 0 ]; then
 
     # Split window vertically, 60% pane
     tmux splitw -v -p 60 -t $session
+
+
+    tmux splitw -v -p 10 -t $session
+    tmux send-keys -t $session "~/status.sh" C-m
 fi
 
 # Attach to the session and then immediately detach
