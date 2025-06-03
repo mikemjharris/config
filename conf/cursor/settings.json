@@ -1,0 +1,106 @@
+{
+  "window.commandCenter": true,
+  "workbench.colorTheme": "Default Light Modern",
+  "editor.minimap.enabled": true,
+  "editor.lineNumbers": "relative",
+  "vim.commands": [
+    {
+      "command": "workbench.action.files.save",
+      "name": "write"
+    }
+  ],
+  "vim.overrideCommandDefinition": {
+    "write": true
+  },
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<space>"],
+      "commands": ["whichkey.show"]
+    },
+    {
+      "before": ["g", "p"],
+      "commands": ["editor.action.showHover"]
+    },
+    {
+      "before": ["g", "d"],
+      "commands": ["editor.action.revealDefinition"]
+    },
+    {
+      "before": ["]", "e"],
+      "commands": ["editor.action.marker.next"]
+    },
+    {
+      "before": ["[", "e"],
+      "commands": ["editor.action.marker.prev"]
+    },
+    {
+      "before": ["]", "c"],
+      "commands": ["workbench.action.editor.nextChange"]
+    },
+    {
+      "before": ["[", "c"],
+      "commands": ["workbench.action.editor.previousChange"]
+    }
+  ],
+  "vim.commandLineModeKeyBindingsNonRecursive": [
+    {
+      "before": [":", "W"],
+      "commands": [":w"]
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<space>"],
+      "commands": ["whichkey.show"]
+    }
+  ],
+  "whichkey.bindings": [
+    {
+      "key": "f",
+      "name": "File...",
+      "type": "bindings",
+      "bindings": [
+        {
+          "key": "f",
+          "name": "Open file",
+          "type": "command",
+          "command": "workbench.action.files.openFileFolder"
+        }
+      ]
+    },
+    {
+      "key": "r",
+      "name": "File...",
+      "type": "bindings",
+      "bindings": [
+        {
+          "key": "n",
+          "name": "Rename symbol",
+          "type": "command",
+          "command": "editor.action.rename"
+        }
+      ]
+    },
+    {
+      "key": "a",
+      "name": "AI...",
+      "type": "bindings",
+      "bindings": [
+        {
+          "key": "c",
+          "name": "Open chat with file context",
+          "type": "command",
+          "command": "composerMode.agent"
+        }
+      ]
+    }
+  ],
+  "cSpell.userWords": ["estruyf", "testorg"],
+  "git.autofetch": true,
+  "cSpell.enabled": false,
+  "workbench.editor.enablePreview": false,
+  "vim.neovimConfigPath": "~/.config/nvim/init.vim",
+  "vim.neovimPath": "/opt/homebrew/bin/nvim",
+  "vim.useSystemClipboard": true,
+  "editor.accessibilitySupport": "on"
+}

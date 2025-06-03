@@ -1,0 +1,71 @@
+// Place your key bindings in this file to override the defaults
+[
+  {
+    "key": "cmd+i",
+    "command": "composerMode.agent"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "workbench.action.quickOpen",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+k",
+    "command": "editor.action.showHover",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+down",
+    "command": "editor.action.goToImplementation",
+    "when": "inReferenceSearchEditor"
+  },
+  {
+    "key": "ctrl+h",
+    "command": "workbench.action.focusLeftGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.focusRightGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.focusBelowGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.focusAboveGroup",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+o",
+    "command": "-lineBreakInsert",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+m",
+    "command": "workbench.action.joinAllGroups"
+  },
+  {
+    "key": "ctrl+shift+f",
+    "command": "workbench.view.scm",
+    "when": "!scmViewletVisible"
+  },
+  {
+    "key": "ctrl+shift+f",
+    "command": "list.focusFirst",
+    "when": "scmViewletVisible"
+  },
+  {
+    "key": "alt+'",
+    "command": "workbench.action.splitEditorDown",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+r",
+    "command": "jest.run",
+    "when": "editorTextFocus && jest:enabled"
+  }
+]
