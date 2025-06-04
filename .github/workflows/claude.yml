@@ -73,11 +73,12 @@ jobs:
             
             3. **Implement the solution**: Write the necessary code, documentation, tests, or configuration
             
-            4. **Create a Pull Request**: Commit your changes and prepare a PR with:
+            4. **Create and Submit Pull Request**: Commit your changes and submit a PR with:
                - Clear title referencing the Linear ticket
                - Comprehensive description
                - Implementation details
                - Testing notes
+               - **Actually submit the PR using `gh pr create` command**
             
             5. **Update Linear**: Comment on the ticket with progress and link to the PR
             
@@ -102,10 +103,11 @@ jobs:
             - Add appropriate tests if it's code
             - Update documentation if needed
             
-            ### Step 4: Create PR
+            ### Step 4: Create and Submit PR
             - Commit changes with meaningful messages
             - Create a branch with format: feature/linear-{ticket-id}
-            - Prepare comprehensive PR description
+            - Create and submit the pull request using `gh pr create`
+            - Use a clear title and comprehensive description
             
             ### Step 5: Update Linear Ticket
             - Add a comprehensive comment to the Linear ticket with:
@@ -117,9 +119,33 @@ jobs:
             - Assign ticket to yourself or appropriate team member
             - Add relevant labels if needed
             
+            **IMPORTANT**: After creating your branch and committing changes, you MUST submit the pull request by running:
+            ```bash
+            gh pr create --title "Your PR Title" --body "Your PR Description" --base main
+            ```
+            
+            Do not just prepare the PR - actually submit it!
+            
             Please start by getting the Linear ticket information and then proceed with the implementation.
           mcp_config: "./mcp-config.json"
-          allowed_tools: "Bash(git:*),View,Read,Write,Edit,MultiEdit,Glob,Grep,LS,mcp__linear__linear_getIssues,mcp__linear__linear_getIssueById,mcp__linear__linear_searchIssues,mcp__linear__linear_updateIssue,mcp__linear__linear_createComment,mcp__linear__linear_getComments,mcp__linear__linear_getProjects,mcp__linear__linear_getTeams,mcp__linear__linear_getViewer,mcp__linear__linear_assignIssue,mcp__linear__linear_setIssuePriority,mcp__linear__linear_addIssueLabel"
+          allowed_tools: "Bash,View,Read,Write,Edit,MultiEdit,Glob,Grep,LS,mcp__linear__linear_getIssues,mcp__linear__linear_getIssueById,mcp__linear__linear_searchIssues,mcp__linear__linear_updateIssue,mcp__linear__linear_createComment,mcp__linear__linear_getComments,mcp__linear__linear_getProjects,mcp__linear__linear_getTeams,mcp__linear__linear_getViewer,mcp__linear__linear_assignIssue,mcp__linear__linear_setIssuePriority,mcp__linear__linear_addIssueLabel"
           max_turns: "${{ github.event.inputs.max_turns }}"
           timeout_minutes: "30"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Auto-submit Pull Request
+        if: success()
+        run: |
+          # Check if Claude created a PR branch
+          CURRENT_BRANCH=$(git branch --show-current)
+          if [[ "$CURRENT_BRANCH" == feature/linear-* ]]; then
+            echo "Claude created branch: $CURRENT_BRANCH"
+            echo "Auto-submitting pull request..."
+            gh pr create --fill --head "$CURRENT_BRANCH" --base main || echo "PR may already exist or needs manual review"
+          else
+            echo "No feature branch detected, skipping auto-submit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
