@@ -41,6 +41,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+
+      - name: Create MCP Configuration
         run: |
           cat > mcp-config.json << 'EOF'
           {
