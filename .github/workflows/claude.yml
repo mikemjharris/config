@@ -1,25 +1,26 @@
-name: Get Latest Linear Ticket
+name: Claude Linear Analysis
 on:
   workflow_dispatch:
     inputs:
       custom_prompt:
-        description: 'Custom prompt for analyzing the Linear ticket'
+        description: 'What would you like Claude to analyze about Linear tickets?'
         required: false
-        default: 'Summarize the latest Linear ticket and provide key insights'
+        default: 'Get the latest 5 Linear tickets and summarize them with key insights'
         type: string
-      limit:
-        description: 'Number of recent tickets to fetch'
+      max_turns:
+        description: 'Maximum conversation turns for Claude'
         required: false
-        default: '1'
+        default: '5'
         type: string
 
 jobs:
-  get-linear-ticket:
+  claude-linear-analysis:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       issues: write
       pull-requests: write
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,70 +34,108 @@ jobs:
 
       - name: Create MCP configuration
         run: |
-          cat > mcp_config.json << 'EOF'
+          cat > mcp-config.json << 'EOF'
           {
             "mcpServers": {
               "linear": {
                 "command": "npx",
                 "args": ["-y", "@tacticlaunch/mcp-linear"],
                 "env": {
-                  "LINEAR_API_TOKEN": "${{ secrets.LINEAR_API_TOKEN }}"
+                  "LINEAR_API_TOKEN": "${{ secrets.LINEAR_API_KEY }}"
                 }
               }
             }
           }
           EOF
 
-      - name: Create analysis prompt
-        run: |
-          cat > analysis_prompt.txt << 'EOF'
-          Please use the Linear MCP server to:
-          
-          1. Get the latest ${{ github.event.inputs.limit }} Linear ticket(s)
-          2. For each ticket, provide:
-             - Title and ID
-             - Status and priority
-             - Assignee
-             - Description summary
-             - Any recent comments or updates
-          
-          Then apply this custom analysis: "${{ github.event.inputs.custom_prompt }}"
-          
-          Format the output in a clear, structured way that would be useful for a team update.
-          EOF
-
-      - name: Run Claude Analysis
-        uses: anthropics/claude-code-action@beta
+      - name: Run Claude Code Analysis
+        id: claude-analysis
+        uses: anthropics/claude-code-base-action@beta
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Hello! I'd like you to help me analyze Linear tickets.
+            
+            Task: ${{ github.event.inputs.custom_prompt }}
+            
+            Please use the Linear MCP server to:
+            1. Get information about recent Linear tickets
+            2. Provide a structured analysis based on the custom prompt above
+            3. Format your response in clear markdown
+            
+            You have access to Linear through the MCP server, so please use those tools to fetch real data.
+          mcp_config: "./mcp-config.json"
+          allowed_tools: "mcp__linear__*,View,Write"
+          max_turns: "${{ github.event.inputs.max_turns }}"
           timeout_minutes: "10"
-          mcp_config_path: "./mcp_config.json"
-          prompt_file: "./analysis_prompt.txt"
-        env:
-          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_KEY }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Create GitHub Issue with Results
+        if: steps.claude-analysis.outputs.conclusion == 'success'
         uses: actions/github-script@v7
         with:
           script: |
-            const title = `Linear Ticket Analysis - ${new Date().toISOString().split('T')[0]}`;
-            const body = `# Linear Ticket Analysis
+            const fs = require('fs');
+            const executionFile = '${{ steps.claude-analysis.outputs.execution_file }}';
+            const executionLog = JSON.parse(fs.readFileSync(executionFile, 'utf8'));
             
-            **Custom Prompt:** ${{ github.event.inputs.custom_prompt }}
-            **Tickets Analyzed:** ${{ github.event.inputs.limit }}
+            // Extract Claude's final response
+            let analysis = '';
+            for (let i = executionLog.messages.length - 1; i >= 0; i--) {
+              if (executionLog.messages[i].role === 'assistant') {
+                analysis = executionLog.messages[i].content;
+                break;
+              }
+            }
+            
+            const title = `Claude Linear Analysis - ${new Date().toISOString().split('T')[0]}`;
+            const body = `# Claude Linear Analysis Report
+            
+            **Prompt:** "${{ github.event.inputs.custom_prompt }}"
             **Generated:** ${new Date().toISOString()}
+            **Status:** ${{ steps.claude-analysis.outputs.conclusion }}
             
-            ## Results
+            ## Analysis Results
             
-            Check the Claude action logs above for the detailed analysis.
+            ${analysis || 'No analysis content found. Check the action logs for details.'}
             
             ---
-            *This issue was automatically generated by the Linear ticket analysis workflow.*`;
+            
+            ## Execution Details
+            - **Max Turns:** ${{ github.event.inputs.max_turns }}
+            - **Execution File:** \`${{ steps.claude-analysis.outputs.execution_file }}\`
+            
+            *This analysis was generated using Claude Code with Linear MCP integration.*`;
             
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: title,
               body: body,
-              labels: ['linear-analysis', 'automated']
+              labels: ['claude-analysis', 'linear', 'automated']
+            });
+
+      - name: Handle Analysis Failure
+        if: steps.claude-analysis.outputs.conclusion == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `Claude Linear Analysis Failed - ${new Date().toISOString().split('T')[0]}`;
+            const body = `# Claude Analysis Failed
+            
+            **Prompt:** "${{ github.event.inputs.custom_prompt }}"
+            **Status:** failure
+            **Generated:** ${new Date().toISOString()}
+            
+            The Claude analysis failed to complete. Please check the action logs for more details.
+            
+            **Execution File:** \`${{ steps.claude-analysis.outputs.execution_file }}\`
+            
+            *This issue was automatically created to track the failure.*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['claude-analysis', 'failure', 'automated']
             });
