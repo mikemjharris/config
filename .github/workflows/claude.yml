@@ -1,23 +1,28 @@
-name: Claude Linear Analysis
+name: Claude Linear Task Automation
 on:
   workflow_dispatch:
     inputs:
-      custom_prompt:
-        description: 'What would you like Claude to analyze about Linear tickets?'
+      ticket_identifier:
+        description: 'Linear ticket ID to work on (e.g., MIK-4, or leave empty for highest priority)'
         required: false
-        default: 'Get the latest 5 Linear tickets and summarize them with key insights'
+        default: ''
+        type: string
+      custom_instructions:
+        description: 'Additional instructions for Claude'
+        required: false
+        default: 'Implement the solution following best practices and create comprehensive documentation'
         type: string
       max_turns:
         description: 'Maximum conversation turns for Claude'
         required: false
-        default: '5'
+        default: '10'
         type: string
 
 jobs:
-  claude-linear-analysis:
+  claude-task-automation:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       issues: write
       pull-requests: write
       id-token: write
@@ -25,7 +30,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -48,94 +53,64 @@ jobs:
           }
           EOF
 
-      - name: Run Claude Code Analysis
-        id: claude-analysis
+      - name: Run Claude Task Automation
+        id: claude-automation
         uses: anthropics/claude-code-base-action@beta
         with:
           prompt: |
-            Hello! I'd like you to help me analyze Linear tickets.
+            # Linear Task Automation Mission
             
-            Task: ${{ github.event.inputs.custom_prompt }}
+            You are a senior software engineer tasked with implementing Linear tickets. Your goal is to:
             
-            Please use the Linear MCP server to:
-            1. Get information about recent Linear tickets
-            2. Provide a structured analysis based on the custom prompt above
-            3. Format your response in clear markdown
+            1. **Analyze the ticket**: Get details about the Linear ticket (ID: "${{ github.event.inputs.ticket_identifier }}" or find the highest priority open ticket if none specified)
             
-            You have access to Linear through the MCP server, so please use those tools to fetch real data.
+            2. **Understand the requirements**: Read the ticket description, comments, and any related context
+            
+            3. **Implement the solution**: Write the necessary code, documentation, tests, or configuration
+            
+            4. **Create a Pull Request**: Commit your changes and prepare a PR with:
+               - Clear title referencing the Linear ticket
+               - Comprehensive description
+               - Implementation details
+               - Testing notes
+            
+            5. **Update Linear**: Comment on the ticket with progress and link to the PR
+            
+            ## Additional Instructions
+            ${{ github.event.inputs.custom_instructions }}
+            
+            ## Process Steps:
+            
+            ### Step 1: Get Ticket Information
+            - If ticket ID provided: fetch that specific ticket
+            - If no ID: find the highest priority open ticket that's actionable (not just onboarding/documentation)
+            - Get full details including description, comments, labels, assignee
+            
+            ### Step 2: Analyze & Plan
+            - Understand what needs to be implemented
+            - Check if this is a code task, configuration, documentation, or setup task
+            - Plan the implementation approach
+            
+            ### Step 3: Implement
+            - Create/modify files as needed
+            - Follow best practices for the codebase
+            - Add appropriate tests if it's code
+            - Update documentation if needed
+            
+            ### Step 4: Create PR
+            - Commit changes with meaningful messages
+            - Create a branch with format: feature/linear-{ticket-id}
+            - Prepare comprehensive PR description
+            
+            ### Step 5: Update Linear
+            - Add a comment to the Linear ticket
+            - Include link to the PR
+            - Update status if appropriate
+            - Mention any blockers or next steps
+            
+            Please start by getting the Linear ticket information and then proceed with the implementation.
           mcp_config: "./mcp-config.json"
-          allowed_tools: "View,Write,mcp__linear__linear_getIssues"
+          allowed_tools: "Bash(git:*),View,Read,Write,Edit,MultiEdit,Glob,Grep,LS,mcp__linear__linear_getIssues,mcp__linear__linear_getIssueById,mcp__linear__linear_searchIssues,mcp__linear__linear_updateIssue,mcp__linear__linear_createComment,mcp__linear__linear_getProjects,mcp__linear__linear_getTeams,mcp__linear__linear_getViewer"
           max_turns: "${{ github.event.inputs.max_turns }}"
-          timeout_minutes: "10"
+          timeout_minutes: "20"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
-      - name: Create GitHub Issue with Results
-        if: steps.claude-analysis.outputs.conclusion == 'success'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const executionFile = '${{ steps.claude-analysis.outputs.execution_file }}';
-            const executionLog = JSON.parse(fs.readFileSync(executionFile, 'utf8'));
-            
-            // Extract Claude's final response
-            let analysis = '';
-            for (let i = executionLog.messages.length - 1; i >= 0; i--) {
-              if (executionLog.messages[i].role === 'assistant') {
-                analysis = executionLog.messages[i].content;
-                break;
-              }
-            }
-            
-            const title = `Claude Linear Analysis - ${new Date().toISOString().split('T')[0]}`;
-            const body = `# Claude Linear Analysis Report
-            
-            **Prompt:** "${{ github.event.inputs.custom_prompt }}"
-            **Generated:** ${new Date().toISOString()}
-            **Status:** ${{ steps.claude-analysis.outputs.conclusion }}
-            
-            ## Analysis Results
-            
-            ${analysis || 'No analysis content found. Check the action logs for details.'}
-            
-            ---
-            
-            ## Execution Details
-            - **Max Turns:** ${{ github.event.inputs.max_turns }}
-            - **Execution File:** \`${{ steps.claude-analysis.outputs.execution_file }}\`
-            
-            *This analysis was generated using Claude Code with Linear MCP integration.*`;
-            
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['claude-analysis', 'linear', 'automated']
-            });
-
-      - name: Handle Analysis Failure
-        if: steps.claude-analysis.outputs.conclusion == 'failure'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const title = `Claude Linear Analysis Failed - ${new Date().toISOString().split('T')[0]}`;
-            const body = `# Claude Analysis Failed
-            
-            **Prompt:** "${{ github.event.inputs.custom_prompt }}"
-            **Status:** failure
-            **Generated:** ${new Date().toISOString()}
-            
-            The Claude analysis failed to complete. Please check the action logs for more details.
-            
-            **Execution File:** \`${{ steps.claude-analysis.outputs.execution_file }}\`
-            
-            *This issue was automatically created to track the failure.*`;
-            
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['claude-analysis', 'failure', 'automated']
-            });
