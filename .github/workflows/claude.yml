@@ -41,8 +41,59 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'yarn'
+
+      - name: Find Claude-labeled Linear ticket
+        id: find-ticket
+        run: |
+          if [ -n "${{ github.event.inputs.ticket_identifier }}" ]; then
+            # Check if specified ticket has 'claude' label
+            TICKET_ID="${{ github.event.inputs.ticket_identifier }}"
+            echo "Checking if ticket $TICKET_ID has 'claude' label..."
+            
+            RESPONSE=$(curl -s -H "Authorization: ${{ secrets.LINEAR_API_KEY }}" \
+              -H "Content-Type: application/json" \
+              -d "{\"query\": \"{ issue(id: \\\"$TICKET_ID\\\") { id title labels { nodes { name } } } }\"}" \
+              https://api.linear.app/graphql)
+            
+            HAS_CLAUDE_LABEL=$(echo "$RESPONSE" | jq -r '.data.issue.labels.nodes[] | select(.name == "claude") | .name // empty')
+            
+            if [ -n "$HAS_CLAUDE_LABEL" ]; then
+              echo "✅ Ticket $TICKET_ID has 'claude' label"
+              echo "ticket_id=$TICKET_ID" >> $GITHUB_OUTPUT
+              echo "has_ticket=true" >> $GITHUB_OUTPUT
+            else
+              echo "❌ Ticket $TICKET_ID does not have 'claude' label - skipping automation"
+              echo "has_ticket=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            # Find highest priority ticket with 'claude' label
+            echo "Finding highest priority ticket with 'claude' label..."
+            
+            RESPONSE=$(curl -s -H "Authorization: ${{ secrets.LINEAR_API_KEY }}" \
+              -H "Content-Type: application/json" \
+              -d '{"query": "{ issues(filter: { labels: { some: { name: { eq: \"claude\" } } }, state: { type: { neq: \"completed\" } } }, orderBy: priority, first: 1) { nodes { id title priority } } }"}' \
+              https://api.linear.app/graphql)
+            
+            TICKET_ID=$(echo "$RESPONSE" | jq -r '.data.issues.nodes[0].id // empty')
+            
+            if [ -n "$TICKET_ID" ] && [ "$TICKET_ID" != "null" ]; then
+              TICKET_TITLE=$(echo "$RESPONSE" | jq -r '.data.issues.nodes[0].title')
+              echo "✅ Found ticket: $TICKET_ID - $TICKET_TITLE"
+              echo "ticket_id=$TICKET_ID" >> $GITHUB_OUTPUT
+              echo "has_ticket=true" >> $GITHUB_OUTPUT
+            else
+              echo "❌ No tickets found with 'claude' label - skipping automation"
+              echo "has_ticket=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Install dependencies
+        if: steps.find-ticket.outputs.has_ticket == 'true'
+        run: yarn install --frozen-lockfile
 
       - name: Create MCP Configuration
+        if: steps.find-ticket.outputs.has_ticket == 'true'
         run: |
           cat > mcp-config.json << 'EOF'
           {
@@ -59,93 +110,122 @@ jobs:
           EOF
 
       - name: Run Claude Task Automation
+        if: steps.find-ticket.outputs.has_ticket == 'true'
         id: claude-automation
         uses: anthropics/claude-code-base-action@beta
         env:
           GH_TOKEN: ${{ github.token }}
+          TICKET_ID: ${{ steps.find-ticket.outputs.ticket_id }}
         with:
           prompt: |
-            # Linear Task Automation Mission
+            # Linear Task Implementation
             
-            You are a senior software engineer tasked with implementing Linear tickets efficiently. Your goal is to:
+            You are a senior software engineer implementing a specific Linear ticket that has been pre-identified.
             
-            1. **Analyze the ticket**: Get details about Linear ticket (ID: "${{ github.event.inputs.ticket_identifier }}" or find highest priority if none specified)
-            2. **Implement the solution**: Write necessary code, documentation, tests, or configuration  
-            3. **Submit PR atomically**: Create branch, commit, push, and submit PR in one efficient sequence
-            4. **Update Linear**: Comment on ticket with progress and PR link
+            **Your Assignment:**
+            - Ticket ID: ${{ env.TICKET_ID }}
+            - This ticket has been verified to have the 'claude' label
+            - Dependencies are already installed (`yarn install` completed)
+            
+            ## Your Tasks:
+            
+            ### Step 1: Get Ticket Details
+            Use the Linear MCP tools to get full ticket information:
+            - `linear_getIssueById` with the ticket ID
+            - Review description, comments, and context
+            - Understand the requirements and acceptance criteria
+            
+            ### Step 2: Implement Solution
+            - Make necessary code/config changes based on ticket requirements
+            - Follow project conventions and best practices
+            - Add tests/documentation if needed
+            
+            ### Step 3: Quality Checks
+            Run these commands to ensure code quality:
+            ```bash
+            # Run type checking
+            yarn typecheck
+            
+            # Run tests
+            yarn test
+            ```
+            Fix any type errors or test failures. Document existing unrelated issues in your PR.
+            
+            ### Step 4: Create and Submit PR
+            Create branch, commit, and submit PR:
+            ```bash
+            # Create feature branch
+            git checkout -b feature/linear-$TICKET_ID-{short-description}
+            
+            # Commit changes
+            git add .
+            git commit -m "feat: {concise description}
+            
+            {detailed description}
+            
+            Fixes $TICKET_ID
+            
+            🤖 Generated with [Claude Code](https://claude.ai/code)"
+            
+            # Push and create PR
+            git push -u origin HEAD
+            gh pr create \
+              --title "feat: {concise description}" \
+              --body "{comprehensive PR description}" \
+              --base main
+            ```
+            
+            ### Step 5: Update Linear Ticket
+            Use Linear MCP tools to:
+            - Add comment with implementation summary and PR link
+            - Update ticket status if appropriate (e.g., "In Review")
             
             ## Additional Instructions
             ${{ github.event.inputs.custom_instructions }}
             
-            ## Workflow Requirements:
+            ## Available Tools
+            - Linear MCP server is configured for ticket management
+            - GitHub CLI is available for PR creation
+            - All project dependencies are installed
+            - Standard file operations (Read, Write, Edit, etc.)
             
-            **CRITICAL**: Only work on Linear tickets that have the 'claude' label attached. This label indicates the ticket is approved for Claude automation.
+            **Note:** Automatic formatting (`yarn fmt`/`yarn format`) and linting (`yarn lint --fix`) will run after you complete your work.
             
-            **Label Verification Process:**
-            1. Get all available labels using `linear_getLabels`
-            2. Find the 'claude' label and note its ID
-            3. When searching for tickets, filter by this label ID
-            4. If a specific ticket ID is provided, verify it has the 'claude' label before proceeding
-            
-            If no tickets have the 'claude' label, or if the specified ticket doesn't have this label, explain the requirement and exit gracefully.
-            
-            ## Efficient Implementation Process:
-            
-            ### Step 1: Get Ticket Information
-            **If ticket ID provided:**
-            - Use `linear_getIssueById` to fetch the specific ticket
-            - Verify it has the 'claude' label before proceeding
-            
-            **If no ticket ID provided:**
-            - First use `linear_getLabels` to get all labels and find the 'claude' label ID
-            - Use `linear_searchIssues` with the claude label ID to find tickets marked for Claude automation
-            - Filter for highest priority open ticket that's actionable (not just onboarding/documentation)
-            - Only work on tickets that have the 'claude' label attached
-            
-            **Important**: Do not work on any ticket that doesn't have the 'claude' label. If the specified ticket ID doesn't have this label, explain this requirement and exit.
-            
-            ### Step 2: Implement Solution  
-            - Make necessary code/config changes
-            - Ensure changes follow project conventions
-            - Add tests/documentation if needed
-            
-            ### Step 3: Atomic Git + PR Submission
-            **Use this optimized sequence:**
-            ```bash
-            # Create and switch to feature branch
-            git checkout -b feature/linear-{ticket-id}-{short-description}
-            
-            # Stage, commit, push, and create PR atomically  
-            git add . && \
-            git commit -m "feat: {concise-description}
-            
-            {detailed-description}
-            
-            Fixes {ticket-id}
-            
-            🤖 Generated with [Claude Code](https://claude.ai/code)" && \
-            git push -u origin HEAD && \
-            gh pr create \
-              --title "feat: {concise-description}" \
-              --body "{comprehensive-pr-description}" \
-              --base main
-            ```
-            
-            ### Step 4: Update Linear Ticket
-            - Add comment with work summary and PR link
-            - Update status if appropriate (e.g., "In Review")
-            
-            ## Best Practices:
-            - Use conventional commit format (feat:, fix:, docs:, etc.)
-            - Keep commit messages concise but descriptive
-            - Include ticket reference in commit and PR
-            - Use `--fill` flag for gh pr create if description gets too long
-            - Check git status before making changes
-            - Handle any merge conflicts or errors gracefully
-            
-            Please start by getting the Linear ticket information and then proceed with the implementation.
+            Start by getting the ticket details using `linear_getIssueById`!
           mcp_config: "./mcp-config.json"
-          allowed_tools: "Bash,View,Read,Write,Edit,MultiEdit,Glob,Grep,LS,mcp__linear__linear_getIssues,mcp__linear__linear_getIssueById,mcp__linear__linear_searchIssues,mcp__linear__linear_updateIssue,mcp__linear__linear_createComment,mcp__linear__linear_getComments,mcp__linear__linear_getProjects,mcp__linear__linear_getTeams,mcp__linear__linear_getViewer,mcp__linear__linear_assignIssue,mcp__linear__linear_setIssuePriority,mcp__linear__linear_addIssueLabel,mcp__linear__linear_getLabels"
+          allowed_tools: "Bash,View,Read,Write,Edit,MultiEdit,Glob,Grep,LS,mcp__linear__linear_getIssueById,mcp__linear__linear_createComment,mcp__linear__linear_updateIssue,mcp__linear__linear_getComments"
           max_turns: "${{ github.event.inputs.max_turns }}"
           timeout_minutes: "30"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Auto-format and lint code
+        if: steps.find-ticket.outputs.has_ticket == 'true'
+        run: |
+          echo "Running automatic formatting and linting..."
+          
+          # Run formatting
+          if yarn fmt 2>/dev/null || yarn format 2>/dev/null; then
+            echo "✅ Code formatting completed"
+          else
+            echo "ℹ️  No format script found, skipping formatting"
+          fi
+          
+          # Run linting with auto-fix
+          if yarn lint --fix 2>/dev/null; then
+            echo "✅ Linting completed with auto-fixes"
+          else
+            echo "ℹ️  Lint --fix failed or no lint script found"
+          fi
+          
+          # Check if there are any changes to commit
+          if ! git diff --quiet; then
+            echo "📝 Auto-formatting/linting made changes, committing them..."
+            git add .
+            git commit -m "style: auto-format and lint fixes
+            
+            🤖 Automated formatting and linting applied after Claude changes"
+            git push
+            echo "✅ Formatting changes committed and pushed"
+          else
+            echo "✅ No formatting changes needed"
+          fi

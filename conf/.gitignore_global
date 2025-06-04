@@ -32,5 +32,6 @@ node_modules
 **/.claude/settings.local.json
 
 claude.local.md
+.claude
 
 mike-local/
