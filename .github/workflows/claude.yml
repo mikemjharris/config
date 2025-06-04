@@ -64,7 +64,7 @@ jobs:
             
             You have access to Linear through the MCP server, so please use those tools to fetch real data.
           mcp_config: "./mcp-config.json"
-          allowed_tools: "mcp__linear__*,View,Write"
+          allowed_tools: "View,Write,mcp__linear__linear_getIssues"
           max_turns: "${{ github.event.inputs.max_turns }}"
           timeout_minutes: "10"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
