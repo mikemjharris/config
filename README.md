@@ -1,60 +1,142 @@
-# Config to setup laptops/systems how I want
+# Development Environment Configuration
 
-This repo includes a bunch of scripts to help me setup computers how I want them.  There are scripts for a new box to install relevant programs.  In addition there are script to set up dot files and other config. This config can either be cloned and linked locally or a one off install (e.g. working on a remote box). 
+Personal configuration repository for setting up development environments across different platforms. Contains installation scripts, dotfiles, and configurations for a modern development workflow centered around Neovim, tmux, and terminal-based tools.
 
-As of Nov 2019 my usual setup is linux laptop with Ubuntu and Gnome desktop.  Usually use a combination of tmux/vim. I'm currently experimenting with using Windows Substation for Linux (WSL) so there are some specific setups for that.
+## Overview
 
-The docs are ok ish - I know what I need at various stages and have tried to detail it here but I'm guessing that most of the setup will only be relevant to me so full docs and comments are kinda lite.  Feel free to message me if you have questions about how anything works.
+This repository supports both full local installations (with symlinked configs for easy maintenance) and one-off remote installations. The configuration is optimized for:
 
-## Applications
-When setting up a new computer you often need to install many things.  These scripts install most of the programs you might need such as git, ruby, mysql etc.
+- **Primary environment**: Linux (Ubuntu) with Neovim as the main editor
+- **Terminal workflow**: tmux for session management, modern terminal tools
+- **Multiple platforms**: Native Linux, WSL, and macOS support
+- **Modern editors**: Comprehensive Neovim setup with LSP, AI assistance, and productivity plugins
 
-If on a mac then you will want to install brew and it's dependencies - note this is quite old as haven't used a Mac in anger since abou 2017
-- `./bin/install-brew-packages.sh`
+## Key Features
 
-If on linux:
-- `./bin/install-linux.sh`
-- `./bin/install-linux-apps.sh`
+- **Neovim Configuration**: Full-featured setup with LSP, treesitter, AI coding assistants (Copilot, ChatGPT, Avante)
+- **Terminal Tools**: Custom tmux sessions, keyboard layouts, shell aliases
+- **Editor Support**: Configurations for Cursor IDE, VS Code, and Vim
+- **AI Integration**: MCP (Model Context Protocol) configuration for Claude integration
+- **Cross-platform**: Scripts for Linux, macOS, and WSL environments
 
+## Quick Start
 
-## Config
+### Installation Scripts
 
-### Working Locally
-Working locally I clone this repo - the install scripts symlink all the releavant files which means if I make any config updates they are reflected in the repo and can be commited and saved. 
-
-- clone repo `git clone git@github.com:mikemjharris/config.git`
-- `cd config`
-- ./bin/local-install.sh
-
-Recently (13-04-2022) added in neovim installation - that's not included in the script (and indeed the script isn't as smooth as I'd like) for nvim sym link the new-nvim-config folder to ~/.config/nvim
-
-### Remote Box
-On remote box you might not want to clone and do a full symlinking etc. as this requires setting up ssh keys etc.
-This script will do a one off copy of tmux/vim/bash config on a remote box (or anywhere). 
+**macOS** (Legacy support - install Homebrew and packages):
+```bash
+./bin/install-brew-packages.sh
 ```
+
+**Linux** (Ubuntu/Debian - recommended):
+```bash
+./bin/install-linux.sh          # Core system packages
+./bin/install-linux-apps.sh     # Additional applications
+```
+
+**Windows Subsystem for Linux (WSL)**:
+```powershell
+./bin/install-wsl.ps1           # Windows-specific setup
+```
+
+
+## Configuration Setup
+
+### Local Development (Recommended)
+For full development environment with symlinked configs:
+
+```bash
+# Clone the repository
+git clone git@github.com:mikemjharris/config.git
+cd config
+
+# Install and symlink all configurations
+./bin/local-install.sh
+
+# Setup Neovim configuration
+ln -sf $(pwd)/conf/new-nvim-setup ~/.config/nvim
+```
+
+### Remote/Temporary Setup
+For quick setup on remote servers or temporary environments:
+
+```bash
 curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e
 ```
-### WSL - windows subsystem for Linux
-Most of this setup should work as it does for a standard ubuntu setup. A few things to note:
-- Use Windows Terminal not Windows console (it solves many font and display issues)
-- My normal setup mixes dark mode in the terminal with light in vim - the terminal seems to force the same colour in all situations. As such I've set a light theme for the terminal - see `robbyrussell-light.zsh-theme` for instructions.
 
-## VS Code
-Just started using VS code and wanted a backup of extensions.  To install extensions on a new computer:
-`cat ./conf/code-extensions.txt | xargs -n 1 code --install-extension`
-To backup this (or similar):
-`code --list-extensions >> ./conf/code-extensions.txt` 
+This creates a one-time copy of essential configs (tmux, vim, bash) without requiring Git setup.
+### Windows Subsystem for Linux (WSL)
+WSL setup works similarly to standard Ubuntu with these considerations:
 
-Also run:
-`ln -s ./conf/settings.json ~/.config/Code/User/settings.json`
+- **Use Windows Terminal** instead of Windows Console for better font and display support
+- **Theme compatibility**: Light terminal theme configured (`robbyrussell-light.zsh-theme`)
+- **Run WSL-specific setup**: Use `./bin/install-wsl.ps1` for Windows-specific configurations
 
-Note: since setting this up have not continued with vscode - reverting back to VIM (and specifically Neovim)
+## Editor Configurations
 
-### **Notes - Other useful applications**
-Most applications are installed in above scripts - these are some others that I find interestings - this is pretty old now
-as mainly using linux apps rather than mac.
-- http://lightheadsw.com/caffeine/  - prevent computer from sleeping - useful for presentations  
-- http://www.irradiatedsoftware.com/sizeup/  - mac window manager  
-- https://www.gimp.org/downloads/ - gimp for designing stuff  
-- https://hluk.github.io/CopyQ/ - copyq - clipboard manager
+### Neovim (Primary Editor)
+Modern Neovim setup with comprehensive plugin ecosystem:
+
+**Features:**
+- LSP integration (Mason, nvim-lspconfig)
+- AI coding assistants (Copilot, ChatGPT, Avante, Supermaven)
+- File management (nvim-tree, Telescope)
+- Git integration (Gitsigns)
+- Syntax highlighting (Treesitter)
+- Session management (Persisted)
+- Modern UI (Lualine, Snacks dashboard)
+
+**Location:** `conf/new-nvim-setup/`
+
+### Cursor IDE
+Configuration for Cursor (AI-powered VS Code fork):
+```bash
+ln -sf $(pwd)/conf/cursor/settings.json ~/.config/Cursor/User/settings.json
+ln -sf $(pwd)/conf/cursor/keybindings.json ~/.config/Cursor/User/keybindings.json
+```
+
+### VS Code (Legacy)
+Extension and settings backup:
+```bash
+# Install extensions
+cat ./conf/code-extensions.txt | xargs -n 1 code --install-extension
+
+# Link settings
+ln -sf $(pwd)/conf/settings.json ~/.config/Code/User/settings.json
+```
+
+## Additional Tools & Configurations
+
+### Terminal & Shell
+- **Tmux sessions**: Pre-configured sessions in `conf/tmux/`
+- **Custom keyboard layouts**: Hardware keyboard configurations in `conf/keyboard/`
+- **Shell aliases**: Bash aliases and functions in `conf/setup_bash_aliases`
+- **Vim color schemes**: Custom themes in `conf/vim-colors/`
+
+### AI Integration
+- **MCP Configuration**: Claude AI integration setup in `mcp-config.json`
+- **Multiple AI Assistants**: Neovim configured with Copilot, ChatGPT, Avante, and Supermaven
+
+### Useful Applications
+These tools complement the main configuration:
+
+- **CopyQ**: Advanced clipboard manager for Linux
+- **GIMP**: Image editing and design work
+- **Various terminal tools**: Installed via the Linux installation scripts
+
+## Scripts & Utilities
+
+- `bin/latest-branches.sh`: Git branch management utility
+- `bin/pre-commit.sh`: Git pre-commit hooks
+- `scripts/setup-aws.sh`: AWS development environment setup
+- `local-exec/dev`: Local development execution scripts
+
+## Contributing
+
+This is a personal configuration repository, but feel free to:
+- Use any configurations that seem useful
+- Suggest improvements via issues or pull requests
+- Ask questions about specific configurations
+
+The configurations are optimized for my workflow but designed to be modular and adaptable.
 
