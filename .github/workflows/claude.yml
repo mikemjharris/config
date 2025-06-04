@@ -61,6 +61,8 @@ jobs:
       - name: Run Claude Task Automation
         id: claude-automation
         uses: anthropics/claude-code-base-action@beta
+        env:
+          GH_TOKEN: ${{ github.token }}
         with:
           prompt: |
             # Linear Task Automation Mission
@@ -124,6 +126,8 @@ jobs:
             gh pr create --title "Your PR Title" --body "Your PR Description" --base main
             ```
             
+            The GH_TOKEN environment variable is already set for you to use GitHub CLI.
+            
             Do not just prepare the PR - actually submit it!
             
             Please start by getting the Linear ticket information and then proceed with the implementation.
@@ -132,20 +136,3 @@ jobs:
           max_turns: "${{ github.event.inputs.max_turns }}"
           timeout_minutes: "30"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
-      - name: Auto-submit Pull Request
-        if: success()
-        run: |
-          # Check if Claude created a PR branch
-          CURRENT_BRANCH=$(git branch --show-current)
-          if [[ "$CURRENT_BRANCH" == feature/linear-* ]]; then
-            echo "Claude created branch: $CURRENT_BRANCH"
-            echo "Auto-submitting pull request..."
-            gh pr create --fill --head "$CURRENT_BRANCH" --base main || echo "PR may already exist or needs manual review"
-          else
-            echo "No feature branch detected, skipping auto-submit"
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
