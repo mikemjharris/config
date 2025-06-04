@@ -35,7 +35,7 @@ jobs:
       - name: Setup Git Configuration
         run: |
           git config user.name "Claude Assistant"
-          git config user.email "claude@anthropic.com"
+          git config user.email "claude.assistant@omnea.co"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -67,72 +67,85 @@ jobs:
           prompt: |
             # Linear Task Automation Mission
             
-            You are a senior software engineer tasked with implementing Linear tickets. Your goal is to:
+            You are a senior software engineer tasked with implementing Linear tickets efficiently. Your goal is to:
             
-            1. **Analyze the ticket**: Get details about the Linear ticket (ID: "${{ github.event.inputs.ticket_identifier }}" or find the highest priority open ticket if none specified)
-            
-            2. **Understand the requirements**: Read the ticket description, comments, and any related context
-            
-            3. **Implement the solution**: Write the necessary code, documentation, tests, or configuration
-            
-            4. **Create and Submit Pull Request**: Commit your changes and submit a PR with:
-               - Clear title referencing the Linear ticket
-               - Comprehensive description
-               - Implementation details
-               - Testing notes
-               - **Actually submit the PR using `gh pr create` command**
-            
-            5. **Update Linear**: Comment on the ticket with progress and link to the PR
+            1. **Analyze the ticket**: Get details about Linear ticket (ID: "${{ github.event.inputs.ticket_identifier }}" or find highest priority if none specified)
+            2. **Implement the solution**: Write necessary code, documentation, tests, or configuration  
+            3. **Submit PR atomically**: Create branch, commit, push, and submit PR in one efficient sequence
+            4. **Update Linear**: Comment on ticket with progress and PR link
             
             ## Additional Instructions
             ${{ github.event.inputs.custom_instructions }}
             
-            ## Process Steps:
+            ## Workflow Requirements:
+            
+            **CRITICAL**: Only work on Linear tickets that have the 'claude' label attached. This label indicates the ticket is approved for Claude automation.
+            
+            **Label Verification Process:**
+            1. Get all available labels using `linear_getLabels`
+            2. Find the 'claude' label and note its ID
+            3. When searching for tickets, filter by this label ID
+            4. If a specific ticket ID is provided, verify it has the 'claude' label before proceeding
+            
+            If no tickets have the 'claude' label, or if the specified ticket doesn't have this label, explain the requirement and exit gracefully.
+            
+            ## Efficient Implementation Process:
             
             ### Step 1: Get Ticket Information
-            - If ticket ID provided: fetch that specific ticket
-            - If no ID: find the highest priority open ticket that's actionable (not just onboarding/documentation)
-            - Get full details including description, comments, labels, assignee
+            **If ticket ID provided:**
+            - Use `linear_getIssueById` to fetch the specific ticket
+            - Verify it has the 'claude' label before proceeding
             
-            ### Step 2: Analyze & Plan
-            - Understand what needs to be implemented
-            - Check if this is a code task, configuration, documentation, or setup task
-            - Plan the implementation approach
+            **If no ticket ID provided:**
+            - First use `linear_getLabels` to get all labels and find the 'claude' label ID
+            - Use `linear_searchIssues` with the claude label ID to find tickets marked for Claude automation
+            - Filter for highest priority open ticket that's actionable (not just onboarding/documentation)
+            - Only work on tickets that have the 'claude' label attached
             
-            ### Step 3: Implement
-            - Create/modify files as needed
-            - Follow best practices for the codebase
-            - Add appropriate tests if it's code
-            - Update documentation if needed
+            **Important**: Do not work on any ticket that doesn't have the 'claude' label. If the specified ticket ID doesn't have this label, explain this requirement and exit.
             
-            ### Step 4: Create and Submit PR
-            - Commit changes with meaningful messages
-            - Create a branch with format: feature/linear-{ticket-id}
-            - Create and submit the pull request using `gh pr create`
-            - Use a clear title and comprehensive description
+            ### Step 2: Implement Solution  
+            - Make necessary code/config changes
+            - Ensure changes follow project conventions
+            - Add tests/documentation if needed
             
-            ### Step 5: Update Linear Ticket
-            - Add a comprehensive comment to the Linear ticket with:
-              - Summary of work completed
-              - Link to the PR 
-              - Technical details of implementation
-              - Next steps or testing instructions
-            - Update ticket status if appropriate (e.g., move to "In Review")
-            - Assign ticket to yourself or appropriate team member
-            - Add relevant labels if needed
-            
-            **IMPORTANT**: After creating your branch and committing changes, you MUST submit the pull request by running:
+            ### Step 3: Atomic Git + PR Submission
+            **Use this optimized sequence:**
             ```bash
-            gh pr create --title "Your PR Title" --body "Your PR Description" --base main
+            # Create and switch to feature branch
+            git checkout -b feature/linear-{ticket-id}-{short-description}
+            
+            # Stage, commit, push, and create PR atomically  
+            git add . && \
+            git commit -m "feat: {concise-description}
+            
+            {detailed-description}
+            
+            Fixes {ticket-id}
+            
+            🤖 Generated with [Claude Code](https://claude.ai/code)" && \
+            git push -u origin HEAD && \
+            gh pr create \
+              --title "feat: {concise-description}" \
+              --body "{comprehensive-pr-description}" \
+              --base main
             ```
             
-            The GH_TOKEN environment variable is already set for you to use GitHub CLI.
+            ### Step 4: Update Linear Ticket
+            - Add comment with work summary and PR link
+            - Update status if appropriate (e.g., "In Review")
             
-            Do not just prepare the PR - actually submit it!
+            ## Best Practices:
+            - Use conventional commit format (feat:, fix:, docs:, etc.)
+            - Keep commit messages concise but descriptive
+            - Include ticket reference in commit and PR
+            - Use `--fill` flag for gh pr create if description gets too long
+            - Check git status before making changes
+            - Handle any merge conflicts or errors gracefully
             
             Please start by getting the Linear ticket information and then proceed with the implementation.
           mcp_config: "./mcp-config.json"
-          allowed_tools: "Bash,View,Read,Write,Edit,MultiEdit,Glob,Grep,LS,mcp__linear__linear_getIssues,mcp__linear__linear_getIssueById,mcp__linear__linear_searchIssues,mcp__linear__linear_updateIssue,mcp__linear__linear_createComment,mcp__linear__linear_getComments,mcp__linear__linear_getProjects,mcp__linear__linear_getTeams,mcp__linear__linear_getViewer,mcp__linear__linear_assignIssue,mcp__linear__linear_setIssuePriority,mcp__linear__linear_addIssueLabel"
+          allowed_tools: "Bash,View,Read,Write,Edit,MultiEdit,Glob,Grep,LS,mcp__linear__linear_getIssues,mcp__linear__linear_getIssueById,mcp__linear__linear_searchIssues,mcp__linear__linear_updateIssue,mcp__linear__linear_createComment,mcp__linear__linear_getComments,mcp__linear__linear_getProjects,mcp__linear__linear_getTeams,mcp__linear__linear_getViewer,mcp__linear__linear_assignIssue,mcp__linear__linear_setIssuePriority,mcp__linear__linear_addIssueLabel,mcp__linear__linear_getLabels"
           max_turns: "${{ github.event.inputs.max_turns }}"
           timeout_minutes: "30"
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
