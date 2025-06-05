@@ -72,8 +72,10 @@ jobs:
             
             RESPONSE=$(curl -s -H "Authorization: ${{ secrets.LINEAR_API_KEY }}" \
               -H "Content-Type: application/json" \
-              -d '{"query": "{ issues(filter: { labels: { some: { name: { eq: \"claude\" } } }, state: { type: { neq: \"completed\" } } }, orderBy: priority, first: 1) { nodes { id title priority } } }"}' \
+              -d '{"query": "{ issues(filter: { labels: { some: { name: { eq: \"claude\" } } }, state: { type: { neq: \"completed\" } } }, orderBy: updatedAt, first: 1) { nodes { id title priority } } }"}' \
               https://api.linear.app/graphql)
+              
+            echo $RESPONSE 
             
             TICKET_ID=$(echo "$RESPONSE" | jq -r '.data.issues.nodes[0].id // empty')
             
