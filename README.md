@@ -115,6 +115,8 @@ ln -sf $(pwd)/conf/settings.json ~/.config/Code/User/settings.json
 
 ### AI Integration
 - **MCP Configuration**: Claude AI integration setup in `mcp-config.json`
+  - Linear integration for project management
+  - File system operations for development workflows
 - **Multiple AI Assistants**: Neovim configured with Copilot, ChatGPT, Avante, and Supermaven
 
 ### Useful Applications
@@ -130,6 +132,23 @@ These tools complement the main configuration:
 - `bin/pre-commit.sh`: Git pre-commit hooks
 - `scripts/setup-aws.sh`: AWS development environment setup
 - `local-exec/dev`: Local development execution scripts
+
+## Development Dependencies
+
+This repository includes Node.js dependencies for enhanced development workflows:
+
+```bash
+# Install dependencies
+yarn install
+
+# Available commands
+yarn typecheck    # Type checking
+yarn test         # Run tests
+yarn fmt          # Format code
+yarn lint         # Lint code
+```
+
+The MCP (Model Context Protocol) server integration requires these dependencies for Linear project management and development automation.
 
 ## Contributing
 
