@@ -6,9 +6,9 @@ vim.cmd [[highlight CopilotSuggestion ctermfg=8 guifg=white guibg=#5c6370]]
 vim.api.nvim_set_keymap("i", "<C-,>", '<Plug>(copilot-next)', {})
 vim.api.nvim_set_keymap("i", "<C-.>", '<Plug>(copilot-previous)', {})
 
-require("copilot").setup({
-  suggestion = { enabled = false },
-  panel = { enabled = false },
-})
-
-require("copilot_cmp").setup()
+-- require("copilot").setup({
+--   suggestion = { enabled = false },
+--   panel = { enabled = false },
+-- })
+--
+-- require("copilot_cmp").setup()

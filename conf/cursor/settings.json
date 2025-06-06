@@ -102,5 +102,6 @@
   "vim.neovimConfigPath": "~/.config/nvim/init.vim",
   "vim.neovimPath": "/opt/homebrew/bin/nvim",
   "vim.useSystemClipboard": true,
-  "editor.accessibilitySupport": "on"
+  "editor.accessibilitySupport": "on",
+  "githubPullRequests.pullBranch": "never"
 }
