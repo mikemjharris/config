@@ -103,5 +103,9 @@
   "vim.neovimPath": "/opt/homebrew/bin/nvim",
   "vim.useSystemClipboard": true,
   "editor.accessibilitySupport": "on",
-  "githubPullRequests.pullBranch": "never"
+  "githubPullRequests.pullBranch": "never",
+  "vim.handleKeys": {
+    "<C-o>": "vim.normalModeKeyBindingsNonRecursive",
+    "<C-i>": "vim.normalModeKeyBindingsNonRecursive"
+  }
 }
