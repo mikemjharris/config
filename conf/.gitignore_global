@@ -26,9 +26,6 @@ node_modules
 *.key
 *.srl
 
-.cursor  
-.cursor/  
-
 **/.claude/settings.local.json
 
 claude.local.md
