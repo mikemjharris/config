@@ -1,4 +1,14 @@
 require('gitsigns').setup {
+  current_line_blame = true,
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol', -- 'eol', 'overlay', or 'right_align'
+    delay = 300,
+    ignore_whitespace = false,
+  },
+  current_line_blame_formatter = ' <author>, <author_time:%Y-%m-%d> - <summary>',
+
+
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
 
