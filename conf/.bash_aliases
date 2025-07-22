@@ -28,6 +28,15 @@ function __gsb {
   git branch --set-upstream-to=origin/`git rev-parse --abbrev-ref HEAD` `git rev-parse --abbrev-ref HEAD`
 }
 
+alias pretty=__pretty
+
+function __pretty() {
+  yarn prettier $(git diff --name-only main...HEAD \
+    | grep -E '\.(ts|tsx|json|graphql)$' \
+    | grep -v '/generated/') --write
+}
+
+
 # Quick server
 alias server="python -m SimpleHTTPServer 8001"
 
