@@ -77,10 +77,6 @@ setw -g mode-keys vi
 set -g base-index 1
 setw -g pane-base-index 1
 
-# Pane border titles configuration
-set -g pane-border-status top
-set -g pane-border-format "#P: #{pane_title}"
-
 # For copy and paste within tmux
 # http://www.rushiagr.com/blog/2016/06/16/everything-you-need-to-know-about-tmux-copy-pasting/
 bind P paste-buffer

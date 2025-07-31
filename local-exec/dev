@@ -10,35 +10,41 @@ tmux has-session -t $session 2>/dev/null
 # If the session doesn't exist, create it
 if [ $? != 0 ]; then
     cd ~/dev/omnea-meta-repo/omnea-app
-    
+
     # Create a new detached session
     tmux new-session -d -s $session
 
     # First window (0) -- vim
     tmux send-keys -t $session "vim ." C-m
+    tmux select-pane -t $session:0.0 -T "📝 Editor"
 
     # Split window horizontally, 25% pane
     tmux splitw -h -p 25 -t $session
     tmux send-keys -t $session "cd .." C-m
     tmux send-keys -t $session "yarn api" C-m
+    tmux select-pane -t $session:0.1 -T "🚀 API Server"
+    
     tmux splitw -v -p 95 -t $session
     tmux send-keys -t $session "docker-compose up" C-m
+    tmux select-pane -t $session:0.2 -T "🐳 Docker Services"
 
     # Split window vertically
     tmux splitw -v -p 95 -t $session
     tmux send-keys -t $session "yarn dev:killall" C-m
-    
+    tmux select-pane -t $session:0.3 -T "🧹 Dev Cleanup"
+
     # Split window vertically
     tmux splitw -v -p 95 -t $session
     tmux send-keys -t $session "hasura console" C-m
-
+    tmux select-pane -t $session:0.4 -T "📊 Hasura Console"
 
     # Split window vertically, 60% pane
     tmux splitw -v -p 60 -t $session
-
+    tmux select-pane -t $session:0.5 -T "💻 Terminal"
 
     tmux splitw -v -p 10 -t $session
     tmux send-keys -t $session "~/status.sh" C-m
+    tmux select-pane -t $session:0.6 -T "📈 Status Monitor"
 fi
 
 # Attach to the session and then immediately detach
