@@ -157,11 +157,16 @@ local plugins = {
   },
   {
     "MeanderingProgrammer/render-markdown.nvim", -- Make Markdown buffers look beautiful
-    ft = { "markdown", "codecompanion", "Avante", "copilot-chat" },
+    ft = { "markdown", "mermaid", "codecompanion", "Avante", "copilot-chat" },
     opts = {
       render_modes = true, -- Render in ALL modes
       sign = {
         enabled = false,   -- Turn off in the status column
+      },
+      code = {
+        sign = false,
+        width = 'block',
+        right_pad = 1,
       },
     },
   },
@@ -176,8 +181,8 @@ local plugins = {
       providers = {
         openai = {
           endpoint = "https://api.openai.com/v1",
-          model = "gpt-4o",             -- your desired model (or use gpt-4o, etc.)
-          timeout = 30000,              -- Timeout in milliseconds, increase this for reasoning models
+          model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+          timeout = 30000,  -- Timeout in milliseconds, increase this for reasoning models
           extra_req_params = {
             temperature = 0,
             max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
@@ -240,9 +245,20 @@ local plugins = {
       },
     },
     cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
+  },
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && yarn install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown", "mermaid" }
+    end,
+    ft = { "markdown", "mermaid" },
+  },
+  {
+    "mracos/mermaid.vim",
+    ft = "mermaid",
   }
-
-
 }
 
 local opts = {}
