@@ -11,7 +11,7 @@ require("core.plugin_config.lsp_config")
 require("core.plugin_config.gitsigns")
 -- require("core.plugin_config.supermaven")
 require("core.plugin_config.copilot")
-require("core.plugin_config.codecompanion")
+--require("core.plugin_config.codecompanion")
 require("core.plugin_config.colorizer")
 
 require("core.plugin_config.null-ls")
