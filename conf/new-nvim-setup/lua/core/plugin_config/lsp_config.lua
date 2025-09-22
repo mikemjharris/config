@@ -43,6 +43,54 @@ local lspconfig = require('lspconfig')
 lspconfig.pyright.setup {}
 lspconfig.ts_ls.setup {
   capabilities = capabilities,
+  init_options = {
+    maxTsServerMemory = 12288, -- 12GB memory limit for large repos
+    preferences = {
+      includeCompletionsForModuleExports = false,
+      includeCompletionsForImportStatements = false,
+      includeCompletionsWithSnippetText = false,
+      includeCompletionsWithInsertText = false,
+      allowIncompleteCompletions = false,
+    },
+  },
+  settings = {
+    typescript = {
+      updateImportsOnFileMove = { enabled = "never" },
+      workspaceSymbols = { scope = "currentProject" },
+      disableAutomaticTypeAcquisition = true,
+      inlayHints = {
+        includeInlayParameterNameHints = 'none',
+        includeInlayFunctionParameterTypeHints = false,
+        includeInlayVariableTypeHints = false,
+        includeInlayPropertyDeclarationTypeHints = false,
+      },
+      preferences = {
+        includeCompletionsWithInsertText = false,
+        includeCompletionsForImportStatements = false,
+        includeCompletionsForModuleExports = false,
+        includeCompletionsWithSnippetText = false,
+        allowIncompleteCompletions = false,
+      },
+      suggest = {
+        enabled = true,
+        completeFunctionCalls = false,
+        includeCompletionsForModuleExports = false,
+        includeAutomaticOptionalChainCompletions = false,
+      },
+    },
+    javascript = {
+      updateImportsOnFileMove = { enabled = "never" },
+      inlayHints = {
+        includeInlayParameterNameHints = 'none',
+        includeInlayFunctionParameterTypeHints = false,
+        includeInlayVariableTypeHints = false,
+        includeInlayPropertyDeclarationTypeHints = false,
+      },
+    },
+  },
+  flags = {
+    debounce_text_changes = 300, -- Debounce for stability
+  },
 }
 
 lspconfig.lua_ls.setup {
