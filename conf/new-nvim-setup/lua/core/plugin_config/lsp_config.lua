@@ -44,7 +44,7 @@ lspconfig.pyright.setup {}
 lspconfig.ts_ls.setup {
   capabilities = capabilities,
   init_options = {
-    maxTsServerMemory = 12288, -- 12GB memory limit for large repos
+    maxTsServerMemory = 4096, -- 4GB memory limit (reduced for system stability)
     preferences = {
       includeCompletionsForModuleExports = false,
       includeCompletionsForImportStatements = false,
