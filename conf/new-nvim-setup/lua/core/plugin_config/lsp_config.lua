@@ -1,5 +1,5 @@
 require("mason-lspconfig").setup({
-  ensure_installed = { "ts_ls" }
+  ensure_installed = { "ts_ls", "solargraph", "ruby_lsp" }
 }
 )
 
@@ -117,6 +117,22 @@ lspconfig.lua_ls.setup {
       }
     },
   },
+}
+
+-- Ruby Language Servers
+lspconfig.solargraph.setup {
+  capabilities = capabilities,
+  settings = {
+    solargraph = {
+      diagnostics = true,
+      completion = true,
+      useBundler = true,
+    }
+  }
+}
+
+lspconfig.ruby_lsp.setup {
+  capabilities = capabilities,
 }
 
 

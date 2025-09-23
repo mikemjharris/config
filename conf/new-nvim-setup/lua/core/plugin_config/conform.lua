@@ -3,6 +3,7 @@ require("conform").setup({
     lua = { "stylua" },
     javascript = { "prettierd", "prettier", stop_after_first = true },
     typescript = { "prettierd", "prettier", stop_after_first = true },
+    ruby = { "rubocop" },
     mermaid = { "mermaid_validator" },
   },
   
