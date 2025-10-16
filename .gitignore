@@ -7,3 +7,5 @@ conf/new-nvim-setup/lua/.luarc.json
 **/.claude/settings.local.json
 
 conf/tmux/plugins/
+
+notes/
