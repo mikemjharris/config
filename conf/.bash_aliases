@@ -129,6 +129,13 @@ alias ga=__ga
 # Pretty tree for git log
 alias lg='git log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ce %cr)" --abbrev-commit --date=relative'
 
+# Copy the Nth commit hash to clipboard (e.g., ggc 1 for most recent, ggc 5 for 5th most recent)
+function __ggc {
+  git log --pretty=format:"%h" | sed "${1}q;d" | pbcopy && echo "Copied commit: $(pbpaste)"
+}
+
+alias ggc=__ggc
+
 
 ### Alias for command line
 # I always look at my history
