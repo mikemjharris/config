@@ -290,6 +290,8 @@ function __pt {
 
 alias docker-compose="docker compose"
 
+alias dc=‘docker-compose exec “basename $PWD“-web’
+
 tmux_fzf_copy() {
   local selected
   selected=$(tmux capture-pane -J -p | fzf --reverse --no-sort --prompt='Scrollback> ')
