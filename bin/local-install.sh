@@ -36,6 +36,9 @@ cat $(pwd)/conf/setup_bash_aliases >> ~/.zshrc
 echo "Setting up global gitignore"
 git config --global core.excludesfile $(pwd)/conf/.gitignore_global
 
+echo "Setting up auto remote"
+git config --global push.autoSetupRemote true
+
 echo "Setting up z plugin"
 git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
 
