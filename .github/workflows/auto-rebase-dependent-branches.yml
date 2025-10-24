@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - main
+      - master
 
 jobs:
   rebase-dependent-branches:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
@@ -25,20 +25,20 @@ jobs:
       - name: Find and rebase dependent branches
         env:
           MERGED_BRANCH: ${{ github.event.pull_request.head.ref }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           # Get all branches
           git fetch --all
 
           # Find branches that have the merged branch in their history
-          for branch in $(git branch -r | grep -v HEAD | grep -v main | sed 's/origin\///'); do
+          for branch in $(git branch -r | grep -v HEAD | grep -v master | sed 's/origin\///'); do
             # Check if this branch contains commits from the merged branch
             if git merge-base --is-ancestor origin/$MERGED_BRANCH origin/$branch 2>/dev/null; then
               echo "Found dependent branch: $branch"
 
-              # Rebase onto main
+              # Rebase onto master
               git checkout $branch
-              git rebase --onto main origin/$MERGED_BRANCH || {
+              git rebase --onto master origin/$MERGED_BRANCH || {
                 echo "Rebase conflict on $branch - creating issue"
                 gh issue create --title "Manual rebase needed for $branch" \
                   --body "Branch $branch needs manual rebase after $MERGED_BRANCH was merged"
