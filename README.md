@@ -48,7 +48,7 @@ To backup this (or similar):
 Also run:
 `ln -s ./conf/settings.json ~/.config/Code/User/settings.json`
 
-Note: since setting this up have not continued with vscode - reverting back to VIM (and specifically Neovim)
+Note: since setting this up have not continued with vscode - reverting back to VIM (and specifically Neovim) - although have been dabbling with cursor and have added in some key mappings - will update the readme 'one day'.
 
 ### **Notes - Other useful applications**
 Most applications are installed in above scripts - these are some others that I find interestings - this is pretty old now
