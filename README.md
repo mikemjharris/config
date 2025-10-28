@@ -9,7 +9,7 @@ The docs are ok ish - I know what I need at various stages and have tried to det
 ## Applications
 When setting up a new computer you often need to install many things.  These scripts install most of the programs you might need such as git, ruby, mysql etc.
 
-If on a mac then you will want to install brew and it's dependencies - note this is quite old as haven't used a Mac in anger since abou 2017
+If on a mac then you will want to install brew and it's dependencies  
 - `./bin/install-brew-packages.sh`
 
 If on linux:

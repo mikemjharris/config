@@ -17,7 +17,7 @@ COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
 FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
 
 # Allowed types according to conventional commits
-TYPES="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
+TYPES="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|wip"
 
 # Regex pattern for conventional commits
 # Format: type(optional scope): description
