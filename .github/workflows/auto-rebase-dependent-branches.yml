@@ -22,6 +22,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Update PRs targeting merged branch
+        env:
+          MERGED_BRANCH: ${{ github.event.pull_request.head.ref }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          # Find all open PRs targeting the merged branch
+          echo "Looking for PRs targeting $MERGED_BRANCH..."
+          gh pr list --base "$MERGED_BRANCH" --state open --json number,headRefName --jq '.[] | "\(.number):\(.headRefName)"' | while IFS=: read -r pr_number head_branch; do
+            echo "Updating PR #$pr_number (branch: $head_branch) to target master"
+            gh pr edit "$pr_number" --base master
+          done
+
       - name: Find and rebase dependent branches
         env:
           MERGED_BRANCH: ${{ github.event.pull_request.head.ref }}
@@ -30,22 +42,38 @@ jobs:
           # Get all branches
           git fetch --all
 
-          # Find branches that have the merged branch in their history
-          for branch in $(git branch -r | grep -v HEAD | grep -v master | sed 's/origin\///'); do
-            # Check if this branch contains commits from the merged branch
-            if git merge-base --is-ancestor origin/$MERGED_BRANCH origin/$branch 2>/dev/null; then
+          # Ensure we're on master
+          git checkout master
+
+          # Find branches that are direct dependents of the merged branch
+          for branch in $(git branch -r | grep -v HEAD | grep -v " origin/master$" | sed 's/origin\///'); do
+            # Skip the merged branch itself
+            if [ "$branch" = "$MERGED_BRANCH" ]; then
+              echo "Skipping merged branch: $branch"
+              continue
+            fi
+
+            # Check if this branch is built directly on top of the merged branch
+            if [ "$(git merge-base origin/$MERGED_BRANCH origin/$branch)" = "$(git rev-parse origin/$MERGED_BRANCH)" ]; then
               echo "Found dependent branch: $branch"
 
+              # Clean up any existing local branch
+              git branch -D $branch 2>/dev/null || true
+
               # Rebase onto master
-              git checkout $branch
-              git rebase --onto master origin/$MERGED_BRANCH || {
+              git checkout -b $branch origin/$branch
+              git rebase --onto master origin/$MERGED_BRANCH $branch || {
                 echo "Rebase conflict on $branch - creating issue"
                 gh issue create --title "Manual rebase needed for $branch" \
                   --body "Branch $branch needs manual rebase after $MERGED_BRANCH was merged"
                 git rebase --abort
+                git checkout master
                 continue
               }
 
               git push origin $branch --force-with-lease
+
+              # Return to master for next iteration
+              git checkout master
             fi
           done
