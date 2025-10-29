@@ -1,13 +1,35 @@
 #!/usr/bin/env node
 
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+// Load .env file if it exists (for local testing)
+const envPath = path.join(__dirname, '../../.env');
+if (fs.existsSync(envPath)) {
+  const envFile = fs.readFileSync(envPath, 'utf8');
+  envFile.split('\n').forEach(line => {
+    const match = line.match(/^([^=:#]+)=(.*)$/);
+    if (match) {
+      const key = match[1].trim();
+      const value = match[2].trim();
+      if (!process.env[key]) {
+        process.env[key] = value;
+      }
+    }
+  });
+}
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'mikemjharris';
 
 // Time window: last 30 minutes (plus 5 min buffer)
-const SINCE = new Date(Date.now() - 35 * 60 * 1000).toISOString();
+// For testing, use a longer window if TESTING env var is set
+const TESTING = process.env.TESTING === 'true';
+const SINCE = TESTING
+  ? new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 24 hours for testing
+  : new Date(Date.now() - 35 * 60 * 1000).toISOString();
 
 // Bot usernames to filter out
 const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel'];
@@ -50,7 +72,7 @@ function sendSlackMessage(blocks) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': payload.length
+        'Content-Length': Buffer.byteLength(payload)
       }
     };
 
@@ -58,7 +80,7 @@ function sendSlackMessage(blocks) {
       let data = '';
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {
-        if (res.statusCode === 200) {
+        if (res.statusCode === 200 || res.statusCode === 201) {
           resolve(data);
         } else {
           reject(new Error(`Slack API error: ${res.statusCode} - ${data}`));
@@ -74,6 +96,17 @@ function sendSlackMessage(blocks) {
 
 function isBot(username) {
   return BOT_USERS.some(bot => username.toLowerCase().includes(bot.toLowerCase()));
+}
+
+function escapeSlackText(text) {
+  // Escape special characters for Slack mrkdwn and limit length
+  // Note: Don't escape > at the start of lines (it's markdown quote syntax)
+  return text
+    .replace(/\r\n/g, '\n')  // Normalize line endings
+    .replace(/\r/g, '\n')     // Normalize line endings
+    .replace(/&/g, '&amp;')
+    .replace(/<(?!http)/g, '&lt;')  // Escape < except in URLs
+    .substring(0, 2900); // Stay well under 3000 char limit
 }
 
 async function getNotifications() {
@@ -151,9 +184,10 @@ async function getNotifications() {
       // Check if PR author is the user
       const isMyPR = pr.user.login === GITHUB_USERNAME;
 
-      // Filter comments (non-bot, and either mentions me or is on my PR)
+      // Filter comments (non-bot, not by me, and either mentions me or is on my PR)
       const relevantComments = comments.filter(c => {
         if (isBot(c.user.login)) return false;
+        if (c.user.login === GITHUB_USERNAME) return false; // Exclude my own comments
         if (c.body.includes(`@${GITHUB_USERNAME}`)) return true;
         if (isMyPR) return true;
         return false;
@@ -161,6 +195,7 @@ async function getNotifications() {
 
       const relevantReviewComments = reviewComments.filter(c => {
         if (isBot(c.user.login)) return false;
+        if (c.user.login === GITHUB_USERNAME) return false; // Exclude my own comments
         if (c.body.includes(`@${GITHUB_USERNAME}`)) return true;
         if (isMyPR) return true;
         return false;
@@ -195,11 +230,10 @@ async function formatAndSendNotifications(notifications) {
 
   const blocks = [
     {
-      type: 'header',
+      type: 'section',
       text: {
-        type: 'plain_text',
-        text: `🔔 PR Updates (${notifications.length})`,
-        emoji: true
+        type: 'mrkdwn',
+        text: `*🔔 PR Updates (${notifications.length})*`
       }
     },
     {
@@ -213,18 +247,19 @@ async function formatAndSendNotifications(notifications) {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `*<${notif.prUrl}|${notif.repo}#${notif.prNumber}>* ${notif.isMyPR ? '(Your PR)' : ''}\n${notif.prTitle}`
+        text: `*<${notif.prUrl}|${escapeSlackText(notif.repo)}#${notif.prNumber}>* ${notif.isMyPR ? '(Your PR)' : ''}\n${escapeSlackText(notif.prTitle)}`
       }
     });
 
     // Approvals
     if (notif.approvals.length > 0) {
       for (const approval of notif.approvals) {
+        const body = approval.body ? `\n_${escapeSlackText(approval.body)}_` : '';
         blocks.push({
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `✅ *Approved* by ${approval.user.login}${approval.body ? `\n>${approval.body}` : ''}`
+            text: `✅ *Approved* by ${escapeSlackText(approval.user.login)}${body}`
           }
         });
       }
@@ -233,11 +268,14 @@ async function formatAndSendNotifications(notifications) {
     // Comments
     for (const comment of notif.comments) {
       const mention = comment.body.includes(`@${GITHUB_USERNAME}`) ? '📢 ' : '';
+      // Remove quote markers and escape
+      const cleanBody = comment.body.replace(/^>\s*/gm, '').substring(0, 200);
+      const truncated = escapeSlackText(cleanBody);
       blocks.push({
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `${mention}💬 *${comment.user.login}*: ${comment.body.substring(0, 200)}${comment.body.length > 200 ? '...' : ''}`
+          text: `${mention}💬 *${escapeSlackText(comment.user.login)}*: ${truncated}${comment.body.length > 200 ? '...' : ''}`
         }
       });
     }
@@ -245,11 +283,14 @@ async function formatAndSendNotifications(notifications) {
     // Review comments
     for (const comment of notif.reviewComments) {
       const mention = comment.body.includes(`@${GITHUB_USERNAME}`) ? '📢 ' : '';
+      // Remove quote markers and escape
+      const cleanBody = comment.body.replace(/^>\s*/gm, '').substring(0, 200);
+      const truncated = escapeSlackText(cleanBody);
       blocks.push({
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `${mention}💭 *${comment.user.login}* (code review): ${comment.body.substring(0, 200)}${comment.body.length > 200 ? '...' : ''}`
+          text: `${mention}💭 *${escapeSlackText(comment.user.login)}* (code review): ${truncated}${comment.body.length > 200 ? '...' : ''}`
         }
       });
     }
@@ -260,6 +301,12 @@ async function formatAndSendNotifications(notifications) {
   }
 
   console.log(`Sending ${notifications.length} notifications to Slack...`);
+  if (TESTING) {
+    const payload = JSON.stringify({ blocks }, null, 2);
+    console.log('Slack payload:', payload);
+    require('fs').writeFileSync('/tmp/slack-payload.json', payload);
+    console.log('Payload written to /tmp/slack-payload.json');
+  }
   await sendSlackMessage(blocks);
   console.log('Notifications sent successfully!');
 }
