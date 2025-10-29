@@ -95,17 +95,25 @@ async function getNotifications() {
         continue;
       }
 
-      // Extract PR info from URL
-      const match = notif.repository.full_name.match(/(.+)/);
-      if (!match) continue;
-
       const repoFullName = notif.repository.full_name;
-      const prNumber = notif.subject.url.split('/').pop();
+
+      // Extract PR number from the API URL
+      // URL format: https://api.github.com/repos/owner/repo/pulls/123
+      const urlParts = notif.subject.url.split('/');
+      const prNumber = urlParts[urlParts.length - 1];
 
       console.log(`Checking PR #${prNumber} in ${repoFullName}...`);
 
-      // Get PR details
-      const pr = await makeGitHubRequest(`/repos/${repoFullName}/pulls/${prNumber}`);
+      // Get PR details - use the full API path from the notification
+      let pr;
+      try {
+        // The subject.url is already an API path, extract just the path part
+        const apiPath = notif.subject.url.replace('https://api.github.com', '');
+        pr = await makeGitHubRequest(apiPath);
+      } catch (error) {
+        console.log(`Failed to fetch PR #${prNumber}: ${error.message}`);
+        continue;
+      }
 
       // Get comments (issue comments)
       const comments = await makeGitHubRequest(
