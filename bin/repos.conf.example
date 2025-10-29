@@ -1,0 +1,8 @@
+# Repo configuration file
+# Copy this to repos.conf and customize with your repos
+# Format: name|github_url|local_path
+
+config|https://github.com/yourusername/config|~/working/config
+project1|https://github.com/yourusername/project1|~/working/project1
+project2|https://github.com/yourusername/project2|~/working/project2
+project3|https://github.com/yourusername/project3|~/working/project3

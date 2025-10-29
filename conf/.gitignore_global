@@ -16,6 +16,11 @@ node_modules
 # project specific vimrc files
 .vimrc
 
+# Neovim project configs
+.nvimrc
+.nvimrc.lua
+.nvim-docker.lua
+
 # .ignore file that's used by ag / silver searcher
 .ignore
 
