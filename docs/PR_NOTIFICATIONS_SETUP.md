@@ -12,7 +12,49 @@ This workflow monitors PR comments and approvals across all your GitHub reposito
 
 ## Setup
 
-### 1. Create a Slack Webhook
+### 1. Add the GitHub Actions Workflow
+
+Due to GitHub security restrictions, the workflow file needs to be added manually.
+
+Create a file `.github/workflows/pr-comment-notifications.yml` with the following content:
+
+```yaml
+name: PR Comment Notifications
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-pr-comments:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Check PR comments and send Slack notification
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+        run: |
+          python scripts/check-pr-comments.py
+```
+
+Commit and push this file to enable the workflow.
+
+### 2. Create a Slack Webhook
 
 1. Go to https://api.slack.com/apps
 2. Create a new app or select an existing one
@@ -22,7 +64,7 @@ This workflow monitors PR comments and approvals across all your GitHub reposito
 6. Select the channel where you want notifications
 7. Copy the webhook URL
 
-### 2. Add GitHub Secrets
+### 3. Add GitHub Secrets
 
 Add the following secrets to your repository:
 
@@ -36,15 +78,13 @@ Add the following secrets to your repository:
      - A PAT is recommended for accessing private repos and organizations
      - Create one at: https://github.com/settings/tokens
 
-### 3. Enable the Workflow
+### 4. Verify the Workflow
 
-The workflow is already configured in `.github/workflows/pr-comment-notifications.yml`
-
-It will:
+Once you've added the workflow file from step 1, it will:
 - Run automatically every hour
 - Can be triggered manually from the Actions tab
 
-### 4. Test It
+### 5. Test It
 
 You can test the workflow manually:
 
