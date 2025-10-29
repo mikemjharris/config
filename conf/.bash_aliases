@@ -290,7 +290,8 @@ function __pt {
 
 alias docker-compose="docker compose"
 
-alias dc=‘docker-compose exec “basename $PWD“-web’
+alias de='docker exec app-"$(basename $PWD)-web-1"'
+alias deit='docker exec -it app-"$(basename $PWD)-web-1"'
 
 tmux_fzf_copy() {
   local selected
