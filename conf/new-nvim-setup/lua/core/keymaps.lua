@@ -52,3 +52,8 @@ end, { nargs = '*', desc = 'Search using Ag (Silver Searcher)' })
 vim.keymap.set('n', '<leader>gg', ':Ag ', { noremap = true, desc = 'Search using Ag' })
 
 vim.keymap.set('n', '<leader>g', ':Git<CR>', { noremap = true, desc = 'Open git' })
+
+-- Docker Ruby keybindings
+vim.keymap.set('n', '<leader>rc', ':Rubocop<CR>', { noremap = true, desc = 'Run RuboCop' })
+vim.keymap.set('n', '<leader>rf', ':RubocopFix<CR>', { noremap = true, desc = 'Auto-fix with RuboCop' })
+vim.keymap.set('n', '<leader>rk', ':Reek<CR>', { noremap = true, desc = 'Run Reek code smell detection' })

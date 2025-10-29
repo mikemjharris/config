@@ -7,6 +7,7 @@ require("core.plugin_config.telescope")
 require("core.plugin_config.vim-test")
 
 require("core.plugin_config.completions")
+require("core.plugin_config.docker-ruby").setup()
 require("core.plugin_config.lsp_config")
 require("core.plugin_config.gitsigns")
 -- require("core.plugin_config.supermaven")

@@ -134,8 +134,29 @@ lspconfig.solargraph.setup {
   }
 }
 
+-- Both solargraph and ruby_lsp configured to work with Docker containers
 lspconfig.ruby_lsp.setup {
   capabilities = capabilities,
+  init_options = {
+    formatter = "auto",
+    linters = {},
+    enabledFeatures = {
+      "codeActions",
+      "diagnostics",
+      "documentHighlights",
+      "documentLink",
+      "documentSymbols",
+      "foldingRanges",
+      "formatting",
+      "hover",
+      "inlayHint",
+      "onTypeFormatting",
+      "selectionRanges",
+      "semanticHighlighting",
+      "completion"
+    },
+    experimentalFeaturesEnabled = true,
+  },
 }
 
 

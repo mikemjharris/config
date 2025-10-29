@@ -49,25 +49,25 @@ local plugins = {
       require("copilot_cmp").setup()
     end
   },
-  {
-    "olimorris/codecompanion.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      {
-        "ravitemer/mcphub.nvim", -- Manage MCP servers
-        cmd = "MCPHub",
-        build = "npm install -g mcp-hub@latest",
-        config = true,
-      },
-      {
-        "Davidyz/VectorCode", -- Index and search code in your repositories
-        version = "*",
-        build = "pipx upgrade vectorcode",
-        dependencies = { "nvim-lua/plenary.nvim" },
-      }
-    },
-  },
+  -- {
+  --   "olimorris/codecompanion.nvim",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-treesitter/nvim-treesitter",
+  --     {
+  --       "ravitemer/mcphub.nvim", -- Manage MCP servers
+  --       cmd = "MCPHub",
+  --       build = "npm install -g mcp-hub@latest",
+  --       config = true,
+  --     },
+  --     {
+  --       "Davidyz/VectorCode", -- Index and search code in your repositories
+  --       version = "*",
+  --       build = "pipx upgrade vectorcode",
+  --       dependencies = { "nvim-lua/plenary.nvim" },
+  --     }
+  --   },
+  -- },
   {
     "folke/snacks.nvim",
     priority = 1000,

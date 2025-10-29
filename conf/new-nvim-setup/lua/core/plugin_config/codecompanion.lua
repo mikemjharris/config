@@ -39,7 +39,7 @@ require("codecompanion").setup({
     },
     vectorcode = {
       opts = {
-        add_tool = true,
+        add_tool = false,
       },
     },
   },
