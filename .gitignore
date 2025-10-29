@@ -9,3 +9,6 @@ conf/new-nvim-setup/lua/.luarc.json
 conf/tmux/plugins/
 
 notes/
+
+# Personal repo configuration
+bin/repos.conf
