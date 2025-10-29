@@ -97,21 +97,30 @@ async function getNotifications() {
 
       const repoFullName = notif.repository.full_name;
 
+      console.log(`\nNotification details:`);
+      console.log(`  Repository: ${repoFullName}`);
+      console.log(`  Subject: ${notif.subject.title}`);
+      console.log(`  Subject URL: ${notif.subject.url}`);
+      console.log(`  Subject Type: ${notif.subject.type}`);
+      console.log(`  Reason: ${notif.reason}`);
+
       // Extract PR number from the API URL
       // URL format: https://api.github.com/repos/owner/repo/pulls/123
       const urlParts = notif.subject.url.split('/');
       const prNumber = urlParts[urlParts.length - 1];
 
-      console.log(`Checking PR #${prNumber} in ${repoFullName}...`);
+      console.log(`  Extracted PR number: ${prNumber}`);
 
       // Get PR details - use the full API path from the notification
       let pr;
       try {
         // The subject.url is already an API path, extract just the path part
         const apiPath = notif.subject.url.replace('https://api.github.com', '');
+        console.log(`  Fetching PR from API path: ${apiPath}`);
         pr = await makeGitHubRequest(apiPath);
+        console.log(`  ✓ Successfully fetched PR #${prNumber}`);
       } catch (error) {
-        console.log(`Failed to fetch PR #${prNumber}: ${error.message}`);
+        console.log(`  ✗ Failed to fetch PR #${prNumber}: ${error.message}`);
         continue;
       }
 
