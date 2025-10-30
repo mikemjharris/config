@@ -1,53 +1,75 @@
 #!/bin/bash
 
-# Script to get local dev server up and running
-# Unique session name
+# Script to create a tmux session with multiple windows
+# Each window has the same 3-pane layout (vim left, 2 vertical panes right)
+
 session="my_dev_session"
+
+# Configuration file for window definitions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WINDOWS_CONFIG="$SCRIPT_DIR/dev.windows"
+
+# If config file doesn't exist, use the example
+if [ ! -f "$WINDOWS_CONFIG" ]; then
+    WINDOWS_CONFIG="$SCRIPT_DIR/dev.windows.example"
+fi
+
+# Read windows configuration from file
+declare -a windows=()
+while IFS= read -r line || [ -n "$line" ]; do
+    # Skip empty lines and comments
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+    # Expand tilde to home directory
+    line="${line/#\~/$HOME}"
+
+    windows+=("$line")
+done < "$WINDOWS_CONFIG"
 
 # Check if the session already exists
 tmux has-session -t $session 2>/dev/null
 
 # If the session doesn't exist, create it
 if [ $? != 0 ]; then
-    cd ~/dev/omnea-meta-repo/omnea-app
+    first_window=true
 
-    # Create a new detached session
-    tmux new-session -d -s $session
+    for window_config in "${windows[@]}"; do
+        IFS=':' read -r dir name cmd <<< "$window_config"
 
-    # First window (0) -- vim
-    tmux send-keys -t $session "vim ." C-m
-    tmux select-pane -t $session:0.0 -T "📝 Editor"
+        if [ "$first_window" = true ]; then
+            # Create the session with the first window
+            tmux new-session -d -s $session -n "$name" -c "$dir"
+            first_window=false
+        else
+            # Create additional windows (tmux auto-assigns index)
+            tmux new-window -t $session -n "$name" -c "$dir"
+        fi
 
-    # Split window horizontally, 25% pane
-    tmux splitw -h -p 25 -t $session
-    tmux send-keys -t $session "cd .." C-m
-    tmux send-keys -t $session "yarn api" C-m
-    tmux select-pane -t $session:0.1 -T "🚀 API Server"
-    
-    tmux splitw -v -p 95 -t $session
-    tmux send-keys -t $session "docker-compose up" C-m
-    tmux select-pane -t $session:0.2 -T "🐳 Docker Services"
+        # Start vim in the main pane (current window)
+        tmux send-keys -t $session: "vim ." C-m
+        tmux select-pane -t $session: -T "📝 $name"
 
-    # Split window vertically
-    tmux splitw -v -p 95 -t $session
-    tmux send-keys -t $session "yarn dev:killall" C-m
-    tmux select-pane -t $session:0.3 -T "🧹 Dev Cleanup"
+        # Split horizontally (30% on right)
+        tmux split-window -h -p 30 -t $session: -c "$dir"
 
-    # Split window vertically
-    tmux splitw -v -p 95 -t $session
-    tmux send-keys -t $session "hasura console" C-m
-    tmux select-pane -t $session:0.4 -T "📊 Hasura Console"
+        # If there's a command for this pane, run it
+        if [ -n "$cmd" ]; then
+            tmux send-keys -t $session: "$cmd" C-m
+        fi
+        tmux select-pane -t $session: -T "🚀 Commands"
 
-    # Split window vertically, 60% pane
-    tmux splitw -v -p 60 -t $session
-    tmux select-pane -t $session:0.5 -T "💻 Terminal"
+        # Split vertically (50/50) - split the current (right) pane
+        tmux split-window -v -p 50 -t $session: -c "$dir"
+        tmux select-pane -t $session: -T "💻 Terminal"
 
-    tmux splitw -v -p 10 -t $session
-    tmux send-keys -t $session "~/status.sh" C-m
-    tmux select-pane -t $session:0.6 -T "📈 Status Monitor"
+        # Select the vim pane (pane 1) as default for this window
+        tmux select-pane -t $session:.1
+    done
+
+    # Get the first window's actual index and select it
+    first_window_id=$(tmux list-windows -t $session -F "#{window_index}" | head -1)
+    tmux select-window -t $session:$first_window_id
 fi
 
-# Attach to the session and then immediately detach
+# Attach to the session
 tmux attach -t $session -d
-
-

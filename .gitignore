@@ -12,3 +12,6 @@ notes/
 
 # Personal repo configuration
 bin/repos.conf
+
+# Personal tmux window configuration
+local-exec/dev.windows

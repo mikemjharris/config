@@ -1,0 +1,10 @@
+# Tmux Dev Windows Configuration
+# Format: directory:window_name:optional_command
+# Lines starting with # are ignored
+# The optional_command will run in the top-right pane
+
+# Example with commands:
+# ~/working/config:config:
+
+# Default configuration (no commands):
+~/working/config:config:
