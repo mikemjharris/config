@@ -25,10 +25,6 @@ vim.cmd([[
     cnoreabbrev Qall qall
 ]])
 
--- Navigate vim panes better
-vim.keymap.set('n', '<c-k>', ':tabprev<CR>')
-vim.keymap.set('n', '<c-j>', ':tabnext<CR>')
-
 -- Clear search
 vim.keymap.set('n', '<leader>h', ':nohlsearch<CR>')
 
