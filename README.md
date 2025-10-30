@@ -39,11 +39,34 @@ Most of this setup should work as it does for a standard ubuntu setup. A few thi
 - Use Windows Terminal not Windows console (it solves many font and display issues)
 - My normal setup mixes dark mode in the terminal with light in vim - the terminal seems to force the same colour in all situations. As such I've set a light theme for the terminal - see `robbyrussell-light.zsh-theme` for instructions.
 
+## Scripts
+
+### Weekly Repository Summary
+A powerful script to analyze commit activity across multiple Git repositories. Perfect for generating weekly development summaries and insights.
+
+**Quick start:**
+```bash
+# Create a list of repositories to analyze
+cp scripts/repos.example.txt scripts/repos.txt
+# Edit repos.txt to add your repository URLs
+
+# Run the summary
+./scripts/weekly-repo-summary.sh --file scripts/repos.txt
+```
+
+**Features:**
+- Analyzes commits from multiple repositories
+- Categorizes commits by type (feat, fix, chore, etc.)
+- Outputs in text or JSON format
+- LLM-ready for automated summarization
+
+For detailed usage and examples, see [scripts/WEEKLY_SUMMARY_README.md](scripts/WEEKLY_SUMMARY_README.md)
+
 ## VS Code
 Just started using VS code and wanted a backup of extensions.  To install extensions on a new computer:
 `cat ./conf/code-extensions.txt | xargs -n 1 code --install-extension`
 To backup this (or similar):
-`code --list-extensions >> ./conf/code-extensions.txt` 
+`code --list-extensions >> ./conf/code-extensions.txt`
 
 Also run:
 `ln -s ./conf/settings.json ~/.config/Code/User/settings.json`
