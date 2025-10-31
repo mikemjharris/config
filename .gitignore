@@ -15,3 +15,8 @@ bin/repos.conf
 
 # Personal tmux window configuration
 local-exec/dev.windows
+
+# Config for weekly repo summary
+scripts/repos/
+scripts/*.txt
+

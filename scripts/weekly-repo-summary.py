@@ -110,22 +110,23 @@ class RepoSummaryGenerator:
             # Assume it's already a name or local path
             return Path(repo_url).name
 
-    def clone_or_update_repo(self, repo_url: str) -> Tuple[bool, Path]:
+    def clone_or_update_repo(self, repo_url: str) -> Tuple[bool, Path, str]:
         """
         Clone a repository if it doesn't exist, otherwise update it.
+        Uses fetch only - does NOT checkout or pull to avoid disrupting working directory.
 
         Args:
             repo_url: Repository URL or path
 
         Returns:
-            Tuple of (success, repo_path)
+            Tuple of (success, repo_path, remote_branch)
         """
         repo_name = self.get_repo_name(repo_url)
         repo_path = self.workspace_dir / repo_name
 
         if repo_path.exists():
-            print(f"  Updating existing repository: {repo_name}")
-            # Fetch latest changes
+            print(f"  Fetching updates for existing repository: {repo_name}")
+            # Fetch latest changes - this is safe and doesn't modify working directory
             success, stdout, stderr = self.run_command(
                 ['git', 'fetch', 'origin'],
                 cwd=repo_path,
@@ -133,27 +134,23 @@ class RepoSummaryGenerator:
             )
             if not success:
                 print(f"  Warning: Failed to fetch updates for {repo_name}: {stderr}")
-                return True, repo_path  # Continue with existing repo
+                # Continue with existing repo - we'll try to use existing refs
 
-            # Try to checkout main branch
-            for branch in [self.main_branch, 'master']:
-                success, _, _ = self.run_command(
-                    ['git', 'checkout', branch],
+            # Determine which remote branch to analyze (don't checkout, just check what exists)
+            for branch in [self.main_branch, 'master', 'main']:
+                success, stdout, stderr = self.run_command(
+                    ['git', 'rev-parse', '--verify', f'origin/{branch}'],
                     cwd=repo_path,
                     check=False
                 )
                 if success:
-                    self.main_branch = branch
-                    break
+                    remote_branch = f'origin/{branch}'
+                    print(f"  Analyzing remote branch: {remote_branch}")
+                    return True, repo_path, remote_branch
 
-            # Pull latest changes
-            success, stdout, stderr = self.run_command(
-                ['git', 'pull', 'origin', self.main_branch],
-                cwd=repo_path,
-                check=False
-            )
-            if not success:
-                print(f"  Warning: Failed to pull updates for {repo_name}: {stderr}")
+            # Fallback - try local branch if no remote found
+            print(f"  Warning: No remote branch found, using local {self.main_branch}")
+            return True, repo_path, self.main_branch
         else:
             print(f"  Cloning repository: {repo_name}")
             success, stdout, stderr = self.run_command(
@@ -162,9 +159,48 @@ class RepoSummaryGenerator:
             )
             if not success:
                 print(f"  Error: Failed to clone {repo_name}: {stderr}")
-                return False, repo_path
+                return False, repo_path, ''
 
-        return True, repo_path
+            # If we cloned from a local path, fix the origin to point to GitHub
+            if repo_url.startswith('/') or repo_url.startswith('~'):
+                # Get the actual GitHub remote from the source repo
+                success, stdout, stderr = self.run_command(
+                    ['git', 'remote', 'get-url', 'origin'],
+                    cwd=Path(repo_url).expanduser(),
+                    check=False
+                )
+                if success and stdout.strip():
+                    github_url = stdout.strip()
+                    # Update origin in cloned repo to point to GitHub
+                    self.run_command(
+                        ['git', 'remote', 'set-url', 'origin', github_url],
+                        cwd=repo_path,
+                        check=False
+                    )
+                    print(f"  Updated origin to GitHub remote: {github_url}")
+                    # Fetch from the real GitHub origin
+                    self.run_command(
+                        ['git', 'fetch', 'origin'],
+                        cwd=repo_path,
+                        check=False
+                    )
+
+            # Determine which remote branch to analyze
+            for branch in [self.main_branch, 'master', 'main']:
+                success, stdout, stderr = self.run_command(
+                    ['git', 'rev-parse', '--verify', f'origin/{branch}'],
+                    cwd=repo_path,
+                    check=False
+                )
+                if success:
+                    remote_branch = f'origin/{branch}'
+                    print(f"  Analyzing remote branch: {remote_branch}")
+                    return True, repo_path, remote_branch
+
+            # Fallback
+            print(f"  Warning: No remote branch found, using {self.main_branch}")
+            remote_branch = f'origin/{self.main_branch}'
+            return True, repo_path, remote_branch
 
     def categorize_commit(self, message: str) -> str:
         """
@@ -185,12 +221,56 @@ class RepoSummaryGenerator:
 
         return 'Other'
 
-    def get_commits_from_repo(self, repo_path: Path) -> List[Dict]:
+    def get_commit_stats(self, repo_path: Path, commit_hash: str) -> Tuple[int, int, int]:
+        """
+        Get stats for a specific commit.
+
+        Args:
+            repo_path: Path to the repository
+            commit_hash: Commit hash
+
+        Returns:
+            Tuple of (files_changed, insertions, deletions)
+        """
+        success, stdout, stderr = self.run_command(
+            ['git', 'show', '--shortstat', '--format=', commit_hash],
+            cwd=repo_path,
+            check=False
+        )
+
+        if not success:
+            return 0, 0, 0
+
+        # Parse output like: " 1 file changed, 5 insertions(+), 2 deletions(-)"
+        files_changed = 0
+        insertions = 0
+        deletions = 0
+
+        for line in stdout.strip().split('\n'):
+            if 'file' in line or 'insertion' in line or 'deletion' in line:
+                # Extract numbers using regex
+                if 'file' in line:
+                    match = re.search(r'(\d+) file', line)
+                    if match:
+                        files_changed = int(match.group(1))
+                if 'insertion' in line:
+                    match = re.search(r'(\d+) insertion', line)
+                    if match:
+                        insertions = int(match.group(1))
+                if 'deletion' in line:
+                    match = re.search(r'(\d+) deletion', line)
+                    if match:
+                        deletions = int(match.group(1))
+
+        return files_changed, insertions, deletions
+
+    def get_commits_from_repo(self, repo_path: Path, branch: str) -> List[Dict]:
         """
         Get commits from the last week in the repository.
 
         Args:
             repo_path: Path to the repository
+            branch: Branch to analyze (can be local or remote like 'origin/main')
 
         Returns:
             List of commit dictionaries
@@ -204,7 +284,7 @@ class RepoSummaryGenerator:
                 'git', 'log',
                 f'--since={since_str}',
                 '--pretty=format:%H|%an|%ai|%s',
-                self.main_branch
+                branch
             ],
             cwd=repo_path,
             check=False
@@ -223,12 +303,19 @@ class RepoSummaryGenerator:
                 commit_hash, author, date, message = line.split('|', 3)
                 category = self.categorize_commit(message)
 
+                # Get stats for this commit
+                files_changed, insertions, deletions = self.get_commit_stats(repo_path, commit_hash)
+
                 commits.append({
                     'hash': commit_hash[:8],
                     'author': author,
                     'date': date,
                     'message': message,
-                    'category': category
+                    'category': category,
+                    'files_changed': files_changed,
+                    'insertions': insertions,
+                    'deletions': deletions,
+                    'total_changes': insertions + deletions
                 })
             except ValueError:
                 print(f"  Warning: Failed to parse commit line: {line}")
@@ -254,6 +341,8 @@ class RepoSummaryGenerator:
         lines.append("")
 
         total_commits = 0
+        total_insertions = 0
+        total_deletions = 0
         total_repos = len(all_data['repositories'])
 
         for repo_data in all_data['repositories']:
@@ -262,9 +351,21 @@ class RepoSummaryGenerator:
             commit_count = len(commits)
             total_commits += commit_count
 
+            # Calculate repo stats
+            repo_insertions = sum(c.get('insertions', 0) for c in commits)
+            repo_deletions = sum(c.get('deletions', 0) for c in commits)
+            repo_files_changed = sum(c.get('files_changed', 0) for c in commits)
+            avg_commit_size = (repo_insertions + repo_deletions) / commit_count if commit_count > 0 else 0
+
+            total_insertions += repo_insertions
+            total_deletions += repo_deletions
+
             lines.append(f"\n{'=' * 80}")
             lines.append(f"Repository: {repo_name}")
             lines.append(f"Commits: {commit_count}")
+            if commit_count > 0:
+                lines.append(f"Total changes: +{repo_insertions}/-{repo_deletions} lines, {repo_files_changed} files")
+                lines.append(f"Average commit size: {avg_commit_size:.0f} lines changed")
             lines.append(f"{'=' * 80}")
 
             if commit_count == 0:
@@ -283,9 +384,12 @@ class RepoSummaryGenerator:
                 lines.append("-" * 40)
 
                 for commit in category_commits:
+                    stats = f"+{commit.get('insertions', 0)}/-{commit.get('deletions', 0)}"
+                    files = f"{commit.get('files_changed', 0)} files"
                     lines.append(f"  [{commit['hash']}] {commit['message']}")
                     lines.append(f"    Author: {commit['author']}")
                     lines.append(f"    Date: {commit['date']}")
+                    lines.append(f"    Changes: {stats}, {files}")
                     lines.append("")
 
         # Summary
@@ -294,6 +398,11 @@ class RepoSummaryGenerator:
         lines.append("=" * 80)
         lines.append(f"Total repositories analyzed: {total_repos}")
         lines.append(f"Total commits: {total_commits}")
+
+        if total_commits > 0:
+            lines.append(f"Total lines changed: +{total_insertions}/-{total_deletions}")
+            avg_overall = (total_insertions + total_deletions) / total_commits
+            lines.append(f"Average commit size: {avg_overall:.0f} lines changed")
 
         # Category breakdown across all repos
         all_categories = defaultdict(int)
@@ -350,12 +459,12 @@ class RepoSummaryGenerator:
                 continue
 
             print(f"Processing: {repo_url}")
-            success, repo_path = self.clone_or_update_repo(repo_url)
+            success, repo_path, remote_branch = self.clone_or_update_repo(repo_url)
 
             if not success:
                 continue
 
-            commits = self.get_commits_from_repo(repo_path)
+            commits = self.get_commits_from_repo(repo_path, remote_branch)
 
             repo_data = {
                 'name': self.get_repo_name(repo_url),
