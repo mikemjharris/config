@@ -166,11 +166,13 @@ async function getNotifications() {
       const comments = await makeGitHubRequest(
         `/repos/${repoFullName}/issues/${prNumber}/comments?since=${SINCE}`
       );
+      console.log(`  Found ${comments.length} issue comments`);
 
       // Get review comments (code review comments)
       const reviewComments = await makeGitHubRequest(
         `/repos/${repoFullName}/pulls/${prNumber}/comments?since=${SINCE}`
       );
+      console.log(`  Found ${reviewComments.length} review comments`);
 
       // Get reviews
       const reviews = await makeGitHubRequest(
@@ -191,22 +193,49 @@ async function getNotifications() {
 
       // Filter comments (non-bot, not by me, and either mentions me or is on my PR)
       const relevantComments = comments.filter(c => {
-        if (isBot(c.user.login)) return false;
-        if (c.user.login === GITHUB_USERNAME) return false; // Exclude my own comments
-        if (c.body.includes(`@${GITHUB_USERNAME}`)) return true;
+        console.log(`  Checking issue comment from: ${c.user.login}`);
+        const botCheck = isBot(c.user.login);
+        console.log(`    isBot: ${botCheck}`);
+        if (botCheck) {
+          console.log(`    ✗ Filtered out (bot)`);
+          return false;
+        }
+        if (c.user.login === GITHUB_USERNAME) {
+          console.log(`    ✗ Filtered out (own comment)`);
+          return false;
+        }
+        const hasMention = c.body.includes(`@${GITHUB_USERNAME}`);
+        console.log(`    mentions me: ${hasMention}, isMyPR: ${isMyPR}`);
+        if (hasMention) return true;
         if (isMyPR) return true;
+        console.log(`    ✗ Filtered out (not relevant)`);
         return false;
       });
 
       const relevantReviewComments = reviewComments.filter(c => {
-        if (isBot(c.user.login)) return false;
-        if (c.user.login === GITHUB_USERNAME) return false; // Exclude my own comments
-        if (c.body.includes(`@${GITHUB_USERNAME}`)) return true;
+        console.log(`  Checking review comment from: ${c.user.login}`);
+        const botCheck = isBot(c.user.login);
+        console.log(`    isBot: ${botCheck}`);
+        if (botCheck) {
+          console.log(`    ✗ Filtered out (bot)`);
+          return false;
+        }
+        if (c.user.login === GITHUB_USERNAME) {
+          console.log(`    ✗ Filtered out (own comment)`);
+          return false;
+        }
+        const hasMention = c.body.includes(`@${GITHUB_USERNAME}`);
+        console.log(`    mentions me: ${hasMention}, isMyPR: ${isMyPR}`);
+        if (hasMention) return true;
         if (isMyPR) return true;
+        console.log(`    ✗ Filtered out (not relevant)`);
         return false;
       });
 
+      console.log(`  After filtering: ${relevantComments.length} relevant issue comments, ${relevantReviewComments.length} relevant review comments, ${approvals.length} approvals`);
+
       if (relevantComments.length > 0 || relevantReviewComments.length > 0 || approvals.length > 0) {
+        console.log(`  ✓ Adding to notifications list`);
         relevantNotifications.push({
           repo: repoFullName,
           prNumber,
@@ -217,6 +246,8 @@ async function getNotifications() {
           reviewComments: relevantReviewComments,
           approvals
         });
+      } else {
+        console.log(`  ✗ No relevant activity, skipping`);
       }
     }
 
