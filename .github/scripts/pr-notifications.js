@@ -32,7 +32,7 @@ const SINCE = TESTING
   : new Date(Date.now() - 35 * 60 * 1000).toISOString();
 
 // Bot usernames to filter out
-const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel'];
+const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel', 'coderabbitai'];
 
 function makeGitHubRequest(path) {
   return new Promise((resolve, reject) => {
@@ -95,6 +95,11 @@ function sendSlackMessage(blocks) {
 }
 
 function isBot(username) {
+  // Check if username contains [bot] (GitHub convention)
+  if (username.toLowerCase().includes('[bot]')) {
+    return true;
+  }
+  // Check against known bot usernames
   return BOT_USERS.some(bot => username.toLowerCase().includes(bot.toLowerCase()));
 }
 
