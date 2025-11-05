@@ -152,6 +152,14 @@ alias st="bundle exec foreman start"
 # Formatting outputs with line numvers
 alias nos="awk '{print NR \":\" \$1}'"
 
+# Open pull requests page for repo
+alias gp=__gp
+
+function __gp {
+  url=$(git remote -v | grep fetch | sed -e 's~.*:\([^.]*\)\.git.*~https://github.com/\1/pulls~')
+  open -a "Google Chrome" "$url"
+}
+
 # Create pr for current branch vs main
 alias pr=__pr
 
@@ -160,9 +168,12 @@ function __pr {
   #  git fetch
   #  echo "Type branch you are coming off - most likely:"
   #  git branch -a | grep CX-sprint | sort | tail -n 1 | sed -e 's~remotes/origin/~~'
-  #read branch  - used to have this when entering 
+  #read branch  - used to have this when entering
   branch="main"
-  git remote -v | grep fetch | sed -e 's~.\+:\(.\+\)\..\+~https://github.com/\1/compare/'$(echo $branch)'...'$(git rev-parse --abbrev-ref HEAD)'~' | pbcopy 
+  current_branch=$(git rev-parse --abbrev-ref HEAD)
+  url=$(git remote -v | grep fetch | sed -e 's~.*:\([^.]*\)\.git.*~https://github.com/\1/compare/'$branch'...'$current_branch'~')
+  echo "$url" | pbcopy
+  open -a "Google Chrome" "$url"
 }
 
 # Use when trying to get a line from a long list.  First pipe to 'nos' to get the line number.
