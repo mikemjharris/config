@@ -8,6 +8,28 @@
 #
 # Make sure git is configured to use global hooks:
 #   git config --global core.hooksPath ~/.git-hooks
+#
+# Environment variables:
+#   COMMIT_MSG_HOOK_DISABLED=true - Disables the hook entirely
+#   COMMIT_MSG_HOOK_ORG=my-org - Only run on repos from this org/user
+
+# Check if hook is disabled
+if [ "$COMMIT_MSG_HOOK_DISABLED" = "true" ]; then
+  exit 0
+fi
+
+# Check if we should only run on specific org repos
+if [ -n "$COMMIT_MSG_HOOK_ORG" ]; then
+  # Get the remote URL
+  REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
+
+  # Check if the remote URL contains the specified org
+  # Handles both SSH (git@github.com:org/repo.git) and HTTPS (https://github.com/org/repo.git)
+  if ! echo "$REMOTE_URL" | grep -qE "[:/]$COMMIT_MSG_HOOK_ORG/"; then
+    # Not in the specified org, skip validation
+    exit 0
+  fi
+fi
 
 # Read the commit message from the file passed as argument
 COMMIT_MSG_FILE=$1
@@ -24,7 +46,11 @@ TYPES="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|wip"
 # The ! for breaking changes is optional
 PATTERN="^($TYPES)(\(.+\))?!?: .{1,}"
 
-if echo "$FIRST_LINE" | grep -qE "$PATTERN"; then
+# Check if it's a merge commit (e.g., "Merge branch 'feature'")
+if echo "$FIRST_LINE" | grep -qE "^Merge "; then
+  echo "✓ Merge commit detected"
+  exit 0
+elif echo "$FIRST_LINE" | grep -qE "$PATTERN"; then
   echo "✓ Commit message follows conventional commits format"
   exit 0
 else
