@@ -301,8 +301,11 @@ function __pt {
 
 alias docker-compose="docker compose"
 
-alias de='docker exec app-"$(basename $PWD)-web-1"'
-alias deit='docker exec -it app-"$(basename $PWD)-web-1"'
+# Source docker service resolver
+source ~/working/config/local-exec/get-docker-service.sh
+
+alias de='docker exec "$(get_docker_service)"'
+alias deit='docker exec -it "$(get_docker_service)"'
 
 tmux_fzf_copy() {
   local selected
