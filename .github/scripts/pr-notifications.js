@@ -191,7 +191,17 @@ async function getNotifications() {
       // Check if PR author is the user
       const isMyPR = pr.user.login === GITHUB_USERNAME;
 
-      // Filter comments (non-bot, not by me, and either mentions me or is on my PR)
+      // Check if user is a requested reviewer
+      const isReviewer = pr.requested_reviewers?.some(r => r.login === GITHUB_USERNAME) ||
+                         pr.requested_teams?.length > 0; // Could enhance team check if needed
+
+      console.log(`  isMyPR: ${isMyPR}, isReviewer: ${isReviewer}`);
+
+      // Check if this is a new PR (created since SINCE)
+      const isNewPR = new Date(pr.created_at) > new Date(SINCE);
+      console.log(`  PR created at: ${pr.created_at}, isNewPR: ${isNewPR}`);
+
+      // Filter comments (non-bot, not by me, and either mentions me or is on my PR or I'm a reviewer)
       const relevantComments = comments.filter(c => {
         console.log(`  Checking issue comment from: ${c.user.login}`);
         const botCheck = isBot(c.user.login);
@@ -205,9 +215,10 @@ async function getNotifications() {
           return false;
         }
         const hasMention = c.body.includes(`@${GITHUB_USERNAME}`);
-        console.log(`    mentions me: ${hasMention}, isMyPR: ${isMyPR}`);
+        console.log(`    mentions me: ${hasMention}, isMyPR: ${isMyPR}, isReviewer: ${isReviewer}`);
         if (hasMention) return true;
         if (isMyPR) return true;
+        if (isReviewer) return true;
         console.log(`    ✗ Filtered out (not relevant)`);
         return false;
       });
@@ -225,16 +236,20 @@ async function getNotifications() {
           return false;
         }
         const hasMention = c.body.includes(`@${GITHUB_USERNAME}`);
-        console.log(`    mentions me: ${hasMention}, isMyPR: ${isMyPR}`);
+        console.log(`    mentions me: ${hasMention}, isMyPR: ${isMyPR}, isReviewer: ${isReviewer}`);
         if (hasMention) return true;
         if (isMyPR) return true;
+        if (isReviewer) return true;
         console.log(`    ✗ Filtered out (not relevant)`);
         return false;
       });
 
       console.log(`  After filtering: ${relevantComments.length} relevant issue comments, ${relevantReviewComments.length} relevant review comments, ${approvals.length} approvals`);
 
-      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || approvals.length > 0) {
+      // Include if:
+      // - There are relevant comments/reviews/approvals
+      // - OR it's a new PR where I'm a reviewer
+      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || approvals.length > 0 || (isNewPR && isReviewer)) {
         console.log(`  ✓ Adding to notifications list`);
         relevantNotifications.push({
           repo: repoFullName,
@@ -242,6 +257,8 @@ async function getNotifications() {
           prTitle: pr.title,
           prUrl: pr.html_url,
           isMyPR,
+          isReviewer,
+          isNewPR: isNewPR && isReviewer,
           comments: relevantComments,
           reviewComments: relevantReviewComments,
           approvals
@@ -279,11 +296,21 @@ async function formatAndSendNotifications(notifications) {
 
   for (const notif of notifications) {
     // PR header
+    let prLabel = '';
+    if (notif.isMyPR) {
+      prLabel = '(Your PR)';
+    } else if (notif.isReviewer) {
+      prLabel = '(Review Requested)';
+    }
+    if (notif.isNewPR) {
+      prLabel += ' 🆕';
+    }
+
     blocks.push({
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `*<${notif.prUrl}|${escapeSlackText(notif.repo)}#${notif.prNumber}>* ${notif.isMyPR ? '(Your PR)' : ''}\n${escapeSlackText(notif.prTitle)}`
+        text: `*<${notif.prUrl}|${escapeSlackText(notif.repo)}#${notif.prNumber}>* ${prLabel}\n${escapeSlackText(notif.prTitle)}`
       }
     });
 
