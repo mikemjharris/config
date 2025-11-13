@@ -125,9 +125,45 @@ async function getNotifications() {
 
     console.log(`Found ${notifications.length} notifications`);
 
+    // Also fetch recently updated PRs where user is author to catch approvals/reviews
+    console.log(`Fetching recently updated PRs where you're author...`);
+    // Search for PRs updated since SINCE (GitHub requires YYYY-MM-DD format)
+    const sinceDate = new Date(SINCE).toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const searchQuery = `type:pr author:${GITHUB_USERNAME} updated:>=${sinceDate}`;
+    console.log(`  Search query: ${searchQuery}`);
+    const myPRs = await makeGitHubRequest(
+      `/search/issues?q=${encodeURIComponent(searchQuery)}&per_page=100`
+    );
+    console.log(`  Found ${myPRs.total_count} PRs where you're the author (updated since ${sinceDate})`);
+
+    // Convert PRs to notification-like format
+    const prNotifications = myPRs.items.map(pr => ({
+      subject: {
+        title: pr.title,
+        url: pr.pull_request.url,
+        type: 'PullRequest'
+      },
+      repository: {
+        full_name: pr.repository_url.replace('https://api.github.com/repos/', '')
+      },
+      reason: 'author'
+    }));
+
+    // Combine notifications and open PRs, removing duplicates
+    const allNotifications = [...notifications];
+    const notificationUrls = new Set(notifications.map(n => n.subject.url));
+
+    for (const prNotif of prNotifications) {
+      if (!notificationUrls.has(prNotif.subject.url)) {
+        allNotifications.push(prNotif);
+      }
+    }
+
+    console.log(`Total notifications to process: ${allNotifications.length}`);
+
     const relevantNotifications = [];
 
-    for (const notif of notifications) {
+    for (const notif of allNotifications) {
       // Only process pull request notifications
       if (!notif.subject.url || !notif.subject.url.includes('/pulls/')) {
         continue;
@@ -179,14 +215,21 @@ async function getNotifications() {
         `/repos/${repoFullName}/pulls/${prNumber}/reviews`
       );
 
-      // Filter recent reviews
+      // Filter recent reviews (exclude bots and own reviews)
       const recentReviews = reviews.filter(r =>
         new Date(r.submitted_at) > new Date(SINCE) &&
-        !isBot(r.user.login)
+        !isBot(r.user.login) &&
+        r.user.login !== GITHUB_USERNAME
       );
+      console.log(`  Found ${recentReviews.length} recent reviews (excluding bots and own reviews)`);
 
       // Check for approvals
       const approvals = recentReviews.filter(r => r.state === 'APPROVED');
+
+      // Get review-level comments (comments that are part of the review body, not on specific lines)
+      const reviewLevelComments = recentReviews.filter(r =>
+        r.body && r.body.trim() !== '' && r.state !== 'APPROVED' // Don't duplicate approval bodies
+      );
 
       // Check if PR author is the user
       const isMyPR = pr.user.login === GITHUB_USERNAME;
@@ -244,12 +287,12 @@ async function getNotifications() {
         return false;
       });
 
-      console.log(`  After filtering: ${relevantComments.length} relevant issue comments, ${relevantReviewComments.length} relevant review comments, ${approvals.length} approvals`);
+      console.log(`  After filtering: ${relevantComments.length} relevant issue comments, ${relevantReviewComments.length} relevant review comments, ${reviewLevelComments.length} review-level comments, ${approvals.length} approvals`);
 
       // Include if:
       // - There are relevant comments/reviews/approvals
       // - OR it's a new PR where I'm a reviewer
-      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || approvals.length > 0 || (isNewPR && isReviewer)) {
+      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || reviewLevelComments.length > 0 || approvals.length > 0 || (isNewPR && isReviewer)) {
         console.log(`  ✓ Adding to notifications list`);
         relevantNotifications.push({
           repo: repoFullName,
@@ -261,6 +304,7 @@ async function getNotifications() {
           isNewPR: isNewPR && isReviewer,
           comments: relevantComments,
           reviewComments: relevantReviewComments,
+          reviewLevelComments,
           approvals
         });
       } else {
@@ -343,7 +387,7 @@ async function formatAndSendNotifications(notifications) {
       });
     }
 
-    // Review comments
+    // Review comments (on specific lines of code)
     for (const comment of notif.reviewComments) {
       const mention = comment.body.includes(`@${GITHUB_USERNAME}`) ? '📢 ' : '';
       // Remove quote markers and escape
@@ -354,6 +398,23 @@ async function formatAndSendNotifications(notifications) {
         text: {
           type: 'mrkdwn',
           text: `${mention}💭 *${escapeSlackText(comment.user.login)}* (code review): ${truncated}${comment.body.length > 200 ? '...' : ''}`
+        }
+      });
+    }
+
+    // Review-level comments (general review comments, not on specific lines)
+    for (const review of notif.reviewLevelComments || []) {
+      const mention = review.body.includes(`@${GITHUB_USERNAME}`) ? '📢 ' : '';
+      // Remove quote markers and escape
+      const cleanBody = review.body.replace(/^>\s*/gm, '').substring(0, 200);
+      const truncated = escapeSlackText(cleanBody);
+      const stateEmoji = review.state === 'CHANGES_REQUESTED' ? '🔄' :
+                         review.state === 'COMMENTED' ? '💬' : '📝';
+      blocks.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `${mention}${stateEmoji} *${escapeSlackText(review.user.login)}* reviewed: ${truncated}${review.body.length > 200 ? '...' : ''}`
         }
       });
     }
