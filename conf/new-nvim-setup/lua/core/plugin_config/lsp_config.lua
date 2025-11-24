@@ -1,5 +1,5 @@
 require("mason-lspconfig").setup({
-  ensure_installed = { "ts_ls", "solargraph", "ruby_lsp" }
+  ensure_installed = { "ts_ls", "ruby_lsp" }
 }
 )
 
@@ -122,19 +122,7 @@ lspconfig.lua_ls.setup {
   },
 }
 
--- Ruby Language Servers
-lspconfig.solargraph.setup {
-  capabilities = capabilities,
-  settings = {
-    solargraph = {
-      diagnostics = true,
-      completion = true,
-      useBundler = true,
-    }
-  }
-}
-
--- Both solargraph and ruby_lsp configured to work with Docker containers
+-- Ruby Language Server (ruby-lsp, same as VS Code default)
 lspconfig.ruby_lsp.setup {
   capabilities = capabilities,
   init_options = {
@@ -272,6 +260,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
+
+    -- Explicitly use Lspsaga hover for K to prevent default LSP hover
+    vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc ++keep<CR>', opts)
+
     vim.keymap.set('n', 'gS', vim.lsp.buf.declaration, opts)
     vim.keymap.set('n', 'gs', vim.lsp.buf.definition, opts)
     --    vim.keymap.set('n', 'J', vim.lsp.buf.hover, opts)
