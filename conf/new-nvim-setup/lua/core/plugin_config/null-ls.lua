@@ -30,13 +30,19 @@ null_ls.setup {
       end,
     }),
   },
-  -- Add this to your setup
+  -- Auto-format on save (disabled for Ruby files)
   on_attach = function(client, bufnr)
     if client.supports_method("textDocument/formatting") then
       vim.api.nvim_create_autocmd("BufWritePre", {
         group = augroup,
         buffer = bufnr,
         callback = function()
+          -- Skip auto-format for Ruby files
+          local filetype = vim.bo[bufnr].filetype
+          if filetype == "ruby" then
+            return
+          end
+
           local success, result = pcall(function()
             vim.lsp.buf.format({
               bufnr = bufnr,
