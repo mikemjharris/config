@@ -6,6 +6,44 @@ As of Nov 2019 my usual setup is linux laptop with Ubuntu and Gnome desktop.  Us
 
 The docs are ok ish - I know what I need at various stages and have tried to detail it here but I'm guessing that most of the setup will only be relevant to me so full docs and comments are kinda lite.  Feel free to message me if you have questions about how anything works.
 
+## Repository Structure
+
+This repository is organized into several key directories:
+
+```
+config/
+├── .github/          # GitHub Actions workflows
+│   ├── workflows/    # Auto-rebase and PR notifications
+│   └── scripts/      # Workflow support scripts
+├── bin/              # Installation and utility scripts
+│   ├── install-*.sh  # System setup scripts
+│   ├── commit-msg.sh # Git hooks for commit validation
+│   ├── pre-commit.sh # Branch naming validation
+│   ├── pre-push.sh   # WIP commit prevention
+│   └── daily-note.sh # Daily note generation
+├── conf/             # Configuration files
+│   ├── .bash_aliases # Bash aliases and shortcuts
+│   ├── .bashrc       # Bash configuration
+│   ├── .tmux.conf    # Tmux configuration
+│   ├── .vimrc        # Vim configuration
+│   ├── .git-templates/ # Git hook templates
+│   ├── new-nvim-setup/ # Neovim configuration
+│   └── tmux/         # Additional tmux configs
+├── local-exec/       # Development environment launchers
+│   └── dev           # Tmux session manager
+├── scripts/          # Standalone utility scripts
+│   └── weekly-repo-summary.sh # Commit analysis tool
+└── Dockerfile        # Docker development environment
+```
+
+### Key Directories
+
+- **bin/**: Installation scripts and git hooks for setting up systems and maintaining code quality
+- **conf/**: Dotfiles and configuration for various tools (bash, vim, tmux, neovim, etc.)
+- **local-exec/**: Scripts for launching pre-configured development environments
+- **scripts/**: Standalone utility scripts for repository analysis and other tasks
+- **.github/**: GitHub Actions workflows for automation (auto-rebase, PR notifications)
+
 ## Applications
 When setting up a new computer you often need to install many things.  These scripts install most of the programs you might need such as git, ruby, mysql etc.
 
