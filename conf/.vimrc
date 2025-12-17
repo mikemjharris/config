@@ -1,5 +1,5 @@
 " Specify a directory for plugins
-" T onstall plugins https://github.com/junegunn/vim-plug   :PlugInstall
+" To install plugins https://github.com/junegunn/vim-plug   :PlugInstall
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
 "

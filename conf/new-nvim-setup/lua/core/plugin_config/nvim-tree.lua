@@ -33,4 +33,4 @@ wk.add({
   { "<C-n>", "<cmd>NvimTreeToggle<CR>",   desc = "Toggle NvimTree",       mode = "n" },
   { "<C-f>", "<cmd>NvimTreeFindFile<CR>", desc = "Find File in NvimTree", mode = "n" },
   { "<C-s>", "<cmd>w<CR>",                desc = "Save File",             mode = "n" },
-}, { prefix = "<C-" })
+})

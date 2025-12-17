@@ -3,7 +3,7 @@ let &packpath=&runtimepath
 source ~/.vimrc
 
 " https://blog.kdheepak.com/three-built-in-neovim-features.html
-" In neovim show all subsitutions in a file in split window
+" In neovim show all substitutions in a file in split window
 set inccommand=split
 
 
