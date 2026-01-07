@@ -6,6 +6,11 @@ conf/new-nvim-setup/lua/.luarc.json
 
 **/.claude/settings.local.json
 
+# Override global gitignore to allow .claude/ in this repo
+!.claude/
+# But still ignore personal files
+.claude/settings.local.json
+
 conf/tmux/plugins/
 
 notes/
@@ -20,3 +25,4 @@ local-exec/dev.windows
 scripts/repos/
 scripts/*.txt
 
+CLAUDE.local.md
