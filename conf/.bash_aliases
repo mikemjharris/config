@@ -1,6 +1,9 @@
 :
-### Alias for git 
+### Alias for git
 alias gco="git checkout "
+
+# unstage all staged files
+alias gus="git restore --staged ."
 
 # If you are force pushing ALWAYS force push with lease
 # https://developer.atlassian.com/blog/2015/04/force-with-lease/
