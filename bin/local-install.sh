@@ -46,6 +46,9 @@ git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
 echo "Setting up ctags config"
 ln -s $(pwd)/conf/.ctags ~/.ctags
 
+echo "Installing yarn for markdown-preview plugin"
+npm install -g yarn
+
 echo "Installing mermaid CLI for diagram rendering"
 npm install -g @mermaid-js/mermaid-cli
 
