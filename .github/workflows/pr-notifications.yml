@@ -3,7 +3,7 @@ name: PR Notifications
 on:
   schedule:
     # Run every 30 minutes
-    - cron: '*/30 * * * *'
+    - cron: '0,30 8-18,19 * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
