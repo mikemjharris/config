@@ -321,3 +321,6 @@ tmux_fzf_copy() {
 }
 
 bindkey '^F' tmux_fzf_search  # Ctrl-F to trigger
+
+alias claude-sw="CLAUDE_CONFIG_DIR=~/.claude-sw claude"
+alias claude-api="CLAUDE_CONFIG_DIR=~/.claude-api claude"
