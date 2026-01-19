@@ -31,3 +31,17 @@ echo ""
 # Determine Ruby version to install
 RUBY_VERSION="3.4.4"  # Default version
 
+if [ -f ".ruby-version" ]; then
+  RUBY_VERSION=$(cat .ruby-version | tr -d '[:space:]')
+  echo "=== Ruby Version Detection ==="
+  echo "Found .ruby-version file: $RUBY_VERSION"
+elif [ -f "$HOME/dev/app/account/.ruby-version" ]; then
+  RUBY_VERSION=$(cat "$HOME/dev/app/account/.ruby-version" | tr -d '[:space:]')
+  echo "=== Ruby Version Detection ==="
+  echo "Found .ruby-version in account app: $RUBY_VERSION"
+else
+  echo "=== Ruby Version Detection ==="
+  echo "No .ruby-version found, using default: $RUBY_VERSION"
+fi
+echo ""
+
