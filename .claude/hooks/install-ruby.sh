@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Hook to install Ruby using rbenv
 # Only runs in Claude Code web instances
+echo "running"
 
 set -e
 
