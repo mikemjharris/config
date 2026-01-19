@@ -80,3 +80,10 @@ echo "=== Installing Ruby $RUBY_VERSION ==="
 echo "This may take a few minutes..."
 # rbenv install "$RUBY_VERSION"
 echo "here"
+if rbenv install 3.4.4; then
+  echo "✓ Ruby $RUBY_VERSION installed successfully"
+else
+  echo "✗ ERROR: Failed to install Ruby $RUBY_VERSION"
+  exit 1
+fi
+echo ""
