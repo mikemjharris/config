@@ -45,3 +45,18 @@ else
 fi
 echo ""
 
+# Check if rbenv is installed
+echo "=== Checking rbenv Installation ==="
+if ! command -v rbenv &> /dev/null; then
+  echo "✗ ERROR: rbenv not found. Please install rbenv first."
+  exit 1
+fi
+echo "✓ rbenv found at: $(command -v rbenv)"
+echo "✓ rbenv version: $(rbenv --version)"
+echo ""
+
+# Check current Ruby versions
+echo "=== Current Ruby Versions ==="
+rbenv versions || echo "No Ruby versions installed yet"
+echo ""
+
