@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'hi'"
+            "command": "env && pwd"
           }
         ]
       }
