@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+# Hook to install Ruby using rbenv
+# Only runs in Claude Code web instances
 
 set -e
-
-echo "hi from script"
 
 echo "=========================================="
 echo "Ruby Installation Hook Starting"
