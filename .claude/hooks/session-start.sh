@@ -78,4 +78,5 @@ fi
 # Install Ruby
 echo "=== Installing Ruby $RUBY_VERSION ==="
 echo "This may take a few minutes..."
-rbenv install "$RUBY_VERSION"
+# rbenv install "$RUBY_VERSION"
+echo "here"
