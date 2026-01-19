@@ -75,3 +75,14 @@ if rbenv versions | grep -q "$RUBY_VERSION"; then
   exit 0
 fi
 
+# Install Ruby
+echo "=== Installing Ruby $RUBY_VERSION ==="
+echo "This may take a few minutes..."
+if rbenv install "$RUBY_VERSION"; then
+  echo "✓ Ruby $RUBY_VERSION installed successfully"
+else
+  echo "✗ ERROR: Failed to install Ruby $RUBY_VERSION"
+  exit 1
+fi
+echo ""
+
