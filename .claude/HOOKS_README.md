@@ -13,6 +13,8 @@ Hooks are configured in `.claude/settings.local.json` and scripts are stored in 
 - **Environment**: Web only (checks `CLAUDE_CODE_REMOTE="true"`)
 - **Purpose**: Automatically installs Ruby 3.4.4 using rbenv if not already installed
 - **Location**: `.claude/hooks/install-ruby.sh`
+- **Timeout**: 600 seconds (10 minutes) - Ruby compilation can take 5-10 minutes
+- **Logging**: All output logged to `claude.log` in project root
 
 ## Environment Detection
 
@@ -121,14 +123,22 @@ Add these to the `permissions.allow` array in settings.
 - Hooks run with your user's full permissions
 - Always validate hook scripts before adding them
 - Use web-only checks (`CLAUDE_CODE_REMOTE`) for cloud-specific operations
-- Hooks timeout after 60 seconds by default
+- Hooks timeout after 60 seconds by default (configurable with `timeout` parameter in seconds)
 - Failed hooks will block execution in `PreToolUse` events
+- Long-running hooks (like Ruby compilation) should have explicit timeout values (e.g., 600 seconds)
 
 ## Debugging
 
 To see hook execution logs:
 1. In CLI: Run `claude --debug`
 2. In Web: Check browser console or session logs
+3. Check `claude.log` in project root for detailed hook execution logs
+
+The `claude.log` file contains:
+- Timestamp of session start
+- All commands executed by hooks
+- Command output and errors
+- Environment variables at hook execution time
 
 ## Additional Resources
 

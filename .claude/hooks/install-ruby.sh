@@ -4,116 +4,142 @@
 
 set -e
 
-echo "=========================================="
-echo "Ruby Installation Hook Starting"
-echo "=========================================="
-echo ""
+# Log file path
+LOG_FILE="${CLAUDE_PROJECT_DIR:-$(pwd)}/claude.log"
+
+# Function to log both to stdout and file
+log() {
+  echo "$@" | tee -a "$LOG_FILE"
+}
+
+# Initialize log file (overwrite existing)
+echo "===========================================" > "$LOG_FILE"
+echo "Session Start: $(date)" >> "$LOG_FILE"
+echo "Script: $0" >> "$LOG_FILE"
+echo "===========================================" >> "$LOG_FILE"
+echo "" >> "$LOG_FILE"
+
+log "=========================================="
+log "Ruby Installation Hook Starting"
+log "=========================================="
+log ""
 
 # Log environment variables
-echo "=== Environment Check ==="
-echo "CLAUDE_CODE_REMOTE: ${CLAUDE_CODE_REMOTE:-'(not set)'}"
-echo "CLAUDE_PROJECT_DIR: ${CLAUDE_PROJECT_DIR:-'(not set)'}"
-echo "PWD: $(pwd)"
-echo "USER: ${USER:-'(not set)'}"
-echo "HOME: ${HOME:-'(not set)'}"
-echo ""
+log "=== Environment Check ==="
+log "CLAUDE_CODE_REMOTE: ${CLAUDE_CODE_REMOTE:-'(not set)'}"
+log "CLAUDE_PROJECT_DIR: ${CLAUDE_PROJECT_DIR:-'(not set)'}"
+log "PWD: $(pwd)"
+log "USER: ${USER:-'(not set)'}"
+log "HOME: ${HOME:-'(not set)'}"
+log ""
 
 # Only run in web environment
+log "=== Checking if running in web environment ==="
 if [ "$CLAUDE_CODE_REMOTE" != "true" ]; then
-  echo "✓ Skipping Ruby installation - not in web environment"
-  echo "=========================================="
+  log "✓ Skipping Ruby installation - not in web environment"
+  log "=========================================="
   exit 0
 fi
 
-echo "✓ Running in Claude Code web instance"
-echo ""
+log "✓ Running in Claude Code web instance"
+log ""
 
 # Determine Ruby version to install
 RUBY_VERSION="3.4.4"  # Default version
+log "=== Ruby Version Detection ==="
 
 if [ -f ".ruby-version" ]; then
+  log "Found .ruby-version file in current directory"
   RUBY_VERSION=$(cat .ruby-version | tr -d '[:space:]')
-  echo "=== Ruby Version Detection ==="
-  echo "Found .ruby-version file: $RUBY_VERSION"
+  log "Ruby version from .ruby-version: $RUBY_VERSION"
 elif [ -f "$HOME/dev/app/account/.ruby-version" ]; then
+  log "Found .ruby-version in account app"
   RUBY_VERSION=$(cat "$HOME/dev/app/account/.ruby-version" | tr -d '[:space:]')
-  echo "=== Ruby Version Detection ==="
-  echo "Found .ruby-version in account app: $RUBY_VERSION"
+  log "Ruby version from account app: $RUBY_VERSION"
 else
-  echo "=== Ruby Version Detection ==="
-  echo "No .ruby-version found, using default: $RUBY_VERSION"
+  log "No .ruby-version found, using default: $RUBY_VERSION"
 fi
-echo ""
+log ""
 
 # Check if rbenv is installed
-echo "=== Checking rbenv Installation ==="
+log "=== Checking rbenv Installation ==="
+log "Running: command -v rbenv"
 if ! command -v rbenv &> /dev/null; then
-  echo "✗ ERROR: rbenv not found. Please install rbenv first."
+  log "✗ ERROR: rbenv not found. Please install rbenv first."
   exit 1
 fi
-echo "✓ rbenv found at: $(command -v rbenv)"
-echo "✓ rbenv version: $(rbenv --version)"
-echo ""
+log "✓ rbenv found at: $(command -v rbenv)"
+log "✓ rbenv version: $(rbenv --version)"
+log ""
 
 # Check current Ruby versions
-echo "=== Current Ruby Versions ==="
-rbenv versions || echo "No Ruby versions installed yet"
-echo ""
+log "=== Current Ruby Versions ==="
+log "Running: rbenv versions"
+rbenv versions 2>&1 | tee -a "$LOG_FILE" || log "No Ruby versions installed yet"
+log ""
 
 # Check if target Ruby version is already installed
+log "=== Checking if Ruby $RUBY_VERSION is already installed ==="
 if rbenv versions | grep -q "$RUBY_VERSION"; then
-  echo "=== Ruby Already Installed ==="
-  echo "✓ Ruby $RUBY_VERSION is already installed"
-  echo "Setting as global version..."
-  rbenv global "$RUBY_VERSION"
-  rbenv rehash
-  echo "✓ Ruby $RUBY_VERSION set as global"
-  echo ""
-  echo "=== Final Ruby Version ==="
-  ruby --version
-  echo "=========================================="
+  log "=== Ruby Already Installed ==="
+  log "✓ Ruby $RUBY_VERSION is already installed"
+  log "Setting as global version..."
+  log "Running: rbenv global $RUBY_VERSION"
+  rbenv global "$RUBY_VERSION" 2>&1 | tee -a "$LOG_FILE"
+  log "Running: rbenv rehash"
+  rbenv rehash 2>&1 | tee -a "$LOG_FILE"
+  log "✓ Ruby $RUBY_VERSION set as global"
+  log ""
+  log "=== Final Ruby Version ==="
+  log "Running: ruby --version"
+  ruby --version 2>&1 | tee -a "$LOG_FILE"
+  log "=========================================="
   exit 0
 fi
 
 # Install Ruby
-echo "=== Installing Ruby $RUBY_VERSION ==="
-echo "This may take a few minutes..."
-if rbenv install "$RUBY_VERSION"; then
-  echo "✓ Ruby $RUBY_VERSION installed successfully"
+log "=== Installing Ruby $RUBY_VERSION ==="
+log "This may take a few minutes..."
+log "Running: rbenv install $RUBY_VERSION"
+if rbenv install "$RUBY_VERSION" 2>&1 | tee -a "$LOG_FILE"; then
+  log "✓ Ruby $RUBY_VERSION installed successfully"
 else
-  echo "✗ ERROR: Failed to install Ruby $RUBY_VERSION"
+  log "✗ ERROR: Failed to install Ruby $RUBY_VERSION"
   exit 1
 fi
-echo ""
+log ""
 
 # Set as global version
-echo "=== Setting Global Ruby Version ==="
-rbenv global "$RUBY_VERSION"
-echo "✓ Set Ruby $RUBY_VERSION as global"
-echo ""
+log "=== Setting Global Ruby Version ==="
+log "Running: rbenv global $RUBY_VERSION"
+rbenv global "$RUBY_VERSION" 2>&1 | tee -a "$LOG_FILE"
+log "✓ Set Ruby $RUBY_VERSION as global"
+log ""
 
 # Rehash rbenv shims
-echo "=== Rehashing rbenv Shims ==="
-rbenv rehash
-echo "✓ rbenv shims rehashed"
-echo ""
+log "=== Rehashing rbenv Shims ==="
+log "Running: rbenv rehash"
+rbenv rehash 2>&1 | tee -a "$LOG_FILE"
+log "✓ rbenv shims rehashed"
+log ""
 
 # Verify installation
-echo "=== Verifying Installation ==="
-if ruby --version | grep -q "$RUBY_VERSION"; then
-  echo "✓ Ruby installation verified:"
-  ruby --version
-  echo ""
-  echo "✓ Gem version:"
-  gem --version
-  echo ""
-  echo "=========================================="
-  echo "Ruby Installation Complete!"
-  echo "=========================================="
+log "=== Verifying Installation ==="
+log "Running: ruby --version"
+if ruby --version 2>&1 | tee -a "$LOG_FILE" | grep -q "$RUBY_VERSION"; then
+  log "✓ Ruby installation verified"
+  log ""
+  log "Running: gem --version"
+  log "✓ Gem version:"
+  gem --version 2>&1 | tee -a "$LOG_FILE"
+  log ""
+  log "=========================================="
+  log "Ruby Installation Complete!"
+  log "=========================================="
   exit 0
 else
-  echo "✗ ERROR: Ruby $RUBY_VERSION not available after installation"
-  echo "Current ruby version:"
-  ruby --version || echo "(ruby command not found)"
+  log "✗ ERROR: Ruby $RUBY_VERSION not available after installation"
+  log "Current ruby version:"
+  ruby --version 2>&1 | tee -a "$LOG_FILE" || log "(ruby command not found)"
   exit 1
 fi
