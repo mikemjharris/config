@@ -8,6 +8,7 @@ This repository contains personal configuration files, scripts, and development 
 When `CLAUDE_CODE_REMOTE="true"`:
 - See @rules/web-environment.md for web-specific guidelines
 - Ruby 3.4.4 is automatically installed via rbenv on session start
+- Hook logs available at `~/.claude-hooks.log`
 - Network access is limited to allowlisted domains
 - All operations run in isolated cloud VMs
 

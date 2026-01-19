@@ -13,6 +13,7 @@
 - Ruby 3.4.4 is automatically installed via rbenv on session start
 - Hook script: `.claude/hooks/install-ruby.sh`
 - Global Ruby version is set automatically
+- Hook logs available at `~/.claude-hooks.log`
 
 ### Network Access
 - Limited to Anthropic's default allowlisted domains
@@ -55,6 +56,9 @@ Prefer these patterns in web environment:
 # Check Ruby installation
 ruby --version
 rbenv versions
+
+# Check hook logs if something went wrong
+cat ~/.claude-hooks.log
 
 # Git operations work normally
 git status
