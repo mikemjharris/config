@@ -1,4 +1,17 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(rbenv:*)",
+      "Bash(ruby --version:*)",
+      "Bash(gem --version:*)",
+      "Bash(command -v:*)",
+      "Bash(echo:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(pwd:*)",
+      "Bash(tr:*)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {

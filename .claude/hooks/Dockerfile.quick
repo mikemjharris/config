@@ -1,0 +1,60 @@
+# Quick test Dockerfile - tests hook logic without actually installing Ruby
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install minimal dependencies
+RUN apt-get update && apt-get install -y \
+    bash \
+    coreutils \
+    grep \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create test user
+RUN useradd -m -s /bin/bash testuser
+USER testuser
+WORKDIR /home/testuser
+
+# Create a mock rbenv that doesn't actually install Ruby
+RUN mkdir -p ~/.rbenv/bin ~/.rbenv/shims && \
+    echo '#!/bin/bash' > ~/.rbenv/bin/rbenv && \
+    echo 'case "$1" in' >> ~/.rbenv/bin/rbenv && \
+    echo '  --version) echo "rbenv 1.2.0-mock" ;;' >> ~/.rbenv/bin/rbenv && \
+    echo '  versions) echo "  3.3.0" ;;' >> ~/.rbenv/bin/rbenv && \
+    echo '  global) echo "Setting global to $2" ;;' >> ~/.rbenv/bin/rbenv && \
+    echo '  rehash) echo "Rehashing shims" ;;' >> ~/.rbenv/bin/rbenv && \
+    echo '  install) echo "Mock installing Ruby $2..." && sleep 2 && echo "Ruby $2 installed (mock)" ;;' >> ~/.rbenv/bin/rbenv && \
+    echo '  *) echo "rbenv: unknown command $1" ;;' >> ~/.rbenv/bin/rbenv && \
+    echo 'esac' >> ~/.rbenv/bin/rbenv && \
+    chmod +x ~/.rbenv/bin/rbenv
+
+# Create mock ruby command
+RUN echo '#!/bin/bash' > ~/.rbenv/shims/ruby && \
+    echo 'if [ "$1" = "--version" ]; then' >> ~/.rbenv/shims/ruby && \
+    echo '  VERSION=$(cat ~/.rbenv/version 2>/dev/null || echo "3.4.4")' >> ~/.rbenv/shims/ruby && \
+    echo '  echo "ruby ${VERSION}p0 (2024-12-25) [x86_64-linux] (mock)"' >> ~/.rbenv/shims/ruby && \
+    echo 'fi' >> ~/.rbenv/shims/ruby && \
+    chmod +x ~/.rbenv/shims/ruby
+
+# Create mock gem command
+RUN echo '#!/bin/bash' > ~/.rbenv/shims/gem && \
+    echo '[ "$1" = "--version" ] && echo "3.5.0 (mock)"' >> ~/.rbenv/shims/gem && \
+    chmod +x ~/.rbenv/shims/gem
+
+# Set up PATH
+ENV PATH="/home/testuser/.rbenv/bin:/home/testuser/.rbenv/shims:${PATH}"
+
+# Simulate Claude Code web environment
+ENV CLAUDE_CODE_REMOTE=true
+ENV CLAUDE_PROJECT_DIR=/home/testuser/project
+
+# Create project directory
+RUN mkdir -p /home/testuser/project
+
+# Copy the hook script
+COPY --chown=testuser:testuser install-ruby.sh /home/testuser/project/.claude/hooks/install-ruby.sh
+RUN chmod +x /home/testuser/project/.claude/hooks/install-ruby.sh
+
+WORKDIR /home/testuser/project
+
+CMD ["/bin/bash", "-c", "./.claude/hooks/install-ruby.sh && echo '' && echo '=== Post-Hook State ===' && ruby --version && gem --version && /bin/bash"]
