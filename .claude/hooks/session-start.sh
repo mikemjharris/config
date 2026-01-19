@@ -16,7 +16,6 @@ handle_error() {
 
 # Main script logic wrapped in error handling
 main() {
-  set -e  # Exit on error within this function (caught by trap)
 
   echo "hi from script"
 
