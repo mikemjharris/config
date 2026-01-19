@@ -60,3 +60,18 @@ echo "=== Current Ruby Versions ==="
 rbenv versions || echo "No Ruby versions installed yet"
 echo ""
 
+# Check if target Ruby version is already installed
+if rbenv versions | grep -q "$RUBY_VERSION"; then
+  echo "=== Ruby Already Installed ==="
+  echo "✓ Ruby $RUBY_VERSION is already installed"
+  echo "Setting as global version..."
+  rbenv global "$RUBY_VERSION"
+  rbenv rehash
+  echo "✓ Ruby $RUBY_VERSION set as global"
+  echo ""
+  echo "=== Final Ruby Version ==="
+  ruby --version
+  echo "=========================================="
+  exit 0
+fi
+
