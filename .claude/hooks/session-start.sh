@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -e
 
 echo "hi from script"
@@ -75,7 +74,3 @@ if rbenv versions | grep -q "$RUBY_VERSION"; then
   exit 0
 fi
 
-# Install Ruby
-echo "=== Installing Ruby $RUBY_VERSION ==="
-echo "This may take a few minutes..."
-env install "$RUBY_VERSION"
