@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "env && pwd"
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh"
           }
         ]
       }
