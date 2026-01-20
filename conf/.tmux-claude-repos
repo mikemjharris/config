@@ -1,0 +1,7 @@
+# Tmux Claude Launcher - Repository Configuration
+# Format: window_name:full_path_to_repo
+# One repo per line, lines starting with # are ignored
+
+account:$HOME/dev/app/account
+train:$HOME/dev/app/train
+config:$HOME/working/config
