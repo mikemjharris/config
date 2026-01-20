@@ -272,6 +272,10 @@ export PROMPT_COMMAND=enter_directory
 
 # TODO symlink and better path
 export PATH=/home/mike/working/config/local-exec:$PATH
+export PATH=$HOME/working/config/cli-tools:$PATH
+
+# Launch tmux session with claude in multiple repos
+alias tcl="tmux-claude-launcher.sh"
 
 ### All for WSL and gui apps
 # https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps
