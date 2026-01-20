@@ -31,15 +31,10 @@ node_modules
 *.key
 *.srl
 
-**/.claude/settings.local.json
-
-claude.local.md
-CLAUDE.local.md
-
+# Ignore all *.local.* files (settings.local.json, CLAUDE.local.md, etc.)
+*.local.*
 
 mike-local/
-
-.claude
 
 .mcp.json
 
