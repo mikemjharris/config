@@ -39,6 +39,24 @@ Most of this setup should work as it does for a standard ubuntu setup. A few thi
 - Use Windows Terminal not Windows console (it solves many font and display issues)
 - My normal setup mixes dark mode in the terminal with light in vim - the terminal seems to force the same colour in all situations. As such I've set a light theme for the terminal - see `robbyrussell-light.zsh-theme` for instructions.
 
+## Directory Structure
+
+- **`bin/`** - Configuration installation and setup scripts
+  - `install-brew-packages.sh` - Install Homebrew packages (macOS)
+  - `install-linux.sh` - Linux system setup
+  - `local-install.sh` - Symlink config files locally
+  - `install.sh` - Remote one-off installation
+  - **`git-hooks/`** - Git hook scripts
+- **`cli-tools/`** - General CLI utilities (add to PATH)
+  - `claude-monitor.sh` - Monitor Claude Code instances
+  - `daily-note.sh` - Daily notes helper
+  - `latest-branches.sh` - List recent git branches
+  - `repo-launcher.sh` - Interactive repo browser
+  - `tmux-claude-launcher.sh` - Launch tmux with Claude in multiple repos
+- **`conf/`** - Configuration files (.bashrc, .vimrc, .tmux.conf, etc.)
+- **`local-exec/`** - Local execution scripts
+- **`scripts/`** - Utility scripts (weekly summaries, etc.)
+
 ## Scripts
 
 ### Weekly Repository Summary
@@ -61,6 +79,31 @@ cp scripts/repos.example.txt scripts/repos.txt
 - LLM-ready for automated summarization
 
 For detailed usage and examples, see [scripts/WEEKLY_SUMMARY_README.md](scripts/WEEKLY_SUMMARY_README.md)
+
+### CLI Tools
+
+General-purpose command-line utilities in `cli-tools/` (add to PATH for easy access):
+
+**Claude Code Management:**
+- `tcl` (alias for `tmux-claude-launcher.sh`) - Launch tmux session with Claude running in multiple repos
+  - Configure repos in `conf/.tmux-claude-repos` or `~/.tmux-claude-repos`
+  - Format: `window_name:path` (one per line)
+- `claude-monitor.sh` - Monitor all running Claude Code instances (also: tmux `<leader>+A`)
+
+**Git Utilities:**
+- `latest-branches.sh` - List your 15 most recently updated git branches
+- `repo-launcher.sh` - Interactive menu to open repos in browser (also: tmux `<leader>+R`)
+
+**Productivity:**
+- `daily-note.sh` - Open daily notes (also: tmux `<leader>+N`)
+
+**Tmux Keybindings:**
+- `<leader>+N` - Daily notes popup
+- `<leader>+R` - Repo launcher popup
+- `<leader>+A` - Claude monitor popup
+- `<leader>+F` - Lazygit popup
+- `<leader>+M` - Man page popup
+- `<leader>+G` - Git log popup
 
 ## VS Code
 Just started using VS code and wanted a backup of extensions.  To install extensions on a new computer:
