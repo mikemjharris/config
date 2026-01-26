@@ -311,8 +311,8 @@ alias docker-compose="docker compose"
 # Source docker service resolver
 source ~/working/config/local-exec/get-docker-service.sh
 
-alias de='_de() { local service=$(get_docker_service); echo "Running: docker exec \"$service\" $@"; docker exec "$service" "$@"; }; _de'
-alias deit='_deit() { local service=$(get_docker_service); echo "Running: docker exec -it \"$service\" $@"; docker exec -it "$service" "$@"; }; _deit'
+alias de='_de() { local service=$(get_docker_service); echo "Running: docker compose exec \"$service\" $@"; docker compose exec "$service" "$@"; }; _de'
+alias deit='_deit() { local service=$(get_docker_service); echo "Running: docker compose exec -it \"$service\" $@"; docker compose exec -it "$service" "$@"; }; _deit'
 
 tmux_fzf_copy() {
   local selected

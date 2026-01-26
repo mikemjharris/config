@@ -15,8 +15,8 @@ get_docker_service() {
     service_name="$dir_name"
   fi
 
-  # Return full container name: app-{service}-web-1
-  echo "app-${service_name}-web-1"
+  # Return service name for docker compose (with -web suffix)
+  echo "${service_name}-web"
 }
 
 # If script is executed directly (not sourced), run the function
