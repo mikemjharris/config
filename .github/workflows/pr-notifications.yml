@@ -18,6 +18,13 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Restore notification state
+        uses: actions/cache@v4
+        with:
+          path: .github/state
+          key: pr-notifications-${{ github.run_id }}
+          restore-keys: pr-notifications-
+
       - name: Fetch PR notifications
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}

@@ -20,6 +20,35 @@ if (fs.existsSync(envPath)) {
   });
 }
 
+const STATE_FILE = path.join(__dirname, '../../.github/state/notified-state.json');
+
+function loadState() {
+  if (fs.existsSync(STATE_FILE)) {
+    try {
+      return JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+    } catch (e) {
+      console.log('Could not parse state file, starting fresh');
+    }
+  }
+  return { notified_reviews: [] };
+}
+
+function saveState(state) {
+  const dir = path.dirname(STATE_FILE);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+}
+
+function pruneState(state) {
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  state.notified_reviews = state.notified_reviews.filter(
+    entry => new Date(entry.notified_at) > sevenDaysAgo
+  );
+  return state;
+}
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'mikemjharris';
@@ -114,7 +143,7 @@ function escapeSlackText(text) {
     .substring(0, 2900); // Stay well under 3000 char limit
 }
 
-async function getNotifications() {
+async function getNotifications(notifiedKeys) {
   try {
     console.log(`Fetching notifications since ${SINCE}...`);
 
@@ -215,12 +244,21 @@ async function getNotifications() {
         `/repos/${repoFullName}/pulls/${prNumber}/reviews`
       );
 
-      // Filter recent reviews (exclude bots and own reviews)
-      const recentReviews = reviews.filter(r =>
-        new Date(r.submitted_at) > new Date(SINCE) &&
-        !isBot(r.user.login) &&
-        r.user.login !== GITHUB_USERNAME
-      );
+      // Check if PR author is the user (needed for review filter below)
+      const isMyPR = pr.user.login === GITHUB_USERNAME;
+
+      // Filter reviews: exclude bots and own reviews.
+      // For own PRs, use state-based dedup instead of time window to avoid
+      // missing reviews that fell between polling cycles.
+      const recentReviews = reviews.filter(r => {
+        if (isBot(r.user.login)) return false;
+        if (r.user.login === GITHUB_USERNAME) return false;
+        if (isMyPR) {
+          const key = `${repoFullName}#${prNumber}:${r.id}`;
+          return !notifiedKeys.has(key);
+        }
+        return new Date(r.submitted_at) > new Date(SINCE);
+      });
       console.log(`  Found ${recentReviews.length} recent reviews (excluding bots and own reviews)`);
 
       // Check for approvals
@@ -230,9 +268,6 @@ async function getNotifications() {
       const reviewLevelComments = recentReviews.filter(r =>
         r.body && r.body.trim() !== '' && r.state !== 'APPROVED' // Don't duplicate approval bodies
       );
-
-      // Check if PR author is the user
-      const isMyPR = pr.user.login === GITHUB_USERNAME;
 
       // Check if user is a requested reviewer
       const isReviewer = pr.requested_reviewers?.some(r => r.login === GITHUB_USERNAME) ||
@@ -444,8 +479,25 @@ async function main() {
       throw new Error('SLACK_WEBHOOK_URL environment variable is required');
     }
 
-    const notifications = await getNotifications();
+    // Load and prune state for review deduplication
+    const state = pruneState(loadState());
+    const notifiedKeys = new Set(state.notified_reviews.map(e => e.key));
+    console.log(`Loaded ${notifiedKeys.size} previously notified reviews from state`);
+
+    const notifications = await getNotifications(notifiedKeys);
     await formatAndSendNotifications(notifications);
+
+    // Track notified reviews so we don't re-send them
+    for (const notif of notifications) {
+      for (const review of [...notif.approvals, ...notif.reviewLevelComments]) {
+        state.notified_reviews.push({
+          key: `${notif.repo}#${notif.prNumber}:${review.id}`,
+          notified_at: new Date().toISOString()
+        });
+      }
+    }
+    saveState(state);
+    console.log(`State saved with ${state.notified_reviews.length} tracked reviews`);
   } catch (error) {
     console.error('Error in main:', error);
     process.exit(1);
