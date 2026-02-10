@@ -279,6 +279,11 @@ async function getNotifications(notifiedKeys) {
       const isNewPR = new Date(pr.created_at) > new Date(SINCE);
       console.log(`  PR created at: ${pr.created_at}, isNewPR: ${isNewPR}`);
 
+      // Check if PR was merged recently
+      const isMerged = pr.merged === true;
+      const mergedRecently = isMerged && pr.merged_at && new Date(pr.merged_at) > new Date(SINCE);
+      console.log(`  PR merged: ${isMerged}, merged_at: ${pr.merged_at}, mergedRecently: ${mergedRecently}`);
+
       // Filter comments (non-bot, not by me, and either mentions me or is on my PR or I'm a reviewer)
       const relevantComments = comments.filter(c => {
         console.log(`  Checking issue comment from: ${c.user.login}`);
@@ -327,7 +332,8 @@ async function getNotifications(notifiedKeys) {
       // Include if:
       // - There are relevant comments/reviews/approvals
       // - OR it's a new PR where I'm a reviewer
-      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || reviewLevelComments.length > 0 || approvals.length > 0 || (isNewPR && isReviewer)) {
+      // - OR it was merged recently (and it's my PR)
+      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || reviewLevelComments.length > 0 || approvals.length > 0 || (isNewPR && isReviewer) || (mergedRecently && isMyPR)) {
         console.log(`  ✓ Adding to notifications list`);
         relevantNotifications.push({
           repo: repoFullName,
@@ -337,6 +343,8 @@ async function getNotifications(notifiedKeys) {
           isMyPR,
           isReviewer,
           isNewPR: isNewPR && isReviewer,
+          mergedRecently,
+          mergedBy: pr.merged_by?.login,
           comments: relevantComments,
           reviewComments: relevantReviewComments,
           reviewLevelComments,
@@ -392,6 +400,18 @@ async function formatAndSendNotifications(notifications) {
         text: `*<${notif.prUrl}|${escapeSlackText(notif.repo)}#${notif.prNumber}>* ${prLabel}\n${escapeSlackText(notif.prTitle)}`
       }
     });
+
+    // Merged status (show first if merged)
+    if (notif.mergedRecently) {
+      const mergedBy = notif.mergedBy ? ` by ${escapeSlackText(notif.mergedBy)}` : '';
+      blocks.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `🎉 *Merged*${mergedBy}`
+        }
+      });
+    }
 
     // Approvals
     if (notif.approvals.length > 0) {
