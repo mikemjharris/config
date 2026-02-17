@@ -30,7 +30,7 @@ function loadState() {
       console.log('Could not parse state file, starting fresh');
     }
   }
-  return { notified_reviews: [] };
+  return { notified_reviews: [], last_run_at: null };
 }
 
 function saveState(state) {
@@ -53,12 +53,24 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'mikemjharris';
 
-// Time window: last 30 minutes (plus 5 min buffer)
 // For testing, use a longer window if TESTING env var is set
 const TESTING = process.env.TESTING === 'true';
-const SINCE = TESTING
-  ? new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 24 hours for testing
-  : new Date(Date.now() - 35 * 60 * 1000).toISOString();
+const DEFAULT_SINCE_MS = 35 * 60 * 1000; // 35 minutes
+const MAX_SINCE_MS = 24 * 60 * 60 * 1000; // Cap at 24 hours
+
+function calculateSince(lastRunAt) {
+  if (TESTING) {
+    return new Date(Date.now() - MAX_SINCE_MS).toISOString();
+  }
+  if (lastRunAt) {
+    const lastRun = new Date(lastRunAt);
+    const msSinceLastRun = Date.now() - lastRun.getTime();
+    // Use time since last run (+ 5 min buffer), capped at 24 hours
+    const sinceMs = Math.min(msSinceLastRun + 5 * 60 * 1000, MAX_SINCE_MS);
+    return new Date(Date.now() - sinceMs).toISOString();
+  }
+  return new Date(Date.now() - DEFAULT_SINCE_MS).toISOString();
+}
 
 // Bot usernames to filter out
 const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel', 'coderabbitai'];
@@ -143,7 +155,7 @@ function escapeSlackText(text) {
     .substring(0, 2900); // Stay well under 3000 char limit
 }
 
-async function getNotifications(notifiedKeys) {
+async function getNotifications(notifiedKeys, SINCE) {
   try {
     console.log(`Fetching notifications since ${SINCE}...`);
 
@@ -273,7 +285,13 @@ async function getNotifications(notifiedKeys) {
       const isReviewer = pr.requested_reviewers?.some(r => r.login === GITHUB_USERNAME) ||
                          pr.requested_teams?.length > 0; // Could enhance team check if needed
 
-      console.log(`  isMyPR: ${isMyPR}, isReviewer: ${isReviewer}`);
+      // Detect new review requests (tagged as reviewer) that we haven't notified about yet
+      const reviewRequestKey = `${repoFullName}#${prNumber}:review_requested`;
+      const isNewReviewRequest = isReviewer &&
+        notif.reason === 'review_requested' &&
+        !notifiedKeys.has(reviewRequestKey);
+
+      console.log(`  isMyPR: ${isMyPR}, isReviewer: ${isReviewer}, isNewReviewRequest: ${isNewReviewRequest}`);
 
       // Check if this is a new PR (created since SINCE)
       const isNewPR = new Date(pr.created_at) > new Date(SINCE);
@@ -333,7 +351,8 @@ async function getNotifications(notifiedKeys) {
       // - There are relevant comments/reviews/approvals
       // - OR it's a new PR where I'm a reviewer
       // - OR it was merged recently (and it's my PR)
-      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || reviewLevelComments.length > 0 || approvals.length > 0 || (isNewPR && isReviewer) || (mergedRecently && isMyPR)) {
+      // - OR it's a new review request (tagged as reviewer, not yet notified)
+      if (relevantComments.length > 0 || relevantReviewComments.length > 0 || reviewLevelComments.length > 0 || approvals.length > 0 || (isNewPR && isReviewer) || (mergedRecently && isMyPR) || isNewReviewRequest) {
         console.log(`  ✓ Adding to notifications list`);
         relevantNotifications.push({
           repo: repoFullName,
@@ -343,6 +362,7 @@ async function getNotifications(notifiedKeys) {
           isMyPR,
           isReviewer,
           isNewPR: isNewPR && isReviewer,
+          isNewReviewRequest,
           mergedRecently,
           mergedBy: pr.merged_by?.login,
           comments: relevantComments,
@@ -400,6 +420,17 @@ async function formatAndSendNotifications(notifications) {
         text: `*<${notif.prUrl}|${escapeSlackText(notif.repo)}#${notif.prNumber}>* ${prLabel}\n${escapeSlackText(notif.prTitle)}`
       }
     });
+
+    // Review request notification
+    if (notif.isNewReviewRequest) {
+      blocks.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `👀 *Review requested* - your review has been requested on this PR`
+        }
+      });
+    }
 
     // Merged status (show first if merged)
     if (notif.mergedRecently) {
@@ -503,12 +534,24 @@ async function main() {
     const state = pruneState(loadState());
     const notifiedKeys = new Set(state.notified_reviews.map(e => e.key));
     console.log(`Loaded ${notifiedKeys.size} previously notified reviews from state`);
+    console.log(`Last run at: ${state.last_run_at || 'never'}`);
 
-    const notifications = await getNotifications(notifiedKeys);
+    // Calculate SINCE dynamically based on last run time
+    // This ensures overnight activity is caught on the first morning run
+    const SINCE = calculateSince(state.last_run_at);
+    console.log(`Using SINCE: ${SINCE}`);
+
+    const notifications = await getNotifications(notifiedKeys, SINCE);
     await formatAndSendNotifications(notifications);
 
-    // Track notified reviews so we don't re-send them
+    // Track notified reviews and review requests so we don't re-send them
     for (const notif of notifications) {
+      if (notif.isNewReviewRequest) {
+        state.notified_reviews.push({
+          key: `${notif.repo}#${notif.prNumber}:review_requested`,
+          notified_at: new Date().toISOString()
+        });
+      }
       for (const review of [...notif.approvals, ...notif.reviewLevelComments]) {
         state.notified_reviews.push({
           key: `${notif.repo}#${notif.prNumber}:${review.id}`,
@@ -516,6 +559,7 @@ async function main() {
         });
       }
     }
+    state.last_run_at = new Date().toISOString();
     saveState(state);
     console.log(`State saved with ${state.notified_reviews.length} tracked reviews`);
   } catch (error) {
