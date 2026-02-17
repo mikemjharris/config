@@ -1,0 +1,27 @@
+name: Daily PR Summary
+
+on:
+  schedule:
+    # 8:00 UTC, weekdays only
+    - cron: '0 8 * * 1-5'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate and send daily PR summary
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_USERNAME: mikemjharris
+        run: |
+          node .github/scripts/daily-pr-summary.js
