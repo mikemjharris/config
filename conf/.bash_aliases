@@ -242,7 +242,59 @@ export KEYTIMEOUT=1
 bindkey -v
 bindkey "\e." insert-last-word
 bindkey "^[." insert-last-word
-bindkey '^R' history-incremental-search-backward
+# fzf history search with Ctrl+R
+# Ctrl+E: edit selected command in $EDITOR before running
+# Ctrl+X: delete selected entry from history
+# Enter: execute selected command
+fzf_history_widget() {
+  local selected
+  selected=$(fc -rl 1 | awk '!seen[$0]++' | \
+    fzf --no-sort --exact --reverse --height=40% \
+        --prompt='History> ' \
+        --header='ctrl-e:edit | ctrl-x:delete | enter:run' \
+        --expect='ctrl-e,ctrl-x' \
+        --query="${LBUFFER}" \
+    )
+
+  local key=$(echo "$selected" | head -1)
+  local cmd=$(echo "$selected" | tail -1 | sed 's/^ *[0-9]* *//')
+
+  if [[ -z "$cmd" ]]; then
+    zle redisplay
+    return
+  fi
+
+  case "$key" in
+    ctrl-e)
+      # Edit in $EDITOR then place on command line
+      local tmpfile=$(mktemp)
+      echo "$cmd" > "$tmpfile"
+      ${EDITOR:-vim} "$tmpfile" < /dev/tty > /dev/tty
+      BUFFER=$(cat "$tmpfile")
+      rm -f "$tmpfile"
+      CURSOR=${#BUFFER}
+      ;;
+    ctrl-x)
+      # Delete matching entries from history
+      local histfile="${HISTFILE:-$HOME/.zsh_history}"
+      cp "$histfile" "${histfile}.bak"
+      local tmpfile=$(mktemp)
+      LC_ALL=C grep -Fv "$cmd" "$histfile" > "$tmpfile" && mv "$tmpfile" "$histfile"
+      fc -R  # reload history
+      zle -M "Deleted from history: $cmd"
+      return
+      ;;
+    *)
+      # Default: place command on buffer and execute
+      BUFFER="$cmd"
+      zle accept-line
+      return
+      ;;
+  esac
+  zle redisplay
+}
+zle -N fzf_history_widget
+bindkey '^R' fzf_history_widget
 
 # make sure vim doesn't hang on ctl s : https://unix.stackexchange.com/a/72092
 stty -ixon
