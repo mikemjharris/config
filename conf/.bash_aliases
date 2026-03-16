@@ -251,7 +251,7 @@ HISTCONTROL=ignorespace
 
 plugins=(
   git
-  zsh-z
+  zoxide
 )
 
 # Run nvm when in new directory : https://stackoverflow.com/a/48322289
