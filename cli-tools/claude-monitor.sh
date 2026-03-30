@@ -40,10 +40,8 @@ if [[ ${#claude_panes[@]} -eq 0 ]]; then
 fi
 
 # Display header
-echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════════${RESET}"
-echo -e "${BOLD}${GREEN}                    Claude Code Monitor${RESET}"
-echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════════${RESET}"
-echo ""
+echo -e "${BOLD}${GREEN} Claude Code Monitor${RESET}"
+echo -e "${BLUE}─────────────────────────────────${RESET}"
 
 # Store pane data with sort keys
 declare -a pane_data=()
@@ -90,35 +88,63 @@ for pane_info in "${claude_panes[@]}"; do
   pane_data+=("${priority}|${idle_seconds}|${pane_id}|${window_name}|${short_path}|${status}|${idle_time}")
 done
 
-# Sort by priority, then by idle time (descending)
-IFS=$'\n' sorted_panes=($(sort -t'|' -k1,1n -k2,2rn <<< "${pane_data[*]}"))
-unset IFS
+# Split into recent (< 2 hours) and old (>= 2 hours), sorted by idle time within each
+RECENT_THRESHOLD=7200  # 2 hours in seconds
 
-# Display sorted panes
+declare -a recent_panes=()
+declare -a old_panes=()
+
+for entry in "${pane_data[@]}"; do
+  idle_secs=$(echo "$entry" | cut -d'|' -f2)
+  if [[ $idle_secs -lt $RECENT_THRESHOLD ]]; then
+    recent_panes+=("$entry")
+  else
+    old_panes+=("$entry")
+  fi
+done
+
+# Sort each group by priority then idle time
+if [[ ${#recent_panes[@]} -gt 0 ]]; then
+  IFS=$'\n' recent_panes=($(sort -t'|' -k1,1n -k2,2n <<< "${recent_panes[*]}"))
+  unset IFS
+fi
+if [[ ${#old_panes[@]} -gt 0 ]]; then
+  IFS=$'\n' old_panes=($(sort -t'|' -k2,2n <<< "${old_panes[*]}"))
+  unset IFS
+fi
+
+# Display helper
 index=1
 declare -a pane_ids=()
 
-for pane_entry in "${sorted_panes[@]}"; do
+display_pane() {
+  local pane_entry="$1"
   IFS='|' read -r priority idle_seconds pane_id window_name short_path status idle_time <<< "$pane_entry"
   pane_ids+=("$pane_id")
-
-  # Extract just the pane number from pane_id (e.g., "my_dev_session:4.4" -> "pane 4")
   pane_num=$(echo "$pane_id" | cut -d. -f2)
-
-  # Display the pane info
-  echo -e "  ${BOLD}${CYAN}${index}${RESET}. ${BOLD}${window_name}${RESET} ${DIM}(pane ${pane_num})${RESET}"
-  echo -e "     ${status} ${DIM}${short_path}${RESET} ${DIM}• idle ${idle_time}${RESET}"
-  echo ""
-
+  echo -e " ${BOLD}${CYAN}${index}${RESET} ${status} ${BOLD}${window_name}${RESET}${DIM}:${pane_num} ${short_path} ${idle_time}${RESET}"
   ((index++))
-done
+}
 
-echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════════${RESET}"
-echo -e "  Press ${BOLD}number${RESET} to switch to that pane"
-echo -e "  Press ${BOLD}q${RESET} to quit"
-echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════════════${RESET}"
-echo ""
-echo -n "Select: "
+# Recent section
+if [[ ${#recent_panes[@]} -gt 0 ]]; then
+  echo -e " ${BOLD}${GREEN}Recent${RESET}"
+  for entry in "${recent_panes[@]}"; do
+    display_pane "$entry"
+  done
+fi
+
+# Old section
+if [[ ${#old_panes[@]} -gt 0 ]]; then
+  [[ ${#recent_panes[@]} -gt 0 ]] && echo -e "${DIM}┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄${RESET}"
+  echo -e " ${DIM}Old${RESET}"
+  for entry in "${old_panes[@]}"; do
+    display_pane "$entry"
+  done
+fi
+
+echo -e "${BLUE}─────────────────────────────────${RESET}"
+echo -ne " ${DIM}[1-9] switch  [q] quit${RESET}: "
 
 # Read single character input
 read -n 1 choice
