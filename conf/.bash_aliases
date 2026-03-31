@@ -322,6 +322,12 @@ precmd() {
 }
 export PROMPT_COMMAND=enter_directory
 
+# Show AWS_VAULT env in prompt before git branch
+aws_vault_info() {
+  [[ -n "$AWS_VAULT" ]] && echo "%{$fg[yellow]%}[$AWS_VAULT]%{$reset_color%} "
+}
+PROMPT='%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%}%c%{$reset_color%} $(aws_vault_info)$(git_prompt_info)'
+
 # TODO symlink and better path
 export PATH=/home/mike/working/config/local-exec:$PATH
 export PATH=$HOME/working/config/cli-tools:$PATH
