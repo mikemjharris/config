@@ -257,7 +257,7 @@ fzf_history_widget() {
     )
 
   local key=$(echo "$selected" | head -1)
-  local cmd=$(echo "$selected" | tail -1 | sed 's/^ *[0-9]* *//')
+  local cmd=$(echo "$selected" | tail -1 | sed 's/^ *[0-9][0-9]*\** *\** *//')
 
   if [[ -z "$cmd" ]]; then
     zle redisplay
@@ -285,13 +285,13 @@ fzf_history_widget() {
       return
       ;;
     *)
-      # Default: place command on buffer and execute
+      # Default: place command on command line ready to run
       BUFFER="$cmd"
-      zle accept-line
+      CURSOR=${#BUFFER}
+      zle reset-prompt
       return
       ;;
   esac
-  zle redisplay
 }
 zle -N fzf_history_widget
 bindkey '^R' fzf_history_widget
