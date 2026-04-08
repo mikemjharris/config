@@ -335,6 +335,25 @@ async function main() {
     console.log('Daily summary sent successfully!');
   } catch (error) {
     console.error('Error in main:', error);
+
+    // Try to send a Slack alert about the failure
+    if (SLACK_WEBHOOK_URL) {
+      let alertText;
+      if (error.message && error.message.includes('401')) {
+        alertText = '🔴 *GitHub Token Expired*\nThe `GH_PERSONAL_TOKEN` used by Daily PR Summary has expired or has bad credentials. Please rotate the token in the repo secrets.';
+      } else {
+        alertText = `🔴 *Daily PR Summary Failed*\n\`${error.message || String(error)}\``;
+      }
+      try {
+        await sendSlackMessage([
+          { type: 'section', text: { type: 'mrkdwn', text: alertText } }
+        ]);
+        console.log('Sent Slack alert about failure');
+      } catch (slackError) {
+        console.error('Failed to send Slack alert:', slackError);
+      }
+    }
+
     process.exit(1);
   }
 }

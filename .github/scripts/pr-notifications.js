@@ -510,14 +510,28 @@ async function formatAndSendNotifications(notifications) {
     });
   }
 
-  console.log(`Sending ${notifications.length} notifications to Slack...`);
+  console.log(`Sending ${notifications.length} notifications to Slack (${blocks.length} blocks)...`);
   if (TESTING) {
     const payload = JSON.stringify({ blocks }, null, 2);
     console.log('Slack payload:', payload);
     require('fs').writeFileSync('/tmp/slack-payload.json', payload);
     console.log('Payload written to /tmp/slack-payload.json');
   }
-  await sendSlackMessage(blocks);
+
+  // Slack has a 50-block limit per message — split into chunks if needed
+  const MAX_BLOCKS = 50;
+  if (blocks.length <= MAX_BLOCKS) {
+    await sendSlackMessage(blocks);
+  } else {
+    const chunks = [];
+    for (let i = 0; i < blocks.length; i += MAX_BLOCKS) {
+      chunks.push(blocks.slice(i, i + MAX_BLOCKS));
+    }
+    console.log(`Splitting into ${chunks.length} messages (${blocks.length} blocks total)`);
+    for (const chunk of chunks) {
+      await sendSlackMessage(chunk);
+    }
+  }
   console.log('Notifications sent successfully!');
 }
 
@@ -564,6 +578,25 @@ async function main() {
     console.log(`State saved with ${state.notified_reviews.length} tracked reviews`);
   } catch (error) {
     console.error('Error in main:', error);
+
+    // Try to send a Slack alert about the failure
+    if (SLACK_WEBHOOK_URL) {
+      let alertText;
+      if (error.message && error.message.includes('401')) {
+        alertText = '🔴 *GitHub Token Expired*\nThe `GH_PERSONAL_TOKEN` used by PR Notifications has expired or has bad credentials. Please rotate the token in the repo secrets.';
+      } else {
+        alertText = `🔴 *PR Notifications Failed*\n\`${escapeSlackText(error.message || String(error))}\``;
+      }
+      try {
+        await sendSlackMessage([
+          { type: 'section', text: { type: 'mrkdwn', text: alertText } }
+        ]);
+        console.log('Sent Slack alert about failure');
+      } catch (slackError) {
+        console.error('Failed to send Slack alert:', slackError);
+      }
+    }
+
     process.exit(1);
   }
 }
