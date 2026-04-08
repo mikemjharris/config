@@ -244,7 +244,7 @@ local plugins = {
         jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
       },
     },
-    cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
+    ft = "csv",
   },
   {
     "iamcco/markdown-preview.nvim",

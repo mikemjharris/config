@@ -22,3 +22,11 @@ local csv_colors = {
 for i, color in ipairs(csv_colors) do
   vim.api.nvim_set_hl(0, 'CsvViewCol' .. (i - 1), { fg = color })
 end
+
+-- Auto-enable csvview for CSV files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'csv',
+  callback = function()
+    require('csvview').enable()
+  end,
+})
