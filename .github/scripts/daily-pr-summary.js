@@ -214,13 +214,34 @@ async function getMyOpenPRs() {
 
 async function getPRsAwaitingMyReview() {
   console.log('Fetching PRs awaiting your review...');
-  const searchQuery = `type:pr review-requested:${GITHUB_USERNAME} state:open`;
-  const result = await makeGitHubRequest(
-    `/search/issues?q=${encodeURIComponent(searchQuery)}&per_page=100&sort=updated&order=desc`
-  );
-  console.log(`Found ${result.total_count} PRs awaiting your review`);
 
-  return result.items.map(item => ({
+  // Fetch PRs where review is explicitly requested
+  const requestedQuery = `type:pr review-requested:${GITHUB_USERNAME} state:open`;
+  const requestedResult = await makeGitHubRequest(
+    `/search/issues?q=${encodeURIComponent(requestedQuery)}&per_page=100&sort=updated&order=desc`
+  );
+  console.log(`Found ${requestedResult.total_count} PRs with review requested`);
+
+  // Also fetch open PRs you've already reviewed (including approved)
+  // GitHub removes you from review-requested once you submit a review
+  const reviewedQuery = `type:pr reviewed-by:${GITHUB_USERNAME} state:open -author:${GITHUB_USERNAME}`;
+  const reviewedResult = await makeGitHubRequest(
+    `/search/issues?q=${encodeURIComponent(reviewedQuery)}&per_page=100&sort=updated&order=desc`
+  );
+  console.log(`Found ${reviewedResult.total_count} open PRs you've reviewed`);
+
+  // Combine and deduplicate by PR URL
+  const seen = new Set();
+  const allItems = [...requestedResult.items, ...reviewedResult.items];
+  const uniqueItems = allItems.filter(item => {
+    if (seen.has(item.html_url)) return false;
+    seen.add(item.html_url);
+    return true;
+  });
+
+  console.log(`Total unique PRs for review section: ${uniqueItems.length}`);
+
+  return uniqueItems.map(item => ({
     repo: item.repository_url.replace('https://api.github.com/repos/', ''),
     number: item.number,
     title: item.title,
@@ -284,7 +305,7 @@ function buildSlackBlocks(myPRs, awaitingReview) {
     type: 'section',
     text: {
       type: 'mrkdwn',
-      text: `*Awaiting Your Review (${awaitingReview.length})*`
+      text: `*PRs You're Reviewing (${awaitingReview.length})*`
     }
   });
 
