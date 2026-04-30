@@ -2,8 +2,8 @@ name: Daily PR Summary
 
 on:
   schedule:
-    # 8:00 UTC, weekdays only
-    - cron: '0 8 * * 1-5'
+    # 5:23 UTC, weekdays only (off-the-hour to avoid scheduler delays)
+    - cron: '23 5 * * 1-5'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
