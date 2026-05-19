@@ -7,13 +7,9 @@ get_docker_service() {
   local cwd="${1:-$PWD}"
   local dir_name=$(basename "$cwd")
 
-  # Special case: assessor-rails maps to assessor
-  if [[ "$dir_name" == "assessor-rails" ]]; then
-    service_name="assessor"
-  else
-    # Default: use directory basename as-is
-    service_name="$dir_name"
-  fi
+  # Take the name before the first hyphen
+  # e.g. assessor-rails -> assessor, account-fw1 -> account, account -> account
+  local service_name="${dir_name%%-*}"
 
   # Return service name for docker compose (with -web suffix)
   echo "${service_name}-web"
