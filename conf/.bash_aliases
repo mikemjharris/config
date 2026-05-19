@@ -179,6 +179,12 @@ function __pr {
   open -a "Google Chrome" "$url"
 }
 
+# Create PR with intelligent base branch detection and optional automated review
+alias pr-create='~/working/config/scripts/create-pr-with-review.sh'
+
+# Run Claude review agents on existing PR
+alias pr-review='~/working/config/scripts/run-pr-agent-review.sh'
+
 # Use when trying to get a line from a long list.  First pipe to 'nos' to get the line number.
 # e.g.  git diff main --name-only | nos 
 #       git diff main --name-only | line 7
@@ -242,17 +248,7 @@ export KEYTIMEOUT=1
 bindkey -v
 bindkey "\e." insert-last-word
 bindkey "^[." insert-last-word
-# Use fzf's native Ctrl+R history widget (handles multi-line commands,
-# dedup, and all edge cases properly).
-if command -v fzf &> /dev/null; then
-  if fzf --zsh &> /dev/null; then
-    source <(fzf --zsh)
-  elif [[ -f /opt/homebrew/opt/fzf/shell/key-bindings.zsh ]]; then
-    source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
-  elif [[ -f /usr/share/fzf/key-bindings.zsh ]]; then
-    source /usr/share/fzf/key-bindings.zsh
-  fi
-fi
+# Ctrl+R fzf history search is provided by ~/.fzf.zsh (sourced from ~/.zshrc)
 
 # make sure vim doesn't hang on ctl s : https://unix.stackexchange.com/a/72092
 stty -ixon
