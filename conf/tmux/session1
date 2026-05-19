@@ -1,10 +1,15 @@
 #session
-# Attach to a current session
-# setup a session with one large panel running vim on left covering 70% of screen.
-# then a vertical split 50 /50
+# Layout:
+#   left column (40%): vim (top) + lazygit (bottom)
+#   right column (60%): two panes split 50/50
 attach -c "#{pane_current_path}"
 
 send-keys "vim ." C-m
 
-splitw -h -p 30 
-splitw -v -p 50 
+splitw -h -p 60
+splitw -v -p 50
+
+splitw -v -p 50 -t '{top-left}'
+send-keys -t '{bottom-left}' "lazygit" C-m
+
+select-pane -t '{top-left}'
