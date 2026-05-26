@@ -25,7 +25,7 @@ const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'mikemjharris';
 const TESTING = process.env.TESTING === 'true';
 
-const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel', 'coderabbitai'];
+const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel', 'coderabbitai', 'copilot'];
 
 function makeGitHubRequest(apiPath) {
   return new Promise((resolve, reject) => {

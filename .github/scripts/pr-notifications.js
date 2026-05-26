@@ -73,7 +73,7 @@ function calculateSince(lastRunAt) {
 }
 
 // Bot usernames to filter out
-const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel', 'coderabbitai'];
+const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel', 'coderabbitai', 'copilot'];
 
 function makeGitHubRequest(path) {
   return new Promise((resolve, reject) => {
