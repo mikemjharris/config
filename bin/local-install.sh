@@ -1,57 +1,111 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Symlink dotfiles from a local checkout into $HOME. Idempotent and unattended.
+#
+# Env vars:
+#   SKIP_OMZ         set to 1 to skip oh-my-zsh install
+#   SKIP_PLUGINS     set to 1 to skip vim/nvim plugin install (heavy, network)
+#   SKIP_NPM_GLOBAL  set to 1 to skip global npm installs (yarn, mermaid-cli)
 
-echo "install plug for local plugins. run - :PlugInstall"
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+set -u
 
-echo "install zsh shell"
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-echo "symlinks .tmux.conf and .vimrc along with others to your directory so that updates are easy to setup"
-ln -s $(pwd)/conf/.tmux.conf  ~/.tmux.conf
-ln -s $(pwd)/conf/.vimrc ~/.vimrc
-ln -s $(pwd)/conf/.bash_aliases  ~/.bash_aliases
-ln -s $(pwd)/cli-tools/latest-branches.sh  ~/latest-branches.sh
+echo "Installing vim-plug for local plugins (run :PlugInstall in vim)"
+curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-echo "Linking in vim templates"
-ln -s $(pwd)/conf/vim-templates ~/.vim/templates
+if [ "${SKIP_OMZ:-0}" != "1" ] && [ ! -d "$HOME/.oh-my-zsh" ]; then
+  echo "Installing oh-my-zsh (unattended, no chsh, keep zshrc)"
+  # KEEP_ZSHRC=yes is important: otherwise the installer renames the existing
+  # ~/.zshrc to ~/.zshrc.pre-oh-my-zsh and we lose anything install-linux.sh
+  # or install.sh has already appended (rbenv init, aliases).
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+fi
 
-echo "Setting up neovim config"
-mkdir -p ~/.config/nvim
-ln -s $(pwd)/conf/new-nvim-config/ ~/.config/nvim
+# Because KEEP_ZSHRC=yes skips loading oh-my-zsh from ~/.zshrc, add the init
+# block ourselves (idempotent via marker).
+OMZ_MARKER="# >>> oh-my-zsh init >>>"
+touch "$HOME/.zshrc"
+if [ -d "$HOME/.oh-my-zsh" ] && ! grep -qF "$OMZ_MARKER" "$HOME/.zshrc"; then
+  echo "Appending oh-my-zsh init block to ~/.zshrc"
+  cat >> "$HOME/.zshrc" <<'OMZ'
+# >>> oh-my-zsh init >>>
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+plugins=(git)
+[ -s "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
+# <<< oh-my-zsh init <<<
+OMZ
+fi
 
-echo "Setting up vim tmp folder"
-mkdir ~/tmp
+echo "Symlinking dotfiles into \$HOME"
+ln -sfn "$REPO_ROOT/conf/.tmux.conf"            "$HOME/.tmux.conf"
+ln -sfn "$REPO_ROOT/conf/.vimrc"                "$HOME/.vimrc"
+ln -sfn "$REPO_ROOT/conf/.bash_aliases"         "$HOME/.bash_aliases"
+ln -sfn "$REPO_ROOT/cli-tools/latest-branches.sh" "$HOME/latest-branches.sh"
+ln -sfn "$REPO_ROOT/conf/.ctags"                "$HOME/.ctags"
 
-echo "Install vim plugins"
-yes | vim +PlugInstall +qall
-yes | nvim +PlugInstall +qall
+echo "Linking vim templates"
+mkdir -p "$HOME/.vim"
+ln -sfn "$REPO_ROOT/conf/vim-templates" "$HOME/.vim/templates"
 
-echo "Linking in tmux init sessions"
-ln -s $(pwd)/conf/tmux ~/.tmux
+echo "Linking neovim config"
+mkdir -p "$HOME/.config"
+# Remove any existing real dir/symlink so the link is clean.
+if [ -e "$HOME/.config/nvim" ] || [ -L "$HOME/.config/nvim" ]; then
+  rm -rf "$HOME/.config/nvim"
+fi
+ln -sfn "$REPO_ROOT/conf/new-nvim-setup" "$HOME/.config/nvim"
 
-echo "Adding alias to zshrc"
-cat $(pwd)/conf/setup_bash_aliases >> ~/.zshrc
+echo "Creating vim tmp folder"
+mkdir -p "$HOME/tmp"
 
-echo "Setting up global gitignore"
-git config --global core.excludesfile $(pwd)/conf/.gitignore_global
+echo "Linking tmux session templates"
+ln -sfn "$REPO_ROOT/conf/tmux" "$HOME/.tmux"
 
-echo "Setting up auto remote"
+# Append aliases once (guarded by marker matching the one install.sh uses).
+ALIASES_MARKER="# >>> mikemjharris/config:conf/setup_bash_aliases >>>"
+touch "$HOME/.zshrc"
+if ! grep -qF "$ALIASES_MARKER" "$HOME/.zshrc"; then
+  echo "Appending aliases to ~/.zshrc"
+  {
+    echo "$ALIASES_MARKER"
+    cat "$REPO_ROOT/conf/setup_bash_aliases"
+    echo "# <<< mikemjharris/config:conf/setup_bash_aliases <<<"
+  } >> "$HOME/.zshrc"
+fi
+
+echo "Configuring git global settings (idempotent)"
+git config --global core.excludesfile "$REPO_ROOT/conf/.gitignore_global"
 git config --global push.autoSetupRemote true
 
-echo "Setting up z plugin"
-git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
+# zsh-z plugin (oh-my-zsh custom).
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-z" ]; then
+  mkdir -p "$ZSH_CUSTOM/plugins"
+  git clone https://github.com/agkozak/zsh-z "$ZSH_CUSTOM/plugins/zsh-z" || \
+    echo "WARN: zsh-z clone failed (oh-my-zsh likely not installed yet)"
+fi
 
+if [ "${SKIP_PLUGINS:-0}" != "1" ]; then
+  if command -v vim >/dev/null 2>&1; then
+    echo "Installing vim plugins"
+    yes | vim +PlugInstall +qall || true
+  fi
+  if command -v nvim >/dev/null 2>&1; then
+    echo "Installing nvim plugins"
+    yes | nvim +PlugInstall +qall || true
+  fi
+fi
 
-echo "Setting up ctags config"
-ln -s $(pwd)/conf/.ctags ~/.ctags
+if [ "${SKIP_NPM_GLOBAL:-0}" != "1" ] && command -v npm >/dev/null 2>&1; then
+  echo "Installing global npm packages (yarn, mermaid-cli)"
+  npm install -g yarn @mermaid-js/mermaid-cli || echo "WARN: global npm install failed"
+fi
 
-echo "Installing yarn for markdown-preview plugin"
-npm install -g yarn
-
-echo "Installing mermaid CLI for diagram rendering"
-npm install -g @mermaid-js/mermaid-cli
-
-echo "Setting up keyboard mappings for external keyboard (Akkon 65 key)"
-ln -s $(pwd)/conf/keyboard ~/.mh_config
-
+# Keyboard mappings — Linux desktop only.
+if [ -d "$REPO_ROOT/conf/keyboard" ]; then
+  ln -sfn "$REPO_ROOT/conf/keyboard" "$HOME/.mh_config"
+fi
