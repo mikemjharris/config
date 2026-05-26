@@ -1,0 +1,45 @@
+name: test-install
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bin/install.sh'
+      - 'bin/install-linux.sh'
+      - 'bin/local-install.sh'
+      - 'conf/**'
+      - 'cli-tools/**'
+      - 'Dockerfile.test-install'
+      - '.dockerignore'
+      - '.github/workflows/test-install.yml'
+  pull_request:
+    paths:
+      - 'bin/install.sh'
+      - 'bin/install-linux.sh'
+      - 'bin/local-install.sh'
+      - 'conf/**'
+      - 'cli-tools/**'
+      - 'Dockerfile.test-install'
+      - '.dockerignore'
+      - '.github/workflows/test-install.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build install scripts on fresh Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test-install image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.test-install
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
