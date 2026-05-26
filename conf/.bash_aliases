@@ -41,7 +41,7 @@ function __pretty() {
 
 
 # Quick server
-alias server="docker run -it --rm -p 8000:8000 -v $(pwd):/usr/src/app -w /usr/src/app python:3.11-slim python -m http.server 8000 --bind 0.0.0.0"
+alias server='docker run -it --rm -p 8001:8001 -v "$PWD":/usr/src/app -w /usr/src/app python:3.11-slim python -m http.server 8001 --bind 0.0.0.0'
 
 # List ssh hosts
 alias hosts="cat ~/.ssh/config | grep 'Host '"
