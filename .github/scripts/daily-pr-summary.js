@@ -251,6 +251,36 @@ async function getPRsAwaitingMyReview() {
   }));
 }
 
+// Slack section text is capped at 3000 chars; pack PR lines into as few
+// sections as possible so we stay well under the 50-block message limit.
+const SECTION_TEXT_LIMIT = 2800;
+
+function packLinesIntoSections(lines) {
+  const sections = [];
+  let buffer = [];
+  let bufferLen = 0;
+  for (const line of lines) {
+    const lineLen = line.length + 1; // +1 for the joining newline
+    if (bufferLen + lineLen > SECTION_TEXT_LIMIT && buffer.length > 0) {
+      sections.push({
+        type: 'section',
+        text: { type: 'mrkdwn', text: buffer.join('\n') }
+      });
+      buffer = [];
+      bufferLen = 0;
+    }
+    buffer.push(line);
+    bufferLen += lineLen;
+  }
+  if (buffer.length > 0) {
+    sections.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: buffer.join('\n') }
+    });
+  }
+  return sections;
+}
+
 function buildSlackBlocks(myPRs, awaitingReview) {
   const blocks = [
     {
@@ -281,21 +311,15 @@ function buildSlackBlocks(myPRs, awaitingReview) {
       }
     });
   } else {
-    for (const pr of myPRs) {
+    const myLines = myPRs.map(pr => {
       const commentInfo = pr.outstandingComments > 0
         ? `, ${pr.outstandingComments} comment${pr.outstandingComments === 1 ? '' : 's'}`
         : '';
       const age = formatAge(pr.createdAt);
       const repoShort = pr.repo.split('/').pop();
-
-      blocks.push({
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `${pr.reviewStatus.emoji} <${pr.url}|${escapeSlackText(repoShort)}#${pr.number}> — ${escapeSlackText(pr.title)} (${pr.reviewStatus.label}${commentInfo}, ${age})`
-        }
-      });
-    }
+      return `${pr.reviewStatus.emoji} <${pr.url}|${escapeSlackText(repoShort)}#${pr.number}> — ${escapeSlackText(pr.title)} (${pr.reviewStatus.label}${commentInfo}, ${age})`;
+    });
+    blocks.push(...packLinesIntoSections(myLines));
   }
 
   blocks.push({ type: 'divider' });
@@ -318,18 +342,12 @@ function buildSlackBlocks(myPRs, awaitingReview) {
       }
     });
   } else {
-    for (const pr of awaitingReview) {
+    const reviewLines = awaitingReview.map(pr => {
       const age = formatAge(pr.createdAt);
       const repoShort = pr.repo.split('/').pop();
-
-      blocks.push({
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `:eyes: <${pr.url}|${escapeSlackText(repoShort)}#${pr.number}> — ${escapeSlackText(pr.title)} (by ${escapeSlackText(pr.author)}, ${age})`
-        }
-      });
-    }
+      return `:eyes: <${pr.url}|${escapeSlackText(repoShort)}#${pr.number}> — ${escapeSlackText(pr.title)} (by ${escapeSlackText(pr.author)}, ${age})`;
+    });
+    blocks.push(...packLinesIntoSections(reviewLines));
   }
 
   blocks.push({ type: 'divider' });
