@@ -1,0 +1,70 @@
+# Test image that exercises the install scripts end-to-end on a fresh Ubuntu.
+# Build: docker build -f Dockerfile.test-install -t config-test-install .
+# Used by .github/workflows/test-install.yml.
+
+FROM ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Minimum needed to run the install scripts as a non-root user with sudo.
+RUN apt-get update && apt-get install -y \
+    sudo \
+    curl \
+    ca-certificates \
+    git \
+    locales \
+    software-properties-common \
+    lsb-release \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/* \
+    && locale-gen en_US.UTF-8
+
+ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
+RUN useradd -m -s /bin/bash developer && \
+    echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer && \
+    chmod 0440 /etc/sudoers.d/developer
+
+USER developer
+WORKDIR /home/developer
+
+# Copy the repo in. .dockerignore keeps this small.
+COPY --chown=developer:developer . /home/developer/config
+WORKDIR /home/developer/config
+
+# Skip everything that can't run inside a container / shouldn't run in CI.
+ENV DEBIAN_FRONTEND=noninteractive \
+    SKIP_SERVICES=1 \
+    SKIP_DESKTOP=1 \
+    SKIP_DOCKER=1 \
+    SKIP_CHROME=1 \
+    SKIP_GIT_CONFIG=1 \
+    SKIP_PLUGINS=1 \
+    SKIP_NPM_GLOBAL=1
+
+RUN bash bin/install-linux.sh
+RUN bash bin/install.sh
+RUN bash bin/local-install.sh
+
+# Sanity checks — fail the build if the install didn't produce what we expect.
+RUN set -e; \
+    test -L "$HOME/.tmux.conf"           || { echo "MISSING: ~/.tmux.conf"; exit 1; }; \
+    test -L "$HOME/.vimrc"               || { echo "MISSING: ~/.vimrc"; exit 1; }; \
+    test -L "$HOME/.bash_aliases"        || { echo "MISSING: ~/.bash_aliases"; exit 1; }; \
+    test -L "$HOME/.ctags"               || { echo "MISSING: ~/.ctags"; exit 1; }; \
+    test -L "$HOME/.config/nvim"         || { echo "MISSING: ~/.config/nvim"; exit 1; }; \
+    test -L "$HOME/.tmux"                || { echo "MISSING: ~/.tmux"; exit 1; }; \
+    test -d "$HOME/.oh-my-zsh"           || { echo "MISSING: ~/.oh-my-zsh"; exit 1; }; \
+    test -d "$HOME/.rbenv"               || { echo "MISSING: ~/.rbenv"; exit 1; }; \
+    test -d "$HOME/.fzf"                 || { echo "MISSING: ~/.fzf"; exit 1; }; \
+    test -f "$HOME/.vim/autoload/plug.vim" || { echo "MISSING: vim-plug"; exit 1; }; \
+    grep -q 'mikemjharris/config:conf/setup_bash_aliases' "$HOME/.zshrc" || { echo "MISSING: alias marker in ~/.zshrc"; exit 1; }; \
+    echo "install scripts succeeded"
+
+# Re-run both scripts to confirm idempotency: marker pair count should stay at 2
+# (one open line, one close line — no duplicates from the re-run).
+RUN bash bin/install.sh && bash bin/local-install.sh && \
+    count=$(grep -c 'mikemjharris/config:conf/setup_bash_aliases' "$HOME/.zshrc"); \
+    [ "$count" = "2" ] || { echo "EXPECT 2 marker lines in ~/.zshrc after re-run, got $count"; exit 1; }
+
+CMD ["/bin/bash"]
