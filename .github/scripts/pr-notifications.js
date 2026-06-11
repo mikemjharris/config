@@ -75,6 +75,10 @@ function calculateSince(lastRunAt) {
 // Bot usernames to filter out
 const BOT_USERS = ['dependabot', 'renovate', 'github-actions', 'codecov', 'vercel', 'coderabbitai', 'copilot'];
 
+// Skip stale PRs with no activity in this many days (filters out long-lived legacy PRs)
+const STALE_PR_DAYS = 60;
+const STALE_PR_MS = STALE_PR_DAYS * 24 * 60 * 60 * 1000;
+
 function makeGitHubRequest(path) {
   return new Promise((resolve, reject) => {
     const options = {
@@ -236,6 +240,13 @@ async function getNotifications(notifiedKeys, SINCE) {
         console.log(`  ✓ Successfully fetched PR #${prNumber}`);
       } catch (error) {
         console.log(`  ✗ Failed to fetch PR #${prNumber}: ${error.message}`);
+        continue;
+      }
+
+      // Skip stale PRs with no activity in the last STALE_PR_DAYS days
+      const prUpdatedAt = new Date(pr.updated_at);
+      if (Date.now() - prUpdatedAt.getTime() > STALE_PR_MS) {
+        console.log(`  ✗ Skipping stale PR (last updated ${pr.updated_at}, older than ${STALE_PR_DAYS} days)`);
         continue;
       }
 
