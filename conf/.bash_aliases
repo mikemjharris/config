@@ -341,3 +341,4 @@ bindkey '^F' tmux_fzf_search  # Ctrl-F to trigger
 alias claude-me='CLAUDE_CONFIG_DIR=~/.claude claude --permission-mode auto'
 alias claude-sw='CLAUDE_CONFIG_DIR=~/.claude-sw claude --permission-mode auto'
 alias claude-api='CLAUDE_CONFIG_DIR=~/.claude-api claude --permission-mode auto'
+alias c='CLAUDE_CONFIG_DIR=~/.claude-sw claude --permission-mode auto'
