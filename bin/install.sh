@@ -8,7 +8,7 @@ set -u
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-RAW_BASE="https://raw.githubusercontent.com/mikemjharris/config/master"
+RAW_BASE="https://raw.githubusercontent.com/mikemjharris/config/main"
 
 USE_LOCAL=0
 if [ -f "$REPO_ROOT/conf/.vimrc" ]; then

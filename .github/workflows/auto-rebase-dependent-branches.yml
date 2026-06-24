@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - master
+      - main
 
 jobs:
   rebase-dependent-branches:
@@ -30,8 +30,8 @@ jobs:
           # Find all open PRs targeting the merged branch
           echo "Looking for PRs targeting $MERGED_BRANCH..."
           gh pr list --base "$MERGED_BRANCH" --state open --json number,headRefName --jq '.[] | "\(.number):\(.headRefName)"' | while IFS=: read -r pr_number head_branch; do
-            echo "Updating PR #$pr_number (branch: $head_branch) to target master"
-            gh pr edit "$pr_number" --base master
+            echo "Updating PR #$pr_number (branch: $head_branch) to target main"
+            gh pr edit "$pr_number" --base main
           done
 
       - name: Find and rebase dependent branches
@@ -42,11 +42,11 @@ jobs:
           # Get all branches
           git fetch --all
 
-          # Ensure we're on master
-          git checkout master
+          # Ensure we're on main
+          git checkout main
 
           # Find branches that are direct dependents of the merged branch
-          for branch in $(git branch -r | grep -v HEAD | grep -v " origin/master$" | sed 's/origin\///'); do
+          for branch in $(git branch -r | grep -v HEAD | grep -v " origin/main$" | sed 's/origin\///'); do
             # Skip the merged branch itself
             if [ "$branch" = "$MERGED_BRANCH" ]; then
               echo "Skipping merged branch: $branch"
@@ -60,20 +60,20 @@ jobs:
               # Clean up any existing local branch
               git branch -D $branch 2>/dev/null || true
 
-              # Rebase onto master
+              # Rebase onto main
               git checkout -b $branch origin/$branch
-              git rebase --onto master origin/$MERGED_BRANCH $branch || {
+              git rebase --onto main origin/$MERGED_BRANCH $branch || {
                 echo "Rebase conflict on $branch - creating issue"
                 gh issue create --title "Manual rebase needed for $branch" \
                   --body "Branch $branch needs manual rebase after $MERGED_BRANCH was merged"
                 git rebase --abort
-                git checkout master
+                git checkout main
                 continue
               }
 
               git push origin $branch --force-with-lease
 
-              # Return to master for next iteration
-              git checkout master
+              # Return to main for next iteration
+              git checkout main
             fi
           done

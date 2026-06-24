@@ -32,7 +32,7 @@ Recently (13-04-2022) added in neovim installation - that's not included in the 
 On remote box you might not want to clone and do a full symlinking etc. as this requires setting up ssh keys etc.
 This script will do a one off copy of tmux/vim/bash config on a remote box (or anywhere). 
 ```
-curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/master/bin/install.sh" | bash -e
+curl -fsSL "https://raw.githubusercontent.com/mikemjharris/config/main/bin/install.sh" | bash -e
 ```
 ### WSL - windows subsystem for Linux
 Most of this setup should work as it does for a standard ubuntu setup. A few things to note:
