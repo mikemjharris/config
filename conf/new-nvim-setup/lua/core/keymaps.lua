@@ -53,6 +53,14 @@ vim.keymap.set('n', '<leader>gg', ':Ag ', { noremap = true, desc = 'Search using
 
 vim.keymap.set('n', '<leader>g', ':Git<CR>', { noremap = true, desc = 'Open git' })
 
+-- HAML has no LSP attached, so grep the word under the cursor for a poor-man's "find references"
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "haml",
+  callback = function(ev)
+    vim.keymap.set("n", "gr", ":Ag <C-r><C-w><CR>", { buffer = ev.buf, desc = "Grep word under cursor" })
+  end,
+})
+
 -- Docker Ruby keybindings
 vim.keymap.set('n', '<leader>rc', ':Rubocop<CR>', { noremap = true, desc = 'Run RuboCop' })
 vim.keymap.set('n', '<leader>rf', ':RubocopFix<CR>', { noremap = true, desc = 'Auto-fix with RuboCop' })
