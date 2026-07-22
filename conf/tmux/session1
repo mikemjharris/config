@@ -11,5 +11,6 @@ splitw -v -p 50
 
 splitw -v -p 50 -t '{top-left}'
 send-keys -t '{bottom-left}' "lazygit" C-m
+send-keys -t '{top-right}' "claude-sw" C-m
 
 select-pane -t '{top-left}'
