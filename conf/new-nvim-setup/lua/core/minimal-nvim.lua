@@ -33,7 +33,7 @@ vim.filetype.add({
 
 require("lazy").setup({
   -- Treesitter for syntax highlighting
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  { "nvim-treesitter/nvim-treesitter", branch = "main", lazy = false, build = ":TSUpdate" },
   {
     "MeanderingProgrammer/render-markdown.nvim", -- Make Markdown buffers look beautiful
     ft = { "markdown", "codecompanion" },
@@ -56,12 +56,13 @@ require("lazy").setup({
   -- Markdown preview (optional)
 })
 
-require 'nvim-treesitter.configs'.setup {
-  ensure_installed = { "markdown", "markdown_inline", "tsx", "typescript", "lua", "json" },
-  highlight = {
-    enable = true,
-  },
-}
+-- main branch: install parsers explicitly; core provides highlighting.
+require('nvim-treesitter').install { "markdown", "markdown_inline", "tsx", "typescript", "lua", "json" }
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function(args)
+    pcall(vim.treesitter.start, args.buf)
+  end,
+})
 
 require("codecompanion").setup({
   strategies = {

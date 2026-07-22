@@ -19,16 +19,25 @@ vim.filetype.add({
 
 local plugins = {
   {
+    -- master branch was archived; main is the Neovim 0.12+ rewrite (core provides highlight/fold)
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false,
+    build = ":TSUpdate",
+  },
+  {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
     dependencies = "nvim-treesitter/nvim-treesitter",
   },
   {
     'nvim-telescope/telescope.nvim', -- fuzzy finder
-    tag = '0.1.4',
+    -- v0.2+ uses core treesitter (vim.treesitter.start); 0.1.4 called the removed nvim-treesitter ft_to_lang
+    tag = 'v0.2.2',
     dependencies = { { 'nvim-lua/plenary.nvim' } }
   },
 
-  { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
+  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
@@ -133,7 +142,7 @@ local plugins = {
   'norcalli/nvim-colorizer.lua',       -- see colors in nvim
   {
     'nvimtools/none-ls.nvim',
-    requires = { 'nvim-lua/plenary.nvim' },
+    dependencies = { 'nvim-lua/plenary.nvim' },
   },
   'folke/neodev.nvim',
   'folke/which-key.nvim',
