@@ -54,6 +54,21 @@ if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
   exit 0
 fi
 
+# Lay out a window to match the `leader t` layout (~/.tmux/session1):
+#   left column (40%):  vim (top) + lazygit (bottom)
+#   right column (60%): claude (top) + shell (bottom)
+# Focus lands on top-left (vim) so the window is ready to edit when selected.
+setup_window_layout() {
+  local target="$1"
+  tmux send-keys -t "$target" "vim ." C-m
+  tmux split-window -h -p 60 -t "$target" -c "#{pane_current_path}"
+  tmux split-window -v -p 50 -t "$target" -c "#{pane_current_path}"
+  tmux split-window -v -p 50 -t "${target}.{top-left}" -c "#{pane_current_path}"
+  tmux send-keys -t "${target}.{bottom-left}" "lazygit" C-m
+  tmux send-keys -t "${target}.{top-right}" "claude" C-m
+  tmux select-pane -t "${target}.{top-left}"
+}
+
 # Create new session with first repo
 first_repo="${REPOS[0]}"
 window_name="${first_repo%%:*}"
@@ -61,7 +76,7 @@ repo_path="${first_repo#*:}"
 
 echo "Creating tmux session '$SESSION_NAME'..."
 tmux new-session -d -s "$SESSION_NAME" -n "$window_name" -c "$repo_path"
-tmux send-keys -t "$SESSION_NAME:$window_name" "claude" C-m
+setup_window_layout "$SESSION_NAME:$window_name"
 
 # Create additional windows for remaining repos
 for i in "${!REPOS[@]}"; do
@@ -75,7 +90,7 @@ for i in "${!REPOS[@]}"; do
 
   echo "Creating window '$window_name' in $repo_path..."
   tmux new-window -t "$SESSION_NAME" -n "$window_name" -c "$repo_path"
-  tmux send-keys -t "$SESSION_NAME:$window_name" "claude" C-m
+  setup_window_layout "$SESSION_NAME:$window_name"
 done
 
 # Select first window
