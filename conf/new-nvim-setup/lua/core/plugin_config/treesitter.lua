@@ -11,8 +11,11 @@ ts.setup {
 local parsers = {
   'c', 'lua', 'rust', 'ruby', 'vim', 'vimdoc',
   'javascript', 'typescript', 'tsx',
+  'html', 'css', 'scss', 'embedded_template',
   'markdown', 'markdown_inline',
-  'yaml',
+  'json', 'yaml', 'toml',
+  'bash', 'python', 'go',
+  'dockerfile', 'diff', 'gitcommit', 'git_rebase', 'gitignore',
 }
 ts.install(parsers)
 
