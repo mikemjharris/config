@@ -93,8 +93,9 @@ for i in "${!REPOS[@]}"; do
   setup_window_layout "$SESSION_NAME:$window_name"
 done
 
-# Select first window
-tmux select-window -t "$SESSION_NAME:0"
+# Select first window (index depends on base-index, so ask rather than assume 0)
+first_window_index=$(tmux list-windows -t "$SESSION_NAME" -F "#{window_index}" | head -1)
+tmux select-window -t "$SESSION_NAME:$first_window_index"
 
 # Attach to session
 echo "Attaching to session '$SESSION_NAME'..."
