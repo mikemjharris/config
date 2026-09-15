@@ -47,3 +47,7 @@ COPILOT_INSTRUCTIONS.md
 sw-open-app
 sw-teardown
 
+.claude/settings.local.json
+
+# Playwright MCP scratch output (snapshots, console logs, screenshots)
+.playwright-mcp/
