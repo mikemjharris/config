@@ -26,3 +26,6 @@ scripts/repos/
 scripts/*.txt
 
 CLAUDE.local.md
+
+# Scratch output from local scripts
+tmp/
