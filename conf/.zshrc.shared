@@ -1,0 +1,17 @@
+# Shared zsh settings, symlinked to ~/.zshrc.shared and sourced from the tail of
+# ~/.zshrc. Sourced last on purpose: it has to run after the tool inits (brew,
+# rbenv, mise) have finished adding to path and fpath.
+#
+# Everything here is guarded or inert on a machine that doesn't need it, so the
+# same file is safe to install anywhere.
+
+# Homebrew's `brew shellenv` marks FPATH exported. Left exported it is inherited
+# by the tmux server and by every child shell, which then prepend their own
+# completion directories on top of the inherited copy. fpath grows on each nesting
+# level, stops matching the fingerprint oh-my-zsh recorded in .zcompdump, and the
+# completion cache is rebuilt from ~1300 files on every shell start.
+#
+# -U makes both arrays unique (it dedupes retroactively, so running here is fine);
+# +x drops the export flag so children start from a clean fpath.
+typeset -U path fpath
+typeset +x FPATH
