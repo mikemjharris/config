@@ -46,6 +46,7 @@ ln -sfn "$REPO_ROOT/conf/.vimrc"                "$HOME/.vimrc"
 ln -sfn "$REPO_ROOT/conf/.bash_aliases"         "$HOME/.bash_aliases"
 ln -sfn "$REPO_ROOT/cli-tools/latest-branches.sh" "$HOME/latest-branches.sh"
 ln -sfn "$REPO_ROOT/conf/.ctags"                "$HOME/.ctags"
+ln -sfn "$REPO_ROOT/conf/.zshrc.shared"         "$HOME/.zshrc.shared"
 
 echo "Linking vim templates"
 mkdir -p "$HOME/.vim"
@@ -74,6 +75,19 @@ if ! grep -qF "$ALIASES_MARKER" "$HOME/.zshrc"; then
     echo "$ALIASES_MARKER"
     cat "$REPO_ROOT/conf/setup_bash_aliases"
     echo "# <<< mikemjharris/config:conf/setup_bash_aliases <<<"
+  } >> "$HOME/.zshrc"
+fi
+
+# Source the shared zsh settings once. Appended last so it runs after the tool
+# inits (brew, rbenv, mise) have finished touching path and fpath.
+ZSHRC_SHARED_MARKER="# >>> mikemjharris/config:conf/.zshrc.shared >>>"
+touch "$HOME/.zshrc"
+if ! grep -qF "$ZSHRC_SHARED_MARKER" "$HOME/.zshrc"; then
+  echo "Appending shared zsh settings to ~/.zshrc"
+  {
+    echo "$ZSHRC_SHARED_MARKER"
+    echo '[ -f "$HOME/.zshrc.shared" ] && source "$HOME/.zshrc.shared"'
+    echo "# <<< mikemjharris/config:conf/.zshrc.shared <<<"
   } >> "$HOME/.zshrc"
 fi
 
