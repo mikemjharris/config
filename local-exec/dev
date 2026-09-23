@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Script to create a tmux session with multiple windows
-# Each window has the same 3-pane layout (vim left, 2 vertical panes right)
+# Each window uses the shared four-pane layout (see tmux-window-layout.sh)
 
 session="my_dev_session"
 
 # Configuration file for window definitions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WINDOWS_CONFIG="$SCRIPT_DIR/dev.windows"
+
+source "$SCRIPT_DIR/../cli-tools/tmux-window-layout.sh"
 
 # If config file doesn't exist, use the example
 if [ ! -f "$WINDOWS_CONFIG" ]; then
@@ -45,25 +47,8 @@ if [ $? != 0 ]; then
             tmux new-window -t $session -n "$name" -c "$dir"
         fi
 
-        # Start vim in the main pane (current window)
-        tmux send-keys -t $session: "vim ." C-m
-        tmux select-pane -t $session: -T "📝 $name"
-
-        # Split horizontally (30% on right)
-        tmux split-window -h -p 30 -t $session: -c "$dir"
-
-        # If there's a command for this pane, run it
-        if [ -n "$cmd" ]; then
-            tmux send-keys -t $session: "$cmd" C-m
-        fi
-        tmux select-pane -t $session: -T "🚀 Commands"
-
-        # Split vertically (50/50) - split the current (right) pane
-        tmux split-window -v -p 50 -t $session: -c "$dir"
-        tmux select-pane -t $session: -T "💻 Terminal"
-
-        # Select the vim pane (pane 1) as default for this window
-        tmux select-pane -t $session:.1
+        # A window with no command of its own gets claude in the top-right pane
+        setup_window_layout "$session:$name" "${cmd:-claude}" "$name"
     done
 
     # Get the first window's actual index and select it
