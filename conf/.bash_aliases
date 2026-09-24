@@ -342,3 +342,6 @@ alias claude-me='CLAUDE_CONFIG_DIR=~/.claude claude --permission-mode auto'
 alias claude-sw='CLAUDE_CONFIG_DIR=~/.claude-sw claude --permission-mode auto'
 alias claude-api='CLAUDE_CONFIG_DIR=~/.claude-api claude --permission-mode auto'
 alias c='CLAUDE_CONFIG_DIR=~/.claude-sw claude --permission-mode auto'
+
+# Claude with the Playwright MCP loaded, for browser-driven /sw-e2e-run verification
+alias claude-playwright='CLAUDE_CONFIG_DIR=~/.claude-sw claude --permission-mode auto --mcp-config /Users/mike/dev/sw-toolbox/scripts/sw-e2e-test/playwright-mcp.json --strict-mcp-config'
