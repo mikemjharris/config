@@ -5,7 +5,7 @@ keyd remaps at the input-device level, so it works on Wayland (the Ubuntu defaul
 
 - Caps Lock → Ctrl
 - Alt+C / Alt+V → copy / paste (sent as Ctrl+Insert / Shift+Insert so terminals work too)
-- Win+H/J/K/L → Left / Down / Up / Right
+- Win+J / Win+K → Down / Up
 
 Edit `keyd/default.conf`, then `sudo keyd reload`. If a remap ever locks you out, `Backspace+Escape+Enter` kills keyd.
 
