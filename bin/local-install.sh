@@ -21,7 +21,7 @@ if [ "${SKIP_OMZ:-0}" != "1" ] && [ ! -d "$HOME/.oh-my-zsh" ]; then
   # ~/.zshrc to ~/.zshrc.pre-oh-my-zsh and we lose anything install-linux.sh
   # or install.sh has already appended (rbenv init, aliases).
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
-    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
 
 # Because KEEP_ZSHRC=yes skips loading oh-my-zsh from ~/.zshrc, add the init
@@ -108,9 +108,11 @@ if [ "${SKIP_PLUGINS:-0}" != "1" ]; then
     echo "Installing vim plugins"
     yes | vim +PlugInstall +qall || true
   fi
-  if command -v nvim >/dev/null 2>&1; then
-    echo "Installing nvim plugins"
-    yes | nvim +PlugInstall +qall || true
+  # install-linux.sh puts nvim in ~/.local/bin, which may not be on PATH yet.
+  NVIM_BIN="$(command -v nvim || echo "$HOME/.local/bin/nvim")"
+  if [ -x "$NVIM_BIN" ]; then
+    echo "Installing nvim plugins (lazy.nvim)"
+    "$NVIM_BIN" --headless "+Lazy! sync" +qa || true
   fi
 fi
 

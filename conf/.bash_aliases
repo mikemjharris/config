@@ -52,30 +52,19 @@ alias hosts="cat ~/.ssh/config | grep 'Host '"
 # Detect platform
 unameOut="$(uname -s)"
 
-# Check if we are running on WSL or not
-# case "${unameOut}" in
-#     Linux*)
-#         if grep -q Microsoft /proc/version 2>/dev/null; then
-#             # Inside WSL
-#             alias pbpaste="powershell.exe -command 'Get-Clipboard' | tr -d '\r' | head -n -1"
-#             alias pbcopy="/mnt/c/Windows/System32/clip.exe"
-#         else
-#             # Regular Linux
-#             if command -v xclip &> /dev/null; then
-#                 alias pbpaste="xclip -out -sel clip"
-#                 alias pbcopy="xclip -sel clip"
-#             fi
-#         fi
-#         ;;
-#     Darwin*)
-#         # macOS
-#         # Nothing needed, macOS already has pbcopy and pbpaste
-#         ;;
-#     *)
-#         # Other platforms
-#         ;;
-# esac
-#
+# Give Linux the mac clipboard commands (WSL, Wayland, then X11)
+if [ "${unameOut}" = "Linux" ] && ! command -v pbcopy &> /dev/null; then
+    if grep -qi microsoft /proc/version 2>/dev/null; then
+        pbcopy() { /mnt/c/Windows/System32/clip.exe; }
+        pbpaste() { powershell.exe -command 'Get-Clipboard' | tr -d '\r' | head -n -1; }
+    elif [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-copy &> /dev/null; then
+        pbcopy() { wl-copy; }
+        pbpaste() { wl-paste; }
+    elif command -v xclip &> /dev/null; then
+        pbcopy() { xclip -sel clip; }
+        pbpaste() { xclip -out -sel clip; }
+    fi
+fi
 
 # If you have dirty json copied this makes it pretty
 alias json="pbpaste | jq | pbcopy"
@@ -283,7 +272,7 @@ aws_vault_info() {
 PROMPT='%(?:%{$fg_bold[green]%}%1{➜%} :%{$fg_bold[red]%}%1{➜%} ) %{$fg[cyan]%}%c%{$reset_color%} $(aws_vault_info)$(git_prompt_info)'
 
 # TODO symlink and better path
-export PATH=/home/mike/working/config/local-exec:$PATH
+export PATH=$HOME/working/config/local-exec:$PATH
 export PATH=$HOME/working/config/cli-tools:$PATH
 
 # Launch tmux session with claude in multiple repos

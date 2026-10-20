@@ -26,8 +26,12 @@ on:
 
 jobs:
   build:
-    name: Build install scripts on fresh Ubuntu
+    name: Build install scripts on fresh Ubuntu ${{ matrix.ubuntu }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu: ['22.04', '24.04', '26.04']
     steps:
       - uses: actions/checkout@v4
 
@@ -41,5 +45,6 @@ jobs:
           file: Dockerfile.test-install
           push: false
           load: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          build-args: UBUNTU_VERSION=${{ matrix.ubuntu }}
+          cache-from: type=gha,scope=ubuntu-${{ matrix.ubuntu }}
+          cache-to: type=gha,mode=max,scope=ubuntu-${{ matrix.ubuntu }}
