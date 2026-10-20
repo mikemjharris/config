@@ -52,6 +52,7 @@ ffmpeg
 imagemagick
 ripgrep
 fd-find
+lazygit
 "
 
 EDITOR_PKGS="vim vim-gtk3"

@@ -66,6 +66,17 @@ mkdir -p "$HOME/tmp"
 echo "Linking tmux session templates"
 ln -sfn "$REPO_ROOT/conf/tmux" "$HOME/.tmux"
 
+# TPM (tmux plugin manager) — .tmux.conf loads it from ~/.tmux/plugins/tpm.
+# ~/.tmux points into the repo, where conf/tmux/plugins/ is gitignored.
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+  git clone --depth 1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm" || \
+    echo "WARN: tpm clone failed"
+fi
+if [ "${SKIP_PLUGINS:-0}" != "1" ] && [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
+  echo "Installing tmux plugins"
+  "$HOME/.tmux/plugins/tpm/bin/install_plugins" || echo "WARN: tmux plugin install failed"
+fi
+
 # Append aliases once (guarded by marker matching the one install.sh uses).
 ALIASES_MARKER="# >>> mikemjharris/config:conf/setup_bash_aliases >>>"
 touch "$HOME/.zshrc"
