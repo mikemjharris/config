@@ -4,7 +4,7 @@
 keyd remaps at the input-device level, so it works on Wayland (the Ubuntu default), X11 and the console.
 
 - Caps Lock → Ctrl
-- Alt+C / Alt+V → copy / paste (sent as Ctrl+Insert / Shift+Insert so terminals work too)
+- Alt+C / Alt+V → copy / paste (sent as Ctrl+Insert / Shift+Insert; the script sets Ptyxis to copy/paste on those)
 - Win+J / Win+K → Down / Up
 
 Edit `keyd/default.conf`, then `sudo keyd reload` (`sudo keyd.rvaiya reload` on Debian/Ubuntu). If a remap ever locks you out, `Backspace+Escape+Enter` kills keyd.
