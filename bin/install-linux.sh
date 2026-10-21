@@ -19,6 +19,8 @@ export GIT_TERMINAL_PROMPT=0
 export DEBIAN_FRONTEND=noninteractive
 
 SUDO="${SUDO-sudo}"
+# Not set in Docker builds or cron.
+USER="${USER:-$(id -un)}"
 # The nvim config (conf/new-nvim-setup) needs 0.12+; distro packages lag behind.
 NEOVIM_VERSION="v0.12.6"
 
