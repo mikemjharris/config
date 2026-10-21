@@ -14,6 +14,8 @@
 #   SKIP_GIT_CONFIG set to 1 to skip writing global git config
 
 set -u
+# A missing repo should fail, not stop and ask for a GitHub login.
+export GIT_TERMINAL_PROMPT=0
 export DEBIAN_FRONTEND=noninteractive
 
 SUDO="${SUDO-sudo}"
@@ -54,8 +56,6 @@ ripgrep
 fd-find
 lazygit
 "
-
-EDITOR_PKGS="vim vim-gtk3"
 
 DEV_PKGS="
 python3
@@ -116,7 +116,6 @@ install_pkgs() {
 }
 
 install_pkgs "$CORE_PKGS"
-install_pkgs "$EDITOR_PKGS"
 install_pkgs "$DEV_PKGS"
 
 if [ "${SKIP_SERVICES:-0}" != "1" ]; then
@@ -209,8 +208,8 @@ if [ "${SKIP_GIT_CONFIG:-0}" != "1" ]; then
   git config --global user.email "hello@mikemjharris.com"
   git config --global user.name "Mike Harris"
   git config --global push.default current
-  git config --global core.editor "vim"
-  git config --global merge.tool vimdiff
+  git config --global core.editor "nvim"
+  git config --global merge.tool nvimdiff
   git config --global merge.conflictstyle diff3
   git config --global mergetool.prompt false
   git config --global init.defaultBranch main
@@ -233,7 +232,7 @@ NVM
   done
   if command -v nvm >/dev/null 2>&1; then
     nvm install --lts && nvm alias default 'lts/*' >/dev/null
-    npm install -g typescript @fsouza/prettierd || echo "WARN: global npm installs failed"
+    npm install -g typescript @fsouza/prettierd tree-sitter-cli || echo "WARN: global npm installs failed"
   else
     echo "WARN: nvm not available, skipping Node install"
   fi

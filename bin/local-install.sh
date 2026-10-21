@@ -3,17 +3,15 @@
 #
 # Env vars:
 #   SKIP_OMZ         set to 1 to skip oh-my-zsh install
-#   SKIP_PLUGINS     set to 1 to skip vim/nvim plugin install (heavy, network)
+#   SKIP_PLUGINS     set to 1 to skip nvim/tmux plugin install (heavy, network)
 #   SKIP_NPM_GLOBAL  set to 1 to skip global npm installs (yarn, mermaid-cli)
 
 set -u
+# A missing repo should fail, not stop and ask for a GitHub login.
+export GIT_TERMINAL_PROMPT=0
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-
-echo "Installing vim-plug for local plugins (run :PlugInstall in vim)"
-curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
-  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 if [ "${SKIP_OMZ:-0}" != "1" ] && [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "Installing oh-my-zsh (unattended, no chsh, keep zshrc)"
@@ -42,15 +40,10 @@ fi
 
 echo "Symlinking dotfiles into \$HOME"
 ln -sfn "$REPO_ROOT/conf/.tmux.conf"            "$HOME/.tmux.conf"
-ln -sfn "$REPO_ROOT/conf/.vimrc"                "$HOME/.vimrc"
 ln -sfn "$REPO_ROOT/conf/.bash_aliases"         "$HOME/.bash_aliases"
 ln -sfn "$REPO_ROOT/cli-tools/latest-branches.sh" "$HOME/latest-branches.sh"
 ln -sfn "$REPO_ROOT/conf/.ctags"                "$HOME/.ctags"
 ln -sfn "$REPO_ROOT/conf/.zshrc.shared"         "$HOME/.zshrc.shared"
-
-echo "Linking vim templates"
-mkdir -p "$HOME/.vim"
-ln -sfn "$REPO_ROOT/conf/vim-templates" "$HOME/.vim/templates"
 
 echo "Linking neovim config"
 mkdir -p "$HOME/.config"
@@ -60,7 +53,7 @@ if [ -e "$HOME/.config/nvim" ] || [ -L "$HOME/.config/nvim" ]; then
 fi
 ln -sfn "$REPO_ROOT/conf/new-nvim-setup" "$HOME/.config/nvim"
 
-echo "Creating vim tmp folder"
+echo "Creating ~/tmp folder"
 mkdir -p "$HOME/tmp"
 
 echo "Linking tmux session templates"
@@ -115,10 +108,6 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-z" ]; then
 fi
 
 if [ "${SKIP_PLUGINS:-0}" != "1" ]; then
-  if command -v vim >/dev/null 2>&1; then
-    echo "Installing vim plugins"
-    yes | vim +PlugInstall +qall || true
-  fi
   # install-linux.sh puts nvim in ~/.local/bin, which may not be on PATH yet.
   NVIM_BIN="$(command -v nvim || echo "$HOME/.local/bin/nvim")"
   if [ -x "$NVIM_BIN" ]; then

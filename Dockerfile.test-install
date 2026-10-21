@@ -50,7 +50,6 @@ RUN bash bin/local-install.sh
 # Sanity checks — fail the build if the install didn't produce what we expect.
 RUN set -e; \
     test -L "$HOME/.tmux.conf"           || { echo "MISSING: ~/.tmux.conf"; exit 1; }; \
-    test -L "$HOME/.vimrc"               || { echo "MISSING: ~/.vimrc"; exit 1; }; \
     test -L "$HOME/.bash_aliases"        || { echo "MISSING: ~/.bash_aliases"; exit 1; }; \
     test -L "$HOME/.ctags"               || { echo "MISSING: ~/.ctags"; exit 1; }; \
     test -L "$HOME/.config/nvim"         || { echo "MISSING: ~/.config/nvim"; exit 1; }; \
@@ -58,7 +57,6 @@ RUN set -e; \
     test -d "$HOME/.oh-my-zsh"           || { echo "MISSING: ~/.oh-my-zsh"; exit 1; }; \
     test -d "$HOME/.rbenv"               || { echo "MISSING: ~/.rbenv"; exit 1; }; \
     test -d "$HOME/.fzf"                 || { echo "MISSING: ~/.fzf"; exit 1; }; \
-    test -f "$HOME/.vim/autoload/plug.vim" || { echo "MISSING: vim-plug"; exit 1; }; \
     "$HOME/.local/bin/nvim" --version | head -1 | grep -q 'v0\.1[2-9]' || { echo "MISSING: nvim 0.12+"; exit 1; }; \
     "$HOME/.local/bin/grip" --version >/dev/null || { echo "MISSING: grip (pipx)"; exit 1; }; \
     grep -q 'mikemjharris/config:conf/setup_bash_aliases' "$HOME/.zshrc" || { echo "MISSING: alias marker in ~/.zshrc"; exit 1; }; \

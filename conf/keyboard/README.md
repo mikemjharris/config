@@ -7,7 +7,7 @@ keyd remaps at the input-device level, so it works on Wayland (the Ubuntu defaul
 - Alt+C / Alt+V → copy / paste (sent as Ctrl+Insert / Shift+Insert so terminals work too)
 - Win+J / Win+K → Down / Up
 
-Edit `keyd/default.conf`, then `sudo keyd reload`. If a remap ever locks you out, `Backspace+Escape+Enter` kills keyd.
+Edit `keyd/default.conf`, then `sudo keyd reload` (`sudo keyd.rvaiya reload` on Debian/Ubuntu). If a remap ever locks you out, `Backspace+Escape+Enter` kills keyd.
 
 # Keyboard setup - LINUX (xkbcomp, legacy X11 only)
 
