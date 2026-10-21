@@ -3,17 +3,15 @@
 #
 # Env vars:
 #   SKIP_OMZ         set to 1 to skip oh-my-zsh install
-#   SKIP_PLUGINS     set to 1 to skip vim/nvim plugin install (heavy, network)
+#   SKIP_PLUGINS     set to 1 to skip nvim/tmux plugin install (heavy, network)
 #   SKIP_NPM_GLOBAL  set to 1 to skip global npm installs (yarn, mermaid-cli)
 
 set -u
+# A missing repo should fail, not stop and ask for a GitHub login.
+export GIT_TERMINAL_PROMPT=0
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-
-echo "Installing vim-plug for local plugins (run :PlugInstall in vim)"
-curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
-  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 if [ "${SKIP_OMZ:-0}" != "1" ] && [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "Installing oh-my-zsh (unattended, no chsh, keep zshrc)"
@@ -21,7 +19,7 @@ if [ "${SKIP_OMZ:-0}" != "1" ] && [ ! -d "$HOME/.oh-my-zsh" ]; then
   # ~/.zshrc to ~/.zshrc.pre-oh-my-zsh and we lose anything install-linux.sh
   # or install.sh has already appended (rbenv init, aliases).
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
-    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
 
 # Because KEEP_ZSHRC=yes skips loading oh-my-zsh from ~/.zshrc, add the init
@@ -42,15 +40,10 @@ fi
 
 echo "Symlinking dotfiles into \$HOME"
 ln -sfn "$REPO_ROOT/conf/.tmux.conf"            "$HOME/.tmux.conf"
-ln -sfn "$REPO_ROOT/conf/.vimrc"                "$HOME/.vimrc"
 ln -sfn "$REPO_ROOT/conf/.bash_aliases"         "$HOME/.bash_aliases"
 ln -sfn "$REPO_ROOT/cli-tools/latest-branches.sh" "$HOME/latest-branches.sh"
 ln -sfn "$REPO_ROOT/conf/.ctags"                "$HOME/.ctags"
 ln -sfn "$REPO_ROOT/conf/.zshrc.shared"         "$HOME/.zshrc.shared"
-
-echo "Linking vim templates"
-mkdir -p "$HOME/.vim"
-ln -sfn "$REPO_ROOT/conf/vim-templates" "$HOME/.vim/templates"
 
 echo "Linking neovim config"
 mkdir -p "$HOME/.config"
@@ -60,11 +53,22 @@ if [ -e "$HOME/.config/nvim" ] || [ -L "$HOME/.config/nvim" ]; then
 fi
 ln -sfn "$REPO_ROOT/conf/new-nvim-setup" "$HOME/.config/nvim"
 
-echo "Creating vim tmp folder"
+echo "Creating ~/tmp folder"
 mkdir -p "$HOME/tmp"
 
 echo "Linking tmux session templates"
 ln -sfn "$REPO_ROOT/conf/tmux" "$HOME/.tmux"
+
+# TPM (tmux plugin manager) — .tmux.conf loads it from ~/.tmux/plugins/tpm.
+# ~/.tmux points into the repo, where conf/tmux/plugins/ is gitignored.
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+  git clone --depth 1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm" || \
+    echo "WARN: tpm clone failed"
+fi
+if [ "${SKIP_PLUGINS:-0}" != "1" ] && [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
+  echo "Installing tmux plugins"
+  "$HOME/.tmux/plugins/tpm/bin/install_plugins" || echo "WARN: tmux plugin install failed"
+fi
 
 # Append aliases once (guarded by marker matching the one install.sh uses).
 ALIASES_MARKER="# >>> mikemjharris/config:conf/setup_bash_aliases >>>"
@@ -104,13 +108,11 @@ if [ ! -d "$ZSH_CUSTOM/plugins/zsh-z" ]; then
 fi
 
 if [ "${SKIP_PLUGINS:-0}" != "1" ]; then
-  if command -v vim >/dev/null 2>&1; then
-    echo "Installing vim plugins"
-    yes | vim +PlugInstall +qall || true
-  fi
-  if command -v nvim >/dev/null 2>&1; then
-    echo "Installing nvim plugins"
-    yes | nvim +PlugInstall +qall || true
+  # install-linux.sh puts nvim in ~/.local/bin, which may not be on PATH yet.
+  NVIM_BIN="$(command -v nvim || echo "$HOME/.local/bin/nvim")"
+  if [ -x "$NVIM_BIN" ]; then
+    echo "Installing nvim plugins (lazy.nvim)"
+    "$NVIM_BIN" --headless "+Lazy! sync" +qa || true
   fi
 fi
 

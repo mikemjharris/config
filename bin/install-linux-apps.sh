@@ -1,20 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Desktop apps — only useful on a workstation with a GUI.
+# Google Chrome is installed by install-linux.sh.
 
-snap update
-snap install gimp
-snap install sequeler
-snap install code --classic
+set -u
 
-sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+sudo snap refresh
+sudo snap install gimp
+sudo snap install code --classic
 
+# for copyq add 'copyq toggle' to the keyboard shortcuts in gnome (e.g. Ctrl-Shift-H)
 sudo apt-get update
-# These are only really useful when using desktop
-# for copyq set ubuntu keyboard preferences to set Ctrl-Shift-H to run `copyq toggle`
-INSTALL_PKGS="copyq google-chrome-stable"
-
-# for copyq add 'copyq toggle' to the keyboard shortcuts in gnome 
-
-for i in $INSTALL_PKGS; do
-  sudo apt-get install -y $i
-done
-
+sudo apt-get install -y copyq

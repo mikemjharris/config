@@ -1,4 +1,16 @@
-# Keyboard setup - LINUX
+# Keyboard setup - LINUX (keyd, current)
+
+`./setup-keyd.sh` installs [keyd](https://github.com/rvaiya/keyd) and links `keyd/default.conf` to `/etc/keyd/default.conf`.
+keyd remaps at the input-device level, so it works on Wayland (the Ubuntu default), X11 and the console.
+
+- Caps Lock → Ctrl
+- Alt+C / Alt+V → copy / paste (sent as Ctrl+Insert / Shift+Insert so terminals work too)
+- Win+J / Win+K → Down / Up
+
+Edit `keyd/default.conf`, then `sudo keyd reload` (`sudo keyd.rvaiya reload` on Debian/Ubuntu). If a remap ever locks you out, `Backspace+Escape+Enter` kills keyd.
+
+# Keyboard setup - LINUX (xkbcomp, legacy X11 only)
+
 
 Symlink 80-keyboard.rules to /etc/udev/rules.d/80-keyboard.rules
 
