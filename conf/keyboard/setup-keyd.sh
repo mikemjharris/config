@@ -13,3 +13,10 @@ sudo systemctl enable --now keyd
 KEYD="$(command -v keyd || command -v keyd.rvaiya)"
 sudo "$KEYD" reload
 echo "keyd active. Edit $SCRIPT_DIR/keyd/default.conf then run: sudo $(basename "$KEYD") reload"
+
+# keyd sends Alt+C/V as Ctrl+Insert / Shift+Insert. Ptyxis (Ubuntu's terminal)
+# only copies/pastes on Ctrl+Shift+C/V by default, so point it at those keys.
+if gsettings list-schemas 2>/dev/null | grep -qx org.gnome.Ptyxis.Shortcuts; then
+  gsettings set org.gnome.Ptyxis.Shortcuts copy-clipboard '<ctrl>Insert'
+  gsettings set org.gnome.Ptyxis.Shortcuts paste-clipboard '<shift>Insert'
+fi
