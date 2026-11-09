@@ -37,3 +37,10 @@ link_files agents
 
 echo "Linking commands into $CLAUDE_DIR/commands"
 link_files commands
+
+echo "Linking scripts into ~/.local/bin"
+mkdir -p "$HOME/.local/bin"
+for file in "$SCRIPT_DIR"/bin/*; do
+  ln -sfn "$file" "$HOME/.local/bin/$(basename "$file")"
+  echo "  Linked $(basename "$file")"
+done

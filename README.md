@@ -42,7 +42,8 @@ Most of this setup should work as it does for a standard ubuntu setup. A few thi
 ## Directory Structure
 
 - **`ai/`** - Personal Claude Code agents and slash commands, all prefixed `mj-`
-  - `setup.sh` - Symlink each one into `${CLAUDE_CONFIG_DIR:-~/.claude}`
+  - `setup.sh` - Symlink each one into `${CLAUDE_CONFIG_DIR:-~/.claude}`, and `bin/` into `~/.local/bin`
+  - `bin/mj-followups` - List and run local follow-ups saved by `/mj-follow-up`
 - **`bin/`** - Configuration installation and setup scripts
   - `install-brew-packages.sh` - Install Homebrew packages (macOS)
   - `install-linux.sh` - Linux system setup
