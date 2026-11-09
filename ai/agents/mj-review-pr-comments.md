@@ -1,5 +1,5 @@
 ---
-name: review-pr-comments
+name: mj-review-pr-comments
 description: Fetch PR comments and reviews, then create a plan to address the feedback
 model: haiku
 ---

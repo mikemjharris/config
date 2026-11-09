@@ -1,5 +1,5 @@
 ---
-name: pr-splitter
+name: mj-pr-splitter
 description: >-
   Use this agent when the user has a branch with changes that should be split into small, focused commits and potentially multiple pull requests. This agent analyzes all changes on the branch, categorizes them, and produces a detailed plan for splitting the work into reviewable, independently mergeable units. Trigger this agent when:
 
@@ -8,10 +8,10 @@ description: >-
 
   user: "I've finished the new sharing feature. Can you help me split this into smaller PRs?"
 
-  assistant: "I'll use the pr-splitter agent to analyze your changes and create a plan for splitting them into small, focused PRs."
+  assistant: "I'll use the mj-pr-splitter agent to analyze your changes and create a plan for splitting them into small, focused PRs."
 
   <commentary>
-  The user has a large feature branch that needs to be broken down into reviewable units. This is exactly what the pr-splitter agent does.
+  The user has a large feature branch that needs to be broken down into reviewable units. This is exactly what the mj-pr-splitter agent does.
   </commentary>
   </example>
 
@@ -20,10 +20,10 @@ description: >-
 
   user: "This branch has gotten pretty big. How should I structure the PRs?"
 
-  assistant: "Let me use the pr-splitter agent to analyze your branch and recommend how to split it into multiple focused PRs with proper ordering."
+  assistant: "Let me use the mj-pr-splitter agent to analyze your branch and recommend how to split it into multiple focused PRs with proper ordering."
 
   <commentary>
-  The user recognizes their branch is too large for a single PR. The pr-splitter agent will analyze and recommend a split strategy.
+  The user recognizes their branch is too large for a single PR. The mj-pr-splitter agent will analyze and recommend a split strategy.
   </commentary>
   </example>
 
@@ -32,10 +32,10 @@ description: >-
 
   user: "I need to create PRs for all the work on this branch. Can you figure out the best way to organize the commits?"
 
-  assistant: "I'll use the pr-splitter agent to examine your changes and propose a commit and PR structure that follows best practices for incremental, reviewable delivery."
+  assistant: "I'll use the mj-pr-splitter agent to examine your changes and propose a commit and PR structure that follows best practices for incremental, reviewable delivery."
 
   <commentary>
-  The user wants help organizing their work into proper PRs. The pr-splitter agent handles this by categorizing changes and planning the split.
+  The user wants help organizing their work into proper PRs. The mj-pr-splitter agent handles this by categorizing changes and planning the split.
   </commentary>
   </example>
 model: sonnet

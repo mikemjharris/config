@@ -74,7 +74,7 @@ git diff <BASE_BRANCH>...HEAD --name-only | grep -E "(spec/|test/|__tests__/|\.t
 
 ### Step 3: Launch PR Splitter Agent
 
-Use the Agent tool to launch the `pr-splitter` agent with subagent_type set appropriately. Pass all the context gathered above to the agent for analysis.
+Use the Agent tool to launch the `mj-pr-splitter` agent. Pass all the context gathered above to the agent for analysis.
 
 The agent will:
 1. Categorize every changed file by layer (schema, data, API, frontend, etc.)
