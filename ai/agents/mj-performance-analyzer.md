@@ -1,5 +1,5 @@
 ---
-name: performance-analyzer
+name: mj-performance-analyzer
 description: >-
   Use this agent when you need to analyze code for performance issues,
   particularly inefficient data access patterns, missing optimizations, and
@@ -28,9 +28,9 @@ description: >-
 
   user: "I've added a results page that shows data with nested relationships"
 
-  A: "Let me use the performance-analyzer agent to check for inefficient data access patterns and proper optimization"
+  A: "Let me use the mj-performance-analyzer agent to check for inefficient data access patterns and proper optimization"
 
-  <uses Agent tool to launch performance-analyzer>
+  <uses Agent tool to launch mj-performance-analyzer>
   </example>
 
 
@@ -39,9 +39,9 @@ description: >-
 
   user: "The results page is taking 12 seconds and shows 200+ queries"
 
-  A: "I'll analyze this with the performance-analyzer agent to identify inefficient patterns"
+  A: "I'll analyze this with the mj-performance-analyzer agent to identify inefficient patterns"
 
-  <uses Agent tool to launch performance-analyzer>
+  <uses Agent tool to launch mj-performance-analyzer>
   </example>
 
 
@@ -50,9 +50,9 @@ description: >-
 
   user: "Can you review my changes for performance issues?"
 
-  A: "I'll use the performance-analyzer agent to check for missing optimizations and inefficient patterns"
+  A: "I'll use the mj-performance-analyzer agent to check for missing optimizations and inefficient patterns"
 
-  <uses Agent tool to launch performance-analyzer>
+  <uses Agent tool to launch mj-performance-analyzer>
   </example>
 model: sonnet
 color: cyan
