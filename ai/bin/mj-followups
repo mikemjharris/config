@@ -1,0 +1,409 @@
+#!/usr/bin/env python3
+"""Local follow-ups: dated re-checks of an investigation, kept and run on this box.
+
+Usage:
+  mj-followups list [--all]            # numbered list, due ones first; --all adds done ones
+  mj-followups due                     # one line if anything is due, else nothing
+  mj-followups run <n|slug> [--dry-run] [--interactive]
+  mj-followups done <n|slug>
+  mj-followups check <folder>          # would this folder run?
+  mj-followups next-monday             # default due time, as ISO with offset
+
+Each follow-up is a folder under ~/.mj-followups/<YYYY-MM-DD>-<slug>/ holding
+followup.json, optional scripts/, and runs/ for results. Nothing runs on its
+own: a follow-up only runs when you ask for it.
+
+Numbers come from the last `list`, saved for 12 hours, so a list that changed
+since can't make `run` pick a different follow-up from the one you saw.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+ROOT = Path(os.environ.get("MJ_FOLLOWUPS_DIR", Path.home() / ".mj-followups"))
+LAST_LIST = ROOT / ".last-list.json"
+LAST_LIST_TTL = timedelta(hours=12)
+RUN_TIMEOUT = 15 * 60
+MAX_TURNS = 40
+
+# Rules that would let an unattended run reach past the commands it names.
+TOO_WIDE_TOOLS = {"Bash", "Bash(*)", "Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch", "Task", "Agent"}
+TOO_WIDE_PROGRAMS = {"env", "xargs", "sudo", "sh", "bash", "zsh", "eval", "exec", "docker", "npx", "find"}
+INLINE_CODE_FLAGS = {"-c", "-e", "--eval"}
+
+RUNNER_INSTRUCTIONS = """\
+You are re-running a follow-up with no earlier context. Its record is \
+{folder}/followup.json: the summary says what was found last time and the baseline \
+holds the numbers to compare against. Run the prompt, put the new results beside \
+the baseline, and say what changed. Don't write any files: your reply is saved as this run's result.
+End your reply with one to three lines starting `SUMMARY:` that say what you found. \
+If you can't finish without the user (a login, a judgement call), end with a line \
+`NEEDS_YOU: <why>` instead."""
+
+
+class NotRunnable(Exception):
+    pass
+
+
+def now() -> datetime:
+    return datetime.now().astimezone()
+
+
+def parse_time(text: object) -> datetime | None:
+    if not isinstance(text, str) or not text:
+        return None
+    try:
+        moment = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return moment if moment.tzinfo else moment.astimezone()
+
+
+def shown_time(moment: datetime | None) -> str:
+    return moment.astimezone().strftime("%a %d %b %H:%M") if moment else "-"
+
+
+def read_json(path: Path, default: object = None) -> object:
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return default
+
+
+def write_json(path: Path, value: object) -> None:
+    temp = path.with_suffix(".tmp")
+    temp.write_text(json.dumps(value, indent=2) + "\n")
+    temp.replace(path)
+
+
+def folders() -> list[Path]:
+    if not ROOT.is_dir():
+        return []
+    return sorted(p for p in ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")
+                  and (p / "followup.json").is_file())
+
+
+def state_of(folder: Path) -> dict:
+    state = read_json(folder / "state.json", {})
+    return state if isinstance(state, dict) else {}
+
+
+def update_state(folder: Path, **changes: object) -> None:
+    state = state_of(folder)
+    state.update(changes)
+    write_json(folder / "state.json", state)
+
+
+def rows(include_done: bool) -> list[dict]:
+    listed = []
+    for folder in folders():
+        followup = read_json(folder / "followup.json", {})
+        if not isinstance(followup, dict):
+            followup = {}
+        state = state_of(folder)
+        done = state.get("status") == "done"
+        if done and not include_done:
+            continue
+        due = parse_time(followup.get("due_at"))
+        listed.append({
+            "slug": folder.name,
+            "title": str(followup.get("title") or folder.name),
+            "due": due,
+            "is_due": not done and due is not None and due <= now(),
+            "done": done,
+            "runs": "run" in followup,
+            "last": state.get("last_status"),
+        })
+    far_future = now() + timedelta(days=36500)
+    listed.sort(key=lambda r: (r["done"], not r["is_due"], r["due"] or far_future))
+    return listed
+
+
+def cmd_list(args: argparse.Namespace) -> int:
+    listed = rows(args.all)
+    if not listed:
+        print(f"No follow-ups in {ROOT}." if not args.all else f"No follow-ups at all in {ROOT}.")
+        return 0
+    print(f"{'#':>3}  {'due':<16} {'status':<8} {'kind':<9} title")
+    for number, row in enumerate(listed, 1):
+        status = "done" if row["done"] else ("DUE" if row["is_due"] else "waiting")
+        kind = "runs" if row["runs"] else "reminder"
+        last = f"  (last run: {row['last']})" if row["last"] else ""
+        print(f"{number:>3}  {shown_time(row['due']):<16} {status:<8} {kind:<9} {row['title']}{last}")
+    ROOT.mkdir(parents=True, exist_ok=True)
+    write_json(LAST_LIST, {"saved_at": now().isoformat(), "slugs": [r["slug"] for r in listed]})
+    return 0
+
+
+def cmd_due(_: argparse.Namespace) -> int:
+    due = [r for r in rows(False) if r["is_due"]]
+    if due:
+        noun = "follow-up is" if len(due) == 1 else "follow-ups are"
+        print(f"{len(due)} {noun} due. /mj-follow-ups to see them.")
+    return 0
+
+
+def resolve(target: str) -> Path:
+    if target.isdigit():
+        saved = read_json(LAST_LIST, {})
+        saved_at = parse_time(saved.get("saved_at")) if isinstance(saved, dict) else None
+        if saved_at is None or now() - saved_at > LAST_LIST_TTL:
+            raise NotRunnable("no recent list; run `mj-followups list` first")
+        slugs = saved.get("slugs", [])
+        number = int(target)
+        if not 1 <= number <= len(slugs):
+            raise NotRunnable(f"no follow-up number {number} in the last list")
+        target = slugs[number - 1]
+    folder = ROOT / target
+    if "/" in target or target.startswith(".") or not (folder / "followup.json").is_file():
+        raise NotRunnable(f"no follow-up called {target!r} in {ROOT}")
+    return folder
+
+
+def tool_rule_problem(rule: str) -> str | None:
+    if rule in TOO_WIDE_TOOLS:
+        return f"{rule!r} allows too much for an unattended run"
+    if not rule.startswith("Bash("):
+        return None
+    words = rule[len("Bash("):].rstrip(")").split()
+    if not words:
+        return f"{rule!r} is empty"
+    if Path(words[0]).name in TOO_WIDE_PROGRAMS:
+        return f"{rule!r} can run anything through {words[0]}"
+    if INLINE_CODE_FLAGS & set(words):
+        return f"{rule!r} can run inline code"
+    if words[-1] == "*" and len(words) < 3:
+        return f"{rule!r} lets {words[0]} take any arguments; name the subcommand or script too"
+    return None
+
+
+def checked(folder: Path) -> tuple[dict, dict]:
+    followup = read_json(folder / "followup.json")
+    if not isinstance(followup, dict):
+        raise NotRunnable(f"{folder}/followup.json is missing or isn't valid JSON")
+    run = followup.get("run")
+    if not isinstance(run, dict) or not isinstance(run.get("prompt"), str) or not run["prompt"].strip():
+        raise NotRunnable(f"{folder.name} is a reminder only: it has no run.prompt")
+    if run.get("mode", "headless") not in ("headless", "interactive"):
+        raise NotRunnable(f"{folder.name}: run.mode must be headless or interactive")
+    workdir = run.get("workdir")
+    if workdir is not None and not Path(os.path.expanduser(workdir)).is_dir():
+        raise NotRunnable(f"{folder.name}: run.workdir {workdir} doesn't exist")
+    tools = run.get("allowed_tools", [])
+    if not isinstance(tools, list) or not all(isinstance(t, str) for t in tools):
+        raise NotRunnable(f"{folder.name}: run.allowed_tools must be a list of strings")
+    for rule in tools:
+        problem = tool_rule_problem(rule.strip())
+        if problem:
+            raise NotRunnable(f"{folder.name}: {problem}")
+    return followup, run
+
+
+def cmd_check(args: argparse.Namespace) -> int:
+    folder = Path(args.folder).expanduser()
+    try:
+        checked(folder)
+    except NotRunnable as reason:
+        print(f"FIX {reason}")
+        return 2
+    print(f"OK {folder.name} would run")
+    return 0
+
+
+def workdir_for(folder: Path, run: dict) -> Path:
+    return Path(os.path.expanduser(run["workdir"])) if run.get("workdir") else folder
+
+
+def allowed_tools(folder: Path, run: dict) -> list[str]:
+    scripts = folder / "scripts"
+    tools = [
+        "Read", "Glob", "Grep",
+        f"Bash(python3 {scripts}/*)",
+        f"Bash(bash {scripts}/*)",
+        f"Bash(sh {scripts}/*)",
+        f"Bash({scripts}/*)",
+    ]
+    if workdir_for(folder, run) == folder:
+        tools += ["Bash(python3 scripts/*)", "Bash(bash scripts/*)", "Bash(sh scripts/*)", "Bash(./scripts/*)"]
+    return tools + [t.strip() for t in run.get("allowed_tools", [])]
+
+
+def headless_command(folder: Path, run: dict) -> list[str]:
+    # The prompt goes right after -p: --allowedTools takes a list and would
+    # swallow anything that followed it.
+    command = [
+        "claude", "-p", run["prompt"],
+        "--output-format", "json",
+        "--permission-mode", "dontAsk",
+        # User and project settings carry allow rules and hooks that would widen the list below.
+        "--setting-sources", ",".join(run.get("setting_sources", [])),
+        "--append-system-prompt", RUNNER_INSTRUCTIONS.format(folder=folder),
+        "--max-turns", str(MAX_TURNS),
+    ]
+    if workdir_for(folder, run) != folder:
+        command += ["--add-dir", str(folder)]
+    return command + ["--allowedTools", *allowed_tools(folder, run)]
+
+
+def run_headless(folder: Path, followup: dict, run: dict, dry_run: bool) -> int:
+    workdir = workdir_for(folder, run)
+    command = headless_command(folder, run)
+    if dry_run:
+        print(f"cd {shlex.quote(str(workdir))}")
+        print(shlex.join(command))
+        return 0
+
+    started = now()
+    result_file = folder / "runs" / f"{started.strftime('%Y%m%dT%H%M%S')}.md"
+    result_file.parent.mkdir(exist_ok=True)
+    print(f"Running {folder.name} headless in {workdir} (up to {RUN_TIMEOUT // 60} minutes)", flush=True)
+    stdout, stderr, timed_out = run_with_timeout(command, workdir)
+
+    output = read_json_text(stdout)
+    text = str(output.get("result") or "")
+    if timed_out:
+        status = "failed"
+    elif any(line.startswith("NEEDS_YOU:") for line in text.splitlines()):
+        status = "needs_you"
+    elif output.get("is_error") or not text:
+        status = "failed"
+    else:
+        status = "done"
+
+    sections = [
+        f"# {followup.get('title') or folder.name}",
+        f"Run {started.isoformat(timespec='seconds')}: **{status}**" + (" (timed out)" if timed_out else ""),
+        text or "(no reply)",
+    ]
+    if stderr.strip():
+        sections.append("## stderr\n\n```\n" + stderr.strip()[-4000:] + "\n```")
+    result_file.write_text("\n\n".join(sections) + "\n")
+    update_state(folder, last_run_at=started.isoformat(), last_status=status, last_result=str(result_file))
+
+    print(f"{status}: {result_file}")
+    for line in text.splitlines():
+        if line.startswith(("SUMMARY:", "NEEDS_YOU:")):
+            print(line)
+    return 0 if status == "done" else 1
+
+
+def read_json_text(text: str) -> dict:
+    try:
+        value = json.loads(text)
+    except ValueError:
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
+def run_with_timeout(command: list[str], workdir: Path) -> tuple[str, str, bool]:
+    # Output goes to files, not pipes: anything claude leaves running in the
+    # background could hold a pipe open and hang the wait.
+    with tempfile.TemporaryFile("w+") as out, tempfile.TemporaryFile("w+") as err:
+        try:
+            process = subprocess.Popen(command, cwd=workdir, stdin=subprocess.DEVNULL,
+                                       stdout=out, stderr=err, text=True, start_new_session=True)
+        except OSError as error:
+            return "", f"couldn't start claude: {error}", False
+        timed_out = False
+        try:
+            process.wait(timeout=RUN_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            os.killpg(process.pid, 15)
+            process.wait()
+        out.seek(0)
+        err.seek(0)
+        return out.read(), err.read(), timed_out
+
+
+def open_interactive(folder: Path, run: dict, dry_run: bool) -> int:
+    workdir = workdir_for(folder, run)
+    prompt = f"{run['prompt']}\n\nThis follow-up's record is {folder}/followup.json; compare with its baseline."
+    claude = ["claude", "--add-dir", str(folder), prompt]
+    if dry_run:
+        print(f"cd {shlex.quote(str(workdir))}")
+        print(shlex.join(claude))
+        return 0
+    if not os.environ.get("TMUX") or not shutil.which("tmux"):
+        print("Not inside tmux. Start it yourself with:")
+        print(f"  cd {shlex.quote(str(workdir))} && {shlex.join(claude)}")
+        return 0
+    window = f"fu-{folder.name[11:31]}"
+    subprocess.run(["tmux", "new-window", "-n", window, "-c", str(workdir), shlex.join(claude)], check=True)
+    update_state(folder, last_run_at=now().isoformat(), last_status="interactive")
+    print(f"Opened {folder.name} in tmux window {window}")
+    return 0
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    try:
+        folder = resolve(args.target)
+        followup, run = checked(folder)
+    except NotRunnable as reason:
+        print(reason, file=sys.stderr)
+        return 2
+    if args.interactive or run.get("mode") == "interactive":
+        return open_interactive(folder, run, args.dry_run)
+    return run_headless(folder, followup, run, args.dry_run)
+
+
+def cmd_done(args: argparse.Namespace) -> int:
+    try:
+        folder = resolve(args.target)
+    except NotRunnable as reason:
+        print(reason, file=sys.stderr)
+        return 2
+    update_state(folder, status="done", done_at=now().isoformat())
+    print(f"Marked {folder.name} done")
+    return 0
+
+
+def cmd_next_monday(_: argparse.Namespace) -> int:
+    today = now()
+    days = (7 - today.weekday()) % 7 or 7
+    monday = (today + timedelta(days=days)).replace(hour=9, minute=0, second=0, microsecond=0)
+    print(monday.isoformat())
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    listing = commands.add_parser("list")
+    listing.add_argument("--all", action="store_true")
+    listing.set_defaults(func=cmd_list)
+
+    commands.add_parser("due").set_defaults(func=cmd_due)
+
+    running = commands.add_parser("run")
+    running.add_argument("target")
+    running.add_argument("--dry-run", action="store_true")
+    running.add_argument("--interactive", action="store_true")
+    running.set_defaults(func=cmd_run)
+
+    done = commands.add_parser("done")
+    done.add_argument("target")
+    done.set_defaults(func=cmd_done)
+
+    check = commands.add_parser("check")
+    check.add_argument("folder")
+    check.set_defaults(func=cmd_check)
+
+    commands.add_parser("next-monday").set_defaults(func=cmd_next_monday)
+
+    args = parser.parse_args()
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
