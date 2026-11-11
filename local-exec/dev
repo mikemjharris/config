@@ -6,7 +6,8 @@
 session="my_dev_session"
 
 # Configuration file for window definitions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks (e.g. ~/launch-sessions) so the layout helper is found
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 WINDOWS_CONFIG="$SCRIPT_DIR/dev.windows"
 
 source "$SCRIPT_DIR/../cli-tools/tmux-window-layout.sh"
