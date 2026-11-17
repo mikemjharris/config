@@ -1,0 +1,10 @@
+{
+  "name": "mj-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Scripts for the mj-e2e skill: run a walkthrough in Chrome, build the report, publish it",
+  "engines": { "node": ">=24" },
+  "dependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}

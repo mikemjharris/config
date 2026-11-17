@@ -1,0 +1,46 @@
+# e2e/<feature>/manifest.yaml: an end-to-end walkthrough of one branch, for the mj-e2e skill.
+# Drafted by `/mj-e2e plan` from the PR diff; edit freely, it's the source of truth for the run.
+
+app: shop                    # the app's slug: the report goes to /e2e/<app>/<feature>/<run>/
+feature: basket-discounts    # the branch as a slug
+branch: basket-discounts
+base: main
+title: Discount codes in the basket
+pr: https://github.com/owner/shop/pull/42   # optional
+
+summary: |
+  Shoppers can type a discount code in the basket. A valid code takes the discount off the total
+  and shows it as its own line; an invalid one shows an error and changes nothing.
+
+changed:                     # what the diff touches, user-visible first
+  - basket page: discount code field and a "Discount" line in the totals
+  - API: POST /api/basket/discount checks the code
+  - codes are seeded from e2e/seed.mjs (new)
+
+setup:
+  target: local              # local (worktrees on this box) | staging (then give url:, and no seeding of real data)
+  install: npm ci
+  start: npm run dev         # run in each worktree; PORT and DATA_DIR are set for it
+  env:
+    LOCAL_DEV: "1"
+  port: 8080                 # after runs here, before on port + 1
+  ready: /                   # GET this until it answers 200
+  seed:                      # run in the worktree after it's ready; {url} is that side's base URL
+    - node e2e/seed.mjs {url}
+
+compare: true                # also run on base and show before/after side by side
+viewport: phone              # phone (390x844) | desktop (1280x800)
+
+steps:                       # 4-8, in the order a person would click through
+  - id: open-basket
+    do: Open /basket with the seeded basket (two items).
+    expect: Two items and a total of £30.00; a "Discount code" field under the items.
+  - id: apply-valid
+    do: Type SAVE10 in the discount field and press Apply.
+    expect: A "Discount (SAVE10) −£3.00" line, and the total now £27.00.
+  - id: apply-invalid
+    do: Clear the code, type NOPE, press Apply.
+    expect: An error "That code isn't valid" next to the field; the total back at £30.00.
+  - id: checkout-carries-discount
+    do: Apply SAVE10 again and go on to Checkout.
+    expect: The checkout summary shows the same discount line and £27.00.
