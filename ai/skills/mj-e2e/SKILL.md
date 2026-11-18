@@ -45,8 +45,15 @@ Run in the app's repo, on the feature branch.
    - 4-8 `steps`, in the order a person would click through: `do` (what to do, in words) and `expect`
      (what the screenshot should show, specific enough to check). Cover the main path first, then one
      or two edge cases the diff suggests.
-4. Show the manifest and ask the user to OK or change it. Commit it (`e2e: walkthrough manifest for
-   <feature>`) once agreed; don't push unless asked.
+4. Show the manifest as a short summary (what changed, how it's tested, the steps as a table), then ask
+   with the AskUserQuestion tool, so the user taps an answer rather than typing (they're often on a
+   phone). One question, "Run the walkthrough?", with these options:
+   - **Commit and run (Recommended)**: commit the manifest, then do `run` straight away.
+   - **Commit only**: commit it; the user runs it later.
+   - **Change the steps**: ask what to change (they type it in "Other"), update, and ask again.
+   Commit as `e2e: walkthrough manifest for <feature>`; don't push unless asked.
+   Use the same kind of tap-to-answer question wherever else this skill needs a decision (e.g. after
+   `execute`'s report: "Merge the branch?", "Rerun", "Leave it").
 
 ## run [manifest]
 Starts the run in its own Remote Control session, so it can be watched from the Claude app.
