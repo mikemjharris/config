@@ -81,9 +81,12 @@ What the launched session does. Work through it without asking; report at the en
    errors, empty states) goes in `issues`.
 7. Write `$out/run.json` (see "run.json" below), then
    `node ${CLAUDE_SKILL_DIR}/scripts/report.mjs $out` to build `$out/index.html`.
-8. **Publish**: `node ${CLAUDE_SKILL_DIR}/scripts/publish.mjs $out` uploads the run to the personal
-   site at `/e2e/<app>/<feature>/<run>/` and prints the URL. Then
-   `tg-send "🧪 <title>: <verdict>. <url>"` if `tg-send` exists.
+8. **Publish** to the personal site: `node ${CLAUDE_SKILL_DIR}/scripts/publish.mjs $out` uploads the
+   run to `/e2e/<app>/<feature>/<run>/` and prints the URL (the site's address: `E2E_API_URL` in
+   `~/.config/mj-e2e.env`, else `PAPI_URL` in `~/.config/personal-site.env`). If the upload fails, don't
+   change the site or its config: publish the run as a private claude.ai page instead (Artifact tool,
+   `$out/index.html` with its PNGs as `files`, `root` = `$out`), and say why the site upload failed in
+   the reply and the message. Then `tg-send "🧪 <title>: <verdict>. <url>"` if `tg-send` exists.
 9. **Tidy**: stop the servers, remove the worktrees. If `walkthrough.mjs` is new or changed, commit it
    (`e2e: walkthrough script for <feature>`), not pushed.
 10. Reply with the verdict, the URL, and any issues.
