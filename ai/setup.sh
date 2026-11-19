@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Symlink each personal agent, command and skill into the Claude config dir.
+# Symlink each personal agent, command and skill into the Claude config dir, and copy the rules.
 # Idempotent. Links file by file so other tools' agents and commands in the
 # same folders (e.g. sw-toolbox) are left alone.
 #
@@ -55,6 +55,21 @@ for skill in "$SCRIPT_DIR"/skills/*/; do
     (cd "$skill" && PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --silent --no-fund --no-audit) \
       && echo "    npm packages installed" || echo "    npm install failed in $skill" >&2
   fi
+done
+
+# Rules load in every session, on every project. Copied rather than linked: Claude Code treats a linked
+# file outside the project as an external import that needs approving. Re-run this after editing one.
+echo "Copying rules into $CLAUDE_DIR/rules"
+mkdir -p "$CLAUDE_DIR/rules"
+for rule in "$CLAUDE_DIR"/rules/mj-*.md; do
+  if [ -f "$rule" ] && [ ! -f "$SCRIPT_DIR/rules/$(basename "$rule")" ]; then
+    rm "$rule"
+    echo "  Removed stale $(basename "$rule")"
+  fi
+done
+for rule in "$SCRIPT_DIR"/rules/*.md; do
+  install -m 644 "$rule" "$CLAUDE_DIR/rules/$(basename "$rule")"
+  echo "  Copied $(basename "$rule")"
 done
 
 echo "Linking scripts into ~/.local/bin"
