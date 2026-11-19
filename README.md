@@ -43,6 +43,8 @@ Most of this setup should work as it does for a standard ubuntu setup. A few thi
 
 - **`ai/`** - Personal Claude Code agents and slash commands, all prefixed `mj-`
   - `setup.sh` - Symlink each one into `${CLAUDE_CONFIG_DIR:-~/.claude}`, and `bin/` into `~/.local/bin`
+  - `rules/` - Rules loaded in every session on every project (copied into `~/.claude/rules/`); `mj-project-baseline.md`: every project gets a CLAUDE.md, CI, linting and formatting
+  - `skills/mj-project-baseline` - Checks a project for those and adds what's missing, with the tools to use per stack
   - `bin/mj-followups` - List and run local follow-ups saved by `/mj-follow-up`
 - **`bin/`** - Configuration installation and setup scripts
   - `install-brew-packages.sh` - Install Homebrew packages (macOS)
