@@ -40,7 +40,7 @@ Figure out what code to analyze:
 
 ### Step 2: Launch Performance Analysis
 
-Use the Agent tool to launch the `mj-performance-analyzer` agent with a clear prompt:
+Use the Agent tool to launch the `mj-review-performance` agent with a clear prompt:
 
 ```
 Analyze the following files for performance issues, focusing on N+1 queries, missing eager loading, and inefficient data access patterns:
