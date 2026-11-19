@@ -1,57 +1,97 @@
 ---
-allowed-tools: Bash(gh *), Bash(git *), Read, Grep, Glob, Agent
-description: Run full PR review workflow - fetch comments and review code quality
+allowed-tools: Bash(gh *), Bash(git *), Bash(mktemp*), Read, Write, Grep, Glob, Agent, AskUserQuestion
+description: Full PR review - correctness, tests, comments and docs, simplicity, security and performance reviewers in parallel, plus the PR's existing comments; findings checked, ranked and shown here, then optionally posted to the PR
+argument-hint: "[base-branch]"
 ---
 
-## PR Context
-!`gh pr view --json number,title,body,url,reviews,comments,reviewRequests 2>/dev/null || echo "No PR found"`
+## Context
+!`git rev-parse --abbrev-ref HEAD`
+!`gh pr view --json number,title,body,url,baseRefName,headRefOid,comments,reviews 2>/dev/null || echo "No PR for this branch"`
+!`git status --short`
 
-## Branch Changes
-!`git diff --name-only main...HEAD 2>/dev/null || echo "No changes found"`
+Run a full review of this branch. Findings are shown here in the terminal; nothing goes to GitHub unless the user
+picks that at the end.
 
-## Recent Commits
-!`git log main..HEAD --oneline 2>/dev/null || echo "No commits"`
+## 1. Work out the change
+- Base: `$ARGUMENTS` if given, else the PR's `baseRefName`, else `main`. Run `git fetch origin <base>` and use
+  `origin/<base>` if it exists (a stacked PR's base may only be on the remote), else the local branch.
+- `git diff <base>...HEAD --stat` and `git log <base>..HEAD --oneline`. If nothing has changed, say so and stop.
+- Uncommitted changes aren't reviewed: if `git status` shows any, say so in one line.
 
-Run a comprehensive PR review by launching these agents in sequence:
+## 2. Pick the reviewers
+| Agent | Runs when |
+|---|---|
+| `mj-review-correctness` | any code changed |
+| `mj-review-tests` | any code or tests changed |
+| `mj-review-docs` | always (comments, and docs that may have drifted) |
+| `mj-review-simplicity` | any code changed |
+| `mj-review-security` | code, config, CI, infra or dependencies changed |
+| `mj-review-performance` | code that runs in production changed (not only tests, docs or CI) |
+| `mj-review-pr-comments` | the PR has comments or reviews |
 
-## Step 1: Gather PR Feedback
+"Code" means anything but docs (Markdown, text). Say in one line which reviewers are running, and why any are
+skipped.
 
-Use the Agent tool to launch the `mj-review-pr-comments` agent. This will:
-- Fetch all PR comments and reviews using `gh` CLI
-- Fetch inline code review comments
-- Analyze and categorize the feedback
-- Create a prioritized list of issues to address
+## 3. Run them in parallel
+Launch every chosen agent in a **single message** (several Agent calls at once). Give each the same prompt:
+the repository path, the base ref to diff against, the PR number, title and description (or "no PR"), the list
+of changed files, and "Review this change following your instructions and end with your JSON findings block."
+The pr-comments agent gets just the PR number.
 
-Wait for this agent to complete and capture its findings.
+## 4. Check the findings
+Before showing anything, go through every finding yourself:
+- Open the file at that line. Is the problem real, as described? Is it in this change (or marked pre-existing)?
+  Is it already handled somewhere the reviewer missed (a caller, a guard, a test)?
+- Drop the ones that fail. Fix a wrong line number. Lower a severity that's overstated.
+- Merge duplicates: the same place or the same root cause from several reviewers becomes one finding that names
+  all of them.
+Keep count of what you dropped.
 
-## Step 2: Review Code Quality
+## 5. Report here
+```
+Full review: <branch> → <base>   (PR #n: title)
+Reviewers: correctness, tests, docs, simplicity, security, performance (+ PR comments)
+Findings: <n> (<m> dropped on checking)
+```
+Then the findings, numbered once across all groups so they can be referred to ("fix 2 and 5"):
 
-Use the Agent tool to launch the `mj-code-reviewer` agent. This will:
-- Review all changes on the current branch vs main
-- Check conventions and patterns
-- Verify best practices
-- Identify security and performance issues
-- Compare against CLAUDE.md patterns
+**Critical** / **Important** / **Minor** (leave out empty groups)
+`1. [correctness] path/file.js:42 — title`
+   One or two lines: what's wrong and when it bites. **Fix:** the change.
 
-Wait for this agent to complete and capture its findings.
+**Already there before this change** (pre-existing findings, if any), numbered on.
 
-## Step 3: Synthesize Findings
+**PR feedback still open** (from `mj-review-pr-comments`, if it ran): each item with who raised it.
 
-Combine the results from both agents into a single action plan:
+Finish with a short suggested order for fixing. If there are no findings, say the change looks good, in one line.
 
-### PR Feedback Items
-[List items from mj-review-pr-comments agent]
+## 6. Ask what next
+Use AskUserQuestion with these two questions in one call (leave out the first if there's no PR, or no findings):
+1. "Post these findings to PR #n on GitHub as review comments?" Options: "No, keep them here (Recommended)",
+   "Post critical and important", "Post all findings".
+2. "Start fixing?" Options: "Fix critical and important", "Fix all", "Not now". (Other lets them name numbers.)
 
-### Code Quality Items
-[List items from mj-code-reviewer agent]
+## 7. Posting to the PR (only if chosen)
+One review, as a comment: never approve or request changes.
+- `gh repo view --json nameWithOwner -q .nameWithOwner` for owner/repo, and the PR's `headRefOid` as the commit.
+- Inline comments only on lines inside the PR's diff (`gh pr diff <n>`: added or context lines in a hunk, on the
+  new side). Any other finding goes in the review body as `path:line`.
+- Each inline comment: `**<Severity> · <reviewer>**: <title>`, then the detail, then `**Suggested fix:** <fix>`.
+- The review body: one line on what was reviewed, the counts per severity, and the findings that couldn't go inline.
+- End the review body and every comment with:
 
-### Combined Priority Order
-Create a single prioritized list that merges both sources:
-1. Critical issues (security, correctness, blocking PR feedback)
-2. Important items (reviewer requests, convention violations)
-3. Suggestions (nice-to-haves from both sources)
+  ```
 
-### Recommended Approach
-Suggest an order for addressing the items, noting any dependencies between them.
+  ---
+  _Generated by [Claude Code](https://claude.ai/code)_
+  ```
+- Write the request to a temp file (`mktemp`) as
+  `{"commit_id": ..., "event": "COMMENT", "body": ..., "comments": [{"path", "line", "side": "RIGHT", "body"}]}`
+  and send it with `gh api repos/<owner>/<repo>/pulls/<n>/reviews --method POST --input <file>`. If GitHub refuses
+  it (422, usually a line outside the diff), move those comments into the body and send once more.
+- Print the review's link as a markdown link.
 
-Ask the user if they want to start implementing the fixes.
+## 8. Fixing (only if chosen)
+Fix in order of severity, one commit per finding or per closely related group, running the project's tests,
+lint and format check (see its CLAUDE.md) as you go. Don't push unless asked. Finish with what was fixed, what
+wasn't and why.
