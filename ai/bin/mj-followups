@@ -8,10 +8,15 @@ Usage:
   mj-followups done <n|slug>
   mj-followups check <folder>          # would this folder run?
   mj-followups next-monday             # default due time, as ISO with offset
+  mj-followups timer on|off|status     # the systemd user timer that starts due ones
+  mj-followups tick                    # what the timer runs each minute
 
 Each follow-up is a folder under ~/.mj-followups/<YYYY-MM-DD>-<slug>/ holding
-followup.json, optional scripts/, and runs/ for results. Nothing runs on its
-own: a follow-up only runs when you ask for it.
+followup.json, optional scripts/, and runs/ for results. One with
+"auto_start": true is started by the timer when it's due: a `remote` run opens a
+Claude session with Remote Control in its own tmux session, a reminder is sent
+with tg-send. Everything else only runs when you ask for it. Between 22:00 and
+08:00 the timer waits for 08:00, unless the follow-up has "at_night": true.
 
 Numbers come from the last `list`, saved for 12 hours, so a list that changed
 since can't make `run` pick a different follow-up from the one you saw.
@@ -21,11 +26,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -34,6 +41,47 @@ LAST_LIST = ROOT / ".last-list.json"
 LAST_LIST_TTL = timedelta(hours=12)
 RUN_TIMEOUT = 15 * 60
 MAX_TURNS = 40
+REPORT_WITHIN = timedelta(minutes=20)
+NIGHT_STARTS, NIGHT_ENDS = 22, 8  # no messages or new sessions in these hours
+
+UNITS = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "systemd/user"
+SERVICE = """\
+[Unit]
+Description=Start follow-ups that are due (mj-followups)
+
+[Service]
+Type=oneshot
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/bin/mj-followups tick
+# The tmux server may be started from here; leave it running when the tick ends.
+KillMode=process
+"""
+TIMER = """\
+[Unit]
+Description=Start follow-ups that are due, checked every minute
+
+[Timer]
+OnCalendar=*:*:00
+AccuracySec=10s
+
+[Install]
+WantedBy=timers.target
+"""
+
+REMOTE_INSTRUCTIONS = """\
+
+
+This is a scheduled follow-up, started by mj-followups with nobody watching. Its record is at the \
+end: the summary says what was found last time and the baseline holds the numbers to compare \
+against. Do what is asked above and nothing beyond it. Write your report as \
+your reply here, for someone reading on a phone, then send a 2-3 line summary with \
+`tg-send` if that command exists (no secrets; not between 22:00 and 08:00). Anything that changes \
+things needs the user's OK first, even if the record suggests it. When you've reported, run \
+`mj-followups reported {slug}` and stay ready for questions.
+
+<record>
+{record}
+</record>"""
 
 # Rules that would let an unattended run reach past the commands it names.
 TOO_WIDE_TOOLS = {"Bash", "Bash(*)", "Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch", "Task", "Agent"}
@@ -121,6 +169,7 @@ def rows(include_done: bool) -> list[dict]:
             "is_due": not done and due is not None and due <= now(),
             "done": done,
             "runs": "run" in followup,
+            "auto": bool(followup.get("auto_start")),
             "last": state.get("last_status"),
         })
     far_future = now() + timedelta(days=36500)
@@ -137,6 +186,8 @@ def cmd_list(args: argparse.Namespace) -> int:
     for number, row in enumerate(listed, 1):
         status = "done" if row["done"] else ("DUE" if row["is_due"] else "waiting")
         kind = "runs" if row["runs"] else "reminder"
+        if row["auto"]:
+            kind = "auto" if row["runs"] else "auto-rem"
         last = f"  (last run: {row['last']})" if row["last"] else ""
         print(f"{number:>3}  {shown_time(row['due']):<16} {status:<8} {kind:<9} {row['title']}{last}")
     ROOT.mkdir(parents=True, exist_ok=True)
@@ -193,11 +244,21 @@ def checked(folder: Path) -> tuple[dict, dict]:
     run = followup.get("run")
     if not isinstance(run, dict) or not isinstance(run.get("prompt"), str) or not run["prompt"].strip():
         raise NotRunnable(f"{folder.name} is a reminder only: it has no run.prompt")
-    if run.get("mode", "headless") not in ("headless", "interactive"):
-        raise NotRunnable(f"{folder.name}: run.mode must be headless or interactive")
+    if run.get("mode", "headless") not in ("headless", "interactive", "remote"):
+        raise NotRunnable(f"{folder.name}: run.mode must be headless, interactive or remote")
     workdir = run.get("workdir")
     if workdir is not None and not Path(os.path.expanduser(workdir)).is_dir():
         raise NotRunnable(f"{folder.name}: run.workdir {workdir} doesn't exist")
+    if run.get("mode") == "remote":
+        if workdir is None:
+            raise NotRunnable(f"{folder.name}: a remote run needs run.workdir")
+        if not is_trusted(Path(os.path.expanduser(workdir))):
+            raise NotRunnable(f"{folder.name}: open claude in {workdir} once and trust it, or the session stops at that prompt")
+    if followup.get("auto_start"):
+        if run.get("mode") != "remote":
+            raise NotRunnable(f"{folder.name}: auto_start needs run.mode remote")
+        if parse_time(followup.get("due_at")) is None:
+            raise NotRunnable(f"{folder.name}: auto_start needs a due_at")
     tools = run.get("allowed_tools", [])
     if not isinstance(tools, list) or not all(isinstance(t, str) for t in tools):
         raise NotRunnable(f"{folder.name}: run.allowed_tools must be a list of strings")
@@ -208,8 +269,20 @@ def checked(folder: Path) -> tuple[dict, dict]:
     return followup, run
 
 
+def is_trusted(workdir: Path) -> bool:
+    config = read_json(Path.home() / ".claude.json", {})
+    projects = config.get("projects", {}) if isinstance(config, dict) else {}
+    path = workdir.resolve()
+    return any(projects.get(str(p), {}).get("hasTrustDialogAccepted") for p in (path, *path.parents))
+
+
 def cmd_check(args: argparse.Namespace) -> int:
     folder = Path(args.folder).expanduser()
+    followup = read_json(folder / "followup.json")
+    if isinstance(followup, dict) and followup.get("auto_start") and "run" not in followup:
+        due = parse_time(followup.get("due_at"))
+        print(f"OK {folder.name}: reminder, sent {shown_time(due)}" if due else "FIX auto_start needs a due_at")
+        return 0 if due else 2
     try:
         checked(folder)
     except NotRunnable as reason:
@@ -328,7 +401,7 @@ def run_with_timeout(command: list[str], workdir: Path) -> tuple[str, str, bool]
 def open_interactive(folder: Path, run: dict, dry_run: bool) -> int:
     workdir = workdir_for(folder, run)
     prompt = f"{run['prompt']}\n\nThis follow-up's record is {folder}/followup.json; compare with its baseline."
-    claude = ["claude", "--add-dir", str(folder), prompt]
+    claude = ["claude", "--add-dir", str(folder), "--", prompt]  # --add-dir takes a list
     if dry_run:
         print(f"cd {shlex.quote(str(workdir))}")
         print(shlex.join(claude))
@@ -344,6 +417,128 @@ def open_interactive(folder: Path, run: dict, dry_run: bool) -> int:
     return 0
 
 
+def session_name(folder: Path) -> str:
+    return "fu-" + re.sub(r"[^A-Za-z0-9_-]", "-", folder.name)
+
+
+def tmux_has(session: str) -> bool:
+    return subprocess.run(["tmux", "has-session", "-t", f"={session}"], capture_output=True).returncode == 0
+
+
+def remote_command(folder: Path, followup: dict, run: dict) -> list[str]:
+    title = str(followup.get("title") or folder.name)
+    record = json.dumps({k: followup[k] for k in ("title", "due_at", "summary", "baseline", "links") if k in followup},
+                        indent=2, ensure_ascii=False)
+    prompt = run["prompt"] + REMOTE_INSTRUCTIONS.format(slug=folder.name, record=record)
+    # No --add-dir for the follow-up's folder: Claude asks whether to trust it, with nobody there to answer.
+    return ["claude", "--remote-control", f"Follow-up: {title}"[:80], "--permission-mode", "auto", "--", prompt]
+
+
+def open_remote(folder: Path, followup: dict, run: dict, dry_run: bool) -> int:
+    workdir = workdir_for(folder, run)
+    session = session_name(folder)
+    command = shlex.join(remote_command(folder, followup, run))
+    if dry_run:
+        print(f"cd {shlex.quote(str(workdir))}")
+        print(command)
+        return 0
+    if tmux_has(session):
+        print(f"{folder.name} is already open (tmux session {session})")
+        return 0
+    # A login shell, so claude gets the same PATH and tools as in a terminal.
+    shell = os.environ.get("SHELL", "/bin/bash")
+    subprocess.run(["tmux", "new-session", "-d", "-s", session, "-c", str(workdir),
+                    shlex.join([shell, "-lic", command])], check=True)
+    # Before the wait, so it can't overwrite the session's own "reported".
+    update_state(folder, last_run_at=now().isoformat(), last_status="remote")
+    time.sleep(8)
+    if not tmux_has(session):
+        update_state(folder, last_status="failed")
+        print(f"failed: {folder.name} closed straight after starting", file=sys.stderr)
+        return 1
+    print(f"Opened {folder.name} with Remote Control (tmux attach -t {session})")
+    return 0
+
+
+def send(text: str) -> None:
+    if shutil.which("tg-send"):
+        subprocess.run(["tg-send", text], capture_output=True, timeout=30)
+
+
+def warn_if_silent(row: dict, folder: Path, state: dict) -> None:
+    """One message when a session the timer started hasn't reported: it may be stopped at a prompt."""
+    started = parse_time(state.get("auto_started_at"))
+    if state.get("last_status") != "remote" or state.get("warned_at") or started is None:
+        return
+    if now() - started > REPORT_WITHIN:
+        update_state(folder, warned_at=now().isoformat())
+        send(f"⏰ Follow-up hasn't reported yet: {row['title']}\nIt may be waiting for you in the Claude app "
+             f"(or tmux attach -t {session_name(folder)}).")
+
+
+def cmd_tick(_: argparse.Namespace) -> int:
+    night = now().hour >= NIGHT_STARTS or now().hour < NIGHT_ENDS
+    for row in rows(False):
+        folder = ROOT / row["slug"]
+        if row["auto"] and not night:
+            warn_if_silent(row, folder, state_of(folder))
+    for row in rows(False):
+        folder = ROOT / row["slug"]
+        if not (row["auto"] and row["is_due"]) or state_of(folder).get("auto_started_at"):
+            continue
+        followup = read_json(folder / "followup.json", {})
+        if night and not followup.get("at_night"):
+            continue
+        # Recorded first: if starting fails it must not be retried every minute.
+        update_state(folder, auto_started_at=now().isoformat())
+        if not row["runs"]:
+            update_state(folder, last_run_at=now().isoformat(), last_status="reminded")
+            send(f"⏰ Follow-up due: {row['title']}\nSee it with /mj-follow-ups.")
+            return 0
+        try:
+            followup, run = checked(folder)
+            started = open_remote(folder, followup, run, False) == 0
+            problem = "it closed straight after starting"
+        except (NotRunnable, OSError, subprocess.SubprocessError) as error:
+            started, problem = False, str(error)
+        if started:
+            send(f"⏰ Follow-up started: {row['title']}\nIt's in the Claude app; a summary follows.")
+        else:
+            update_state(folder, last_status="failed")
+            send(f"⏰ Follow-up due but it couldn't start: {row['title']}\n{problem[:200]}")
+        return 0 if started else 1  # one per tick: each session uses a few hundred MB
+    return 0
+
+
+def cmd_reported(args: argparse.Namespace) -> int:
+    try:
+        folder = resolve(args.target)
+    except NotRunnable as reason:
+        print(reason, file=sys.stderr)
+        return 2
+    update_state(folder, last_status="reported", reported_at=now().isoformat())
+    print(f"Marked {folder.name} reported")
+    return 0
+
+
+def cmd_timer(args: argparse.Namespace) -> int:
+    if not shutil.which("systemctl"):
+        print("The timer needs systemd (Linux).", file=sys.stderr)
+        return 2
+    if args.action == "on":
+        UNITS.mkdir(parents=True, exist_ok=True)
+        (UNITS / "mj-followups.service").write_text(SERVICE)
+        (UNITS / "mj-followups.timer").write_text(TIMER)
+        subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
+        subprocess.run(["systemctl", "--user", "enable", "--now", "mj-followups.timer"], check=True)
+    elif args.action == "off":
+        subprocess.run(["systemctl", "--user", "disable", "--now", "mj-followups.timer"], check=True)
+    state = subprocess.run(["systemctl", "--user", "is-active", "mj-followups.timer"], capture_output=True, text=True)
+    active = state.stdout.strip() == "active"
+    print("timer on: due follow-ups with auto_start will start" if active else "timer off: nothing starts on its own")
+    return 0
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     try:
         folder = resolve(args.target)
@@ -351,6 +546,8 @@ def cmd_run(args: argparse.Namespace) -> int:
     except NotRunnable as reason:
         print(reason, file=sys.stderr)
         return 2
+    if run.get("mode") == "remote" and not args.interactive:
+        return open_remote(folder, followup, run, args.dry_run)
     if args.interactive or run.get("mode") == "interactive":
         return open_interactive(folder, run, args.dry_run)
     return run_headless(folder, followup, run, args.dry_run)
@@ -364,6 +561,10 @@ def cmd_done(args: argparse.Namespace) -> int:
         return 2
     update_state(folder, status="done", done_at=now().isoformat())
     print(f"Marked {folder.name} done")
+    if shutil.which("tmux") and tmux_has(session_name(folder)):
+        # Last: this may be the session the command is running in.
+        print(f"Closing its tmux session {session_name(folder)}", flush=True)
+        subprocess.run(["tmux", "kill-session", "-t", f"={session_name(folder)}"])
     return 0
 
 
@@ -398,6 +599,16 @@ def main() -> int:
     check = commands.add_parser("check")
     check.add_argument("folder")
     check.set_defaults(func=cmd_check)
+
+    reported = commands.add_parser("reported")
+    reported.add_argument("target")
+    reported.set_defaults(func=cmd_reported)
+
+    commands.add_parser("tick").set_defaults(func=cmd_tick)
+
+    timer = commands.add_parser("timer")
+    timer.add_argument("action", choices=["on", "off", "status"])
+    timer.set_defaults(func=cmd_timer)
 
     commands.add_parser("next-monday").set_defaults(func=cmd_next_monday)
 
