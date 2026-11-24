@@ -10,7 +10,8 @@ Turn the investigation in this conversation into a **follow-up**: a dated
 re-check ("run this query again next week and compare") saved on this box under
 `~/.mj-followups/`. It outlives this session. With `auto_start`, a systemd
 timer on the box acts when it's due: it opens a new Claude session with Remote
-Control, or sends a reminder on Telegram. Without it, nothing runs on its own
+Control, or sends a reminder with `admin-notify` (the box's admin bot;
+`tg-send` where that isn't installed). Without it, nothing runs on its own
 and `/mj-follow-ups` runs one when asked.
 
 If `command -v mj-followups` finds nothing, tell the user to run
@@ -80,7 +81,7 @@ folder exists, add `-2`, `-3`, and so on.
   so if not). The session runs in auto permission mode with nobody watching,
   so the prompt must be read-only unless the user said otherwise, and must
   restate any rule the conversation set ("change nothing", "don't message at
-  night"). It reports in its own session and by `tg-send`, then waits there.
+  night"). It reports in its own session and by `admin-notify`, then waits there.
   It's given the summary and baseline but not the folder's `scripts/`: put
   anything it runs in the `workdir`. No report in 20 minutes sends a warning.
 - **at_night** (optional, top level): due times from 22:00 to 08:00 wait until

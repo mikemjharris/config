@@ -15,8 +15,9 @@ Each follow-up is a folder under ~/.mj-followups/<YYYY-MM-DD>-<slug>/ holding
 followup.json, optional scripts/, and runs/ for results. One with
 "auto_start": true is started by the timer when it's due: a `remote` run opens a
 Claude session with Remote Control in its own tmux session, a reminder is sent
-with tg-send. Everything else only runs when you ask for it. Between 22:00 and
-08:00 the timer waits for 08:00, unless the follow-up has "at_night": true.
+with admin-notify (the box's admin bot), or tg-send where that isn't installed.
+Everything else only runs when you ask for it. Between 22:00 and 08:00 the timer
+waits for 08:00, unless the follow-up has "at_night": true.
 
 Numbers come from the last `list`, saved for 12 hours, so a list that changed
 since can't make `run` pick a different follow-up from the one you saw.
@@ -75,7 +76,7 @@ This is a scheduled follow-up, started by mj-followups with nobody watching. Its
 end: the summary says what was found last time and the baseline holds the numbers to compare \
 against. Do what is asked above and nothing beyond it. Write your report as \
 your reply here, for someone reading on a phone, then send a 2-3 line summary with \
-`tg-send` if that command exists (no secrets; not between 22:00 and 08:00). Anything that changes \
+`{notifier}` if that command exists (no secrets; not between 22:00 and 08:00). Anything that changes \
 things needs the user's OK first, even if the record suggests it. When you've reported, run \
 `mj-followups reported {slug}` and stay ready for questions.
 
@@ -429,7 +430,7 @@ def remote_command(folder: Path, followup: dict, run: dict) -> list[str]:
     title = str(followup.get("title") or folder.name)
     record = json.dumps({k: followup[k] for k in ("title", "due_at", "summary", "baseline", "links") if k in followup},
                         indent=2, ensure_ascii=False)
-    prompt = run["prompt"] + REMOTE_INSTRUCTIONS.format(slug=folder.name, record=record)
+    prompt = run["prompt"] + REMOTE_INSTRUCTIONS.format(slug=folder.name, record=record, notifier=notifier())
     # No --add-dir for the follow-up's folder: Claude asks whether to trust it, with nobody there to answer.
     return ["claude", "--remote-control", f"Follow-up: {title}"[:80], "--permission-mode", "auto", "--", prompt]
 
@@ -460,9 +461,16 @@ def open_remote(folder: Path, followup: dict, run: dict, dry_run: bool) -> int:
     return 0
 
 
+def notifier() -> str:
+    return "admin-notify" if shutil.which("admin-notify") else "tg-send"
+
+
 def send(text: str) -> None:
-    if shutil.which("tg-send"):
-        subprocess.run(["tg-send", text], capture_output=True, timeout=30)
+    if not shutil.which(notifier()):
+        return
+    result = subprocess.run([notifier(), text], capture_output=True, timeout=30)
+    if result.returncode != 0:  # shown in the service's journal
+        print(f"{notifier()} failed ({result.returncode}): {text.splitlines()[0]}", file=sys.stderr)
 
 
 def warn_if_silent(row: dict, folder: Path, state: dict) -> None:
