@@ -46,7 +46,7 @@ Most of this setup should work as it does for a standard ubuntu setup. A few thi
   - `rules/` - Rules loaded in every session on every project (copied into `~/.claude/rules/`); `mj-project-baseline.md`: every project gets a CLAUDE.md, CI, linting and formatting
   - `skills/mj-project-baseline` - Checks a project for those and adds what's missing, with the tools to use per stack
   - `/mj-full-pr-review` - Runs the `mj-review-*` agents in parallel (correctness, tests, comments and docs, simplicity, security, performance) plus the PR's open comments, checks and ranks the findings, then asks whether to post them to the PR and whether to start fixing
-  - `bin/mj-followups` - List and run local follow-ups saved by `/mj-follow-up`
+  - `bin/mj-followups` - List and run local follow-ups saved by `/mj-follow-up`; `mj-followups timer on` lets a systemd user timer start the due ones (a Claude session with Remote Control) and send reminders
 - **`bin/`** - Configuration installation and setup scripts
   - `install-brew-packages.sh` - Install Homebrew packages (macOS)
   - `install-linux.sh` - Linux system setup

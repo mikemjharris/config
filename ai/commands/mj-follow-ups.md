@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(mj-followups list*), Bash(mj-followups run *), Bash(mj-followups done *), Read
+allowed-tools: Bash(mj-followups list*), Bash(mj-followups run *), Bash(mj-followups done *), Bash(mj-followups timer *), Read
 argument-hint: "[all | run <number> | done <number>]"
 description: List your local follow-ups with numbers, and run or close one by its number
 ---
@@ -21,7 +21,9 @@ mj-followups list          # add --all for `all`: done ones too
 ```
 
 Show the table exactly as printed, in a code block, then one line: "Run one
-with `/mj-follow-ups run <number>`."
+with `/mj-follow-ups run <number>`." Kind `auto` starts its own Claude session
+when due and `auto-rem` sends a reminder; if there are any, also run
+`mj-followups timer status` and say so if it's off.
 
 ### Run (`run <number>`)
 
@@ -39,6 +41,9 @@ result file's path. On `needs_you`, offer to open it interactively with
 `mj-followups run <number> --interactive`. An interactive one opens a tmux
 window: say which.
 
+A `remote` one opens a new session with Remote Control in tmux session
+`fu-<folder>`: say so, and that it's in the Claude app.
+
 A reminder-only follow-up has nothing to run: read its `followup.json` and
 give the user the summary and the "What to check next time" list.
 
@@ -47,3 +52,6 @@ give the user the summary and the "What to check next time" list.
 ```bash
 mj-followups done <number>
 ```
+
+This also closes the follow-up's tmux session, if it's open. Sessions stay open
+until then, so suggest it once the user has read the report.
